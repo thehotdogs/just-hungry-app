@@ -10,11 +10,16 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.just_hungry.models.PostModel;
+import com.example.just_hungry.models.UserModel;
+import com.firebase.ui.auth.data.model.User;
+
 import java.util.ArrayList;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter<PostRecyclerAdapter.PostViewHolder> {
     Context context;
     ArrayList<PostModel> posts;
+    UserModel resultUser = null;
     //constructor
     public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
         this.context = context;
@@ -31,12 +36,28 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<PostRecyclerAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull PostRecyclerAdapter.PostViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler vioew row layout file
         // based on the position of the row
         holder.storeName.setText(posts.get(position).getStoreName());
-        holder.time.setText(posts.get(position).getTime());
-        holder.posterName.setText("budi");
+        holder.timing.setText(posts.get(position).getTiming());
+        if (posts.get(position).getLocation() != null) holder.location.setText(posts.get(position).getLocation().getStringLocation());
+        //holder.posterName.setText(posts.get(position).getPosterName());
+        if (posts.get(position).getDateCreated() != null) holder.dateCreated.setText(posts.get(position).getDateCreated());
+//        holder.participantCount.setText(posts.get(position).getParticipantCount());
+        //UserModel user = new UserModel();
+
+        if (posts.get(position).getPosterId() != null) {
+            String posterId = posts.get(position).getPosterId();
+            System.out.println("POSTER ID: " + posterId);
+            Utils.getUserById(posterId, poster -> {
+                resultUser = poster;
+                if (resultUser != null) {
+                    holder.posterName.setText(resultUser.getName());
+                }
+            });
+        }
+
     }
 
     @Override
@@ -51,19 +72,25 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<PostRecyclerAdapte
 
         ImageView postImage;
         TextView storeName;
-        TextView time;
+        TextView timing;
         TextView location;
         TextView posterName;
-        TextView userImage;
+        ImageView posterImage;
+        TextView dateCreated;
+        TextView participantCount;
 
 
         public PostViewHolder(@NonNull View itemView) {
             super(itemView);
             // This is where you initialize the views
             postImage = itemView.findViewById(R.id.postImage);
-            storeName = itemView.findViewById(R.id.storeNameText);
-            time = itemView.findViewById(R.id.timeText);
-            posterName = itemView.findViewById(R.id.posterName);
+            storeName = itemView.findViewById(R.id.storeNameCardText);
+            timing = itemView.findViewById(R.id.timingCardText);
+            posterName = itemView.findViewById(R.id.posterNameCardText);
+            location = itemView.findViewById(R.id.locationCardText);
+            posterImage = itemView.findViewById(R.id.posterCardImage);
+            dateCreated = itemView.findViewById(R.id.dateCreatedCardText);
+            participantCount = itemView.findViewById(R.id.participantCountCardText);
 
         }
     }

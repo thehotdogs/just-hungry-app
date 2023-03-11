@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"
-        app:cardBackgroundColor="#B56C6C"
+        app:cardBackgroundColor="#FFF0D9"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="300dp">
 
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/postImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -33,39 +33,88 @@
                 app:layout_constraintVertical_bias="0.473"
                 tools:srcCompat="@tools:sample/avatars" />
 
-            <TextView
-                android:id="@+id/storeNameText"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/posterCardImage"
+                android:layout_width="56dp"
+                android:layout_height="49dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.458"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.936"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/storeNameCardText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="Store Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.146" />
 
-            <TextView
-                android:id="@+id/timeText"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/timingCardText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="Time"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.403" />
 
-            <TextView
-                android:id="@+id/posterName"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/locationCardText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="location"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.562" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/participantCountCardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="8/10"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.679" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/dateCreatedCardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2022-9-11:08:57"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.493"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.943" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/posterNameCardText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Poster Name"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.498"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/postImage"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.853" />
 
