@@ -72,6 +72,11 @@ public class Utils {
         // Query the 'users' collection for the user with the specified ID.
         db.collection("users").whereEqualTo("userId", userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
                     // Convert the Firestore document to a User object.
                     DocumentSnapshot result = documentSnapshot.getDocuments().get(0);
                     UserModel user = new UserModel(result);

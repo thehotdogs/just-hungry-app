@@ -46,17 +46,30 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<PostRecyclerAdapte
         if (posts.get(position).getDateCreated() != null) holder.dateCreated.setText(posts.get(position).getDateCreated());
 //        holder.participantCount.setText(posts.get(position).getParticipantCount());
         //UserModel user = new UserModel();
+        try {
+            if (posts.get(position).getPosterId() != null) {
+                String posterId = posts.get(position).getPosterId();
+//                System.out.println("POSTER ID: " + posterId);
 
-        if (posts.get(position).getPosterId() != null) {
-            String posterId = posts.get(position).getPosterId();
-            System.out.println("POSTER ID: " + posterId);
-            Utils.getUserById(posterId, poster -> {
-                resultUser = poster;
-                if (resultUser != null) {
-                    holder.posterName.setText(resultUser.getName());
+                Utils.getUserById(posterId, poster -> {
+                    if (poster == null) {
+                        System.out.println("POSTER IS NULL");
+                        return;
+                    }
+                    resultUser = poster;
+//                    System.out.println("RESULT USER: " + resultUser);
+                    String name = resultUser.getName();
+//                    System.out.println("RESULT USERNAME: " + name);
+                        if (resultUser != null && name != "") {
+                            holder.posterName.setText(name);
+                        }
+                    });
                 }
-            });
+        }catch (Exception e) {
+            System.out.println("ERROR: " + e);
+            return;
         }
+        return;
 
     }
 

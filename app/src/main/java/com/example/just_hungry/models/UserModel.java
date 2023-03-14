@@ -1,6 +1,8 @@
 package com.example.just_hungry.models;
 
 
+import android.annotation.SuppressLint;
+
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -19,6 +21,7 @@ public class UserModel {
     private String dateCreated;
     private ArrayList<AssetModel> assets;
     private AssetModel profilePictureUrl;
+    @SuppressLint("SimpleDateFormat")
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
 
 
@@ -59,7 +62,12 @@ public class UserModel {
         this.password = documentSnapshot.getString("password");
         this.name = documentSnapshot.getString("name");
         this.userId = documentSnapshot.getString("userId");
-        this.reputation = Math.toIntExact((documentSnapshot.getLong("reputation")));
+        try {
+            this.reputation = documentSnapshot.getLong("reputation").intValue();
+        } catch (Exception e) {
+            this.reputation = 0;
+        }
+        // this.reputation = Math.toIntExact((documentSnapshot.getLong("reputation")));
         //this.profilePictureUrl = (AssetModel) documentSnapshot.get("profilePictureUrl");
         //this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
         //this.location = (LocationModel) documentSnapshot.get("location");
@@ -126,6 +134,6 @@ public class UserModel {
         this.dateCreated = dateCreated;
     }
 
-
+    // gett
 
 }
