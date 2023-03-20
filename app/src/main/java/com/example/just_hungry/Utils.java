@@ -35,16 +35,16 @@ public class Utils {
         //this is for callbacks
         void onSuccess(QuerySnapshot dataSnapshotValue);
     }
-    private void GetAllPostsFirestore(final PostActivity.OnGetDataListener listener, String userId) {
-        Task<QuerySnapshot> querySnapshotTask = db.collection("users").whereEqualTo("userId", userId).get();
-        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
-
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                listener.onSuccess(queryDocumentSnapshots);
-            }
-        });
-    }
+//    private void GetAllPostsFirestore(final PostActivity.OnGetDataListener listener, String userId) {
+//        Task<QuerySnapshot> querySnapshotTask = db.collection("users").whereEqualTo("userId", userId).get();
+//        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
+//
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                listener.onSuccess(queryDocumentSnapshots);
+//            }
+//        });
+//    }
 
 //    public static UserModel getUserInstanceFromId(String userId){
 //        FirebaseFirestore db = FirebaseFirestore.getInstance();

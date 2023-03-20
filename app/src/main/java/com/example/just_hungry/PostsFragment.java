@@ -1,11 +1,17 @@
 package com.example.just_hungry;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.example.just_hungry.models.PostModel;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -17,7 +23,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class PostActivity extends AppCompatActivity {
+public class PostsFragment extends Fragment {
 
     public ArrayList<PostModel> posts = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -27,13 +33,14 @@ public class PostActivity extends AppCompatActivity {
     //scrolling stuff
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this);
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.home_posts_main);
-        postRecyclerView = (RecyclerView) findViewById(R.id.postRecyclerView);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.home_posts_main, container, false);
+
+
+        postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
         OnGetDataListener listener = new OnGetDataListener() {
             @Override
@@ -46,14 +53,14 @@ public class PostActivity extends AppCompatActivity {
                     //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
                     System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
                 }
-                adapter = new PostRecyclerAdapter(PostActivity.this, posts);
+                adapter = new PostRecyclerAdapter(rootView.getContext(), posts);
                 System.out.println("SETTONG UP ADAPTER DONE" + posts);
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             }
         };
 
-        final SwipeRefreshLayout pullToRefresh = findViewById(R.id.pullToRefresh);
+        final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -62,7 +69,7 @@ public class PostActivity extends AppCompatActivity {
             }
         });
         GetAllPostsFirestore(listener);
-
+        return rootView;
     }
 
 
