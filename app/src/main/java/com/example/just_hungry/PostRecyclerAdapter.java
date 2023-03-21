@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
-import com.firebase.ui.auth.data.model.User;
 
 import java.util.ArrayList;
 
@@ -37,7 +36,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
-            View headerView = inflater.inflate(R.layout.header_view, parent, false);
+            View headerView = inflater.inflate(R.layout.post_header_view, parent, false);
             return new HeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
