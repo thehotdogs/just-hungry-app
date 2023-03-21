@@ -4,19 +4,20 @@
 
     <item
         android:id="@+id/action_posts"
-
+        android:icon="@drawable/ic_baseline_search_24"
         android:title="Posts"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_order"
-
-        android:title="Order"
+        android:id="@+id/action_addorder"
+        android:icon="@drawable/ic_baseline_playlist_add_24"
+        android:title="Add Order"
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_account"
-        android:title="Account"
+        android:id="@+id/action_yourorder"
+        android:title="Your Orders"
+        android:icon="@drawable/ic_baseline_inbox_24"
         app:showAsAction="ifRoom" />
 <!--    android:icon="@drawable/ic_account"-->
 </menu>

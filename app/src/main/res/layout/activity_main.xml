@@ -21,6 +21,7 @@
 <!--        app:titleTextColor="@android:color/white"-->
 <!--        app:menu="@menu/top_nav_menu" />-->
 
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/fragment_container"
         android:name="androidx.navigation.fragment.NavHostFragment"

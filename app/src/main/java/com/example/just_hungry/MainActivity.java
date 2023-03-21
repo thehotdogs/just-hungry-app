@@ -3,18 +3,10 @@ package com.example.just_hungry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
@@ -42,11 +34,11 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_posts:
                 selectedFragment = new PostsFragment();
                 break;
-            case R.id.action_order:
-                //selectedFragment = new OrderFragment();
+            case R.id.action_addorder:
+                selectedFragment = new AddOrderFragment();
                 break;
-            case R.id.action_account:
-                //selectedFragment = new AccountFragment();
+            case R.id.action_yourorder:
+                selectedFragment = new YourOrderFragment();
                 break;
             default:
                 return false;
