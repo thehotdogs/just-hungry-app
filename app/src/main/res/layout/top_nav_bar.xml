@@ -4,21 +4,27 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/top_nav_bar"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
+    android:layout_height="?attr/actionBarSize"
     android:background="@color/md_theme_light_primary"
     app:itemIconTint="@color/md_theme_light_primaryContainer"
-    app:itemTextColor="@color/md_theme_light_onPrimary">
+    app:itemTextColor="@color/md_theme_light_onPrimary"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:layout_gravity="center">
 
     <TextView
         android:id="@+id/top_navbar_text"
+        android:gravity="center"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="TextView"
-        android:textColor="#BBDEFB"
+        android:text="Hungrybees"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.516" />
+        app:layout_constraintVertical_bias="0.567" />
 </androidx.constraintlayout.widget.ConstraintLayout>

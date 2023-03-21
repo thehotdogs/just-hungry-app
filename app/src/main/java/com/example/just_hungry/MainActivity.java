@@ -3,17 +3,22 @@ package com.example.just_hungry;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView welcomeMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +32,9 @@ public class MainActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PostsFragment()).commit();
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
+
     }
+
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment selectedFragment = new PostsFragment();
 
@@ -49,8 +56,4 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    public void onClickHelloWorldButton(View view) {
-        // give a toast message
-        Toast.makeText(this, "Hello World!", Toast.LENGTH_SHORT).show();
-    }
 }

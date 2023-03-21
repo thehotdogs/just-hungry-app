@@ -7,11 +7,13 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
-        android:layout_width="403dp"
+        android:layout_width="350dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="24dp"
-        app:cardBackgroundColor="#FFF0D9"
+        android:layout_marginTop="18dp"
+        android:layout_marginBottom="10dp"
+        app:cardElevation="@dimen/cardview_default_elevation"
+        app:cardBackgroundColor="#FFFFFF"
+        app:cardCornerRadius="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,7 +33,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.473"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@drawable/rendang_background" />
 
             <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/posterCardImage"
