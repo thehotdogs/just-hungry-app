@@ -10,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 
@@ -56,7 +57,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return;
         }
         position = position -1 ;  // Adjust the position for the header view
-        // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler vioew row layout file
+        // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file
         // based on the position of the row
         PostViewHolder postHolder = (PostViewHolder) holder;
         postHolder.storeName.setText(posts.get(position).getStoreName());
@@ -66,6 +67,12 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
 //        holder.participantCount.setText(posts.get(position).getParticipantCount());
         //UserModel user = new UserModel();
+        // get image from firebase db
+        if (Utils.isNetworkAvailable(context)) {
+            Glide.with(context)
+                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
+                    .into(postHolder.postImage);
+        }
         try {
             if (posts.get(position).getPosterId() != null) {
                 String posterId = posts.get(position).getPosterId();
@@ -80,16 +87,14 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 //                    System.out.println("RESULT USER: " + resultUser);
                     String name = resultUser.getName();
 //                    System.out.println("RESULT USERNAME: " + name);
-                        if (resultUser != null && name != "") {
+                        if (resultUser != null && !name.equalsIgnoreCase("")) {
                             postHolder.posterName.setText(name);
                         }
                     });
                 }
         }catch (Exception e) {
             System.out.println("ERROR: " + e);
-            return;
         }
-        return;
 
     }
 

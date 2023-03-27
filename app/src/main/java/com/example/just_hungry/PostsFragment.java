@@ -34,18 +34,33 @@ public class PostsFragment extends Fragment {
     int pastVisiblesItems, visibleItemCount, totalItemCount;
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
 
+    /** onCreateView mainly handles firestore database post getting
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
+     */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_main, container, false);
 
 
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+
+        // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
         OnGetDataListener listener = new OnGetDataListener() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
                 posts.clear();
+                // create a new posts ArrayList which stores all the PostModel objects
                 for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
                     HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
                     posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
@@ -53,7 +68,7 @@ public class PostsFragment extends Fragment {
                     System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
                 }
                 adapter = new PostRecyclerAdapter(rootView.getContext(), posts);
-                System.out.println("SETTONG UP ADAPTER DONE" + posts);
+                System.out.println("SETTING UP ADAPTER DONE" + posts);
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             }
