@@ -4,15 +4,22 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
+import android.content.Intent;
+import android.view.View.OnClickListener;
+import android.widget.Toast;
+
 
 import java.util.ArrayList;
 
@@ -43,11 +50,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
             return new PostRecyclerAdapter.PostViewHolder(itemView);
         }
-//
-//        // This is where you inflate the layout (giving look to our rows)
-//        LayoutInflater inflater = LayoutInflater.from(context);
-//        View view = inflater.inflate(R.layout.post_row, parent, false);
-//        return new PostRecyclerAdapter.PostViewHolder(view);
     }
 
     @Override
@@ -57,15 +59,52 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return;
         }
         position = position -1 ;  // Adjust the position for the header view
+        PostViewHolder postHolder = (PostViewHolder) holder;
+
+        postHolder.itemView.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                //System.out.println("TOGGLED");
+                if (postHolder.buttonContainer.getVisibility() == View.GONE) {
+                    postHolder.buttonContainer.setVisibility(View.VISIBLE);
+                } else {
+                    postHolder.buttonContainer.setVisibility(View.GONE);
+                }
+            }
+        });
+        postHolder.joinButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
+                    // Join function call
+                    postHolder.joinButton.setText("Leave");
+                } else {
+                    // Leave function call
+                    postHolder.joinButton.setText("Join");
+                }
+            }
+        });
+        int finalPosition = position;
+        postHolder.chatButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //!TODO UNCOMMENT FOR CHAT
+                Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(context, ChatActivity.class);
+//                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
+//                context.startActivity(intent);
+            }
+        });
+
         // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file
         // based on the position of the row
-        PostViewHolder postHolder = (PostViewHolder) holder;
         postHolder.storeName.setText(posts.get(position).getStoreName());
         postHolder.timing.setText(posts.get(position).getTiming());
         if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
         //holder.posterName.setText(posts.get(position).getPosterName());
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
-//        holder.participantCount.setText(posts.get(position).getParticipantCount());
+        //        holder.participantCount.setText(posts.get(position).getParticipantCount());
         //UserModel user = new UserModel();
         // get image from firebase db
         if (Utils.isNetworkAvailable(context)) {
@@ -76,7 +115,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         try {
             if (posts.get(position).getPosterId() != null) {
                 String posterId = posts.get(position).getPosterId();
-//                System.out.println("POSTER ID: " + posterId);
+        //                System.out.println("POSTER ID: " + posterId);
 
                 Utils.getUserById(posterId, poster -> {
                     if (poster == null) {
@@ -136,6 +175,10 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         ImageView posterImage;
         TextView dateCreated;
         TextView participantCount;
+        ConstraintLayout buttonContainer;
+
+        Button joinButton;
+        Button chatButton;
 
 
         public PostViewHolder(@NonNull View itemView) {
@@ -149,7 +192,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             posterImage = itemView.findViewById(R.id.posterCardImage);
             dateCreated = itemView.findViewById(R.id.dateCreatedCardText);
             participantCount = itemView.findViewById(R.id.participantCountCardText);
-
+            joinButton = itemView.findViewById(R.id.joinButton);
+            chatButton = itemView.findViewById(R.id.chatButton);
+//            joinButton.setVisibility(View.GONE);
+//            chatButton.setVisibility(View.GONE);
+            buttonContainer = itemView.findViewById(R.id.button_container);
         }
     }
 }

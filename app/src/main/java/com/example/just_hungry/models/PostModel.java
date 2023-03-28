@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.UUID;
 
 public class PostModel {
+    private String postId;
     private String posterId;
     private String dateCreated;
     private String timing;
@@ -20,6 +21,7 @@ public class PostModel {
 
     public PostModel() {
         //set to default value
+        this.postId = UUID.randomUUID().toString();
         this.posterId = UUID.randomUUID().toString();
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
         this.timing = "oi";
@@ -30,7 +32,8 @@ public class PostModel {
         this.maxParticipants = 10;
     }
 
-    public PostModel(String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants) {
+    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants) {
+        this.posterId = postId;
         this.posterId = posterId;
         this.dateCreated = dateCreated;
         this.timing = timing;
@@ -42,6 +45,7 @@ public class PostModel {
     }
 
     public PostModel(DocumentSnapshot documentSnapshot) {
+        this.postId = documentSnapshot.getString("postId");
         this.posterId = documentSnapshot.getString("posterId");
         this.dateCreated = documentSnapshot.getString("dateCreated");
         this.timing = documentSnapshot.getString("timing");
@@ -54,6 +58,9 @@ public class PostModel {
     }
 
     // getters and setters
+    public String getPostId() {
+        return postId;
+    }
     public String getPosterId() {
         return posterId;
     }
@@ -77,6 +84,9 @@ public class PostModel {
     }
     public Integer getMaxParticipants() {
         return maxParticipants;
+    }
+    public void setPostId(String postId) {
+        this.postId = postId;
     }
     public void setPosterId(String posterId) {
         this.posterId = posterId;
