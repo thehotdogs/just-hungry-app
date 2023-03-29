@@ -8,7 +8,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/textViewHelloUser"
+        android:id="@+id/textViewOrderYouJoined"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -17,28 +17,28 @@
         android:shadowDx="1"
         android:shadowDy="1"
         android:shadowRadius="2"
-        android:text="Hello Imba!"
+        android:text="Orders you joined"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/textViewFancySomeFood"
+        app:layout_constraintBottom_toTopOf="@+id/textViewYourOrderHint"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.102"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textViewFancySomeFood"
+        android:id="@+id/textViewYourOrderHint"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="Fancy some food?"
+        android:text="Click each listing to see details!"
         android:textColor="@android:color/black"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/textViewHelloUser"
-        app:layout_constraintTop_toBottomOf="@+id/textViewHelloUser" />
+        app:layout_constraintStart_toStartOf="@+id/textViewOrderYouJoined"
+        app:layout_constraintTop_toBottomOf="@+id/textViewOrderYouJoined" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

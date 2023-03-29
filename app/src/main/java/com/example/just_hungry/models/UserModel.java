@@ -9,6 +9,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class UserModel {
@@ -31,6 +33,17 @@ public class UserModel {
         this.password = "password";
         this.name = "name";
         this.userId = UUID.randomUUID().toString();
+        this.reputation = 0;
+        this.profilePictureUrl = new AssetModel();
+        this.assets = new ArrayList<AssetModel>();
+        this.location = new LocationModel();
+        this.dateCreated = ISO_8601_FORMAT.format(new Date()).toString();
+    }
+    public UserModel(String email, String password, String name, String userId) {
+        this.email = email;
+        this.password = password;
+        this.userId = userId;
+        this.name = name;
         this.reputation = 0;
         this.profilePictureUrl = new AssetModel();
         this.assets = new ArrayList<AssetModel>();
@@ -74,6 +87,19 @@ public class UserModel {
         this.dateCreated = documentSnapshot.getString("dateCreated");
     }
 
+    public Map<String, Object> getHashMapForFirestore() {
+        Map<String, Object> user = new HashMap<>();
+        user.put("email", this.email);
+        user.put("password", this.password);
+        user.put("name", this.name);
+        user.put("userId", this.userId);
+        user.put("reputation", this.reputation);
+        user.put("profilePictureUrl", this.profilePictureUrl);
+        user.put("assets", this.assets);
+        user.put("location", this.location);
+        user.put("dateCreated", this.dateCreated);
+        return user;
+    }
 
 
     // getters and setters

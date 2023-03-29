@@ -1,25 +1,21 @@
 package com.example.just_hungry;
 
+import static com.example.just_hungry.Utils.LoadImageFromWebOperations;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
-import com.example.just_hungry.models.LocationModel;
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationServices;
+import com.bumptech.glide.Glide;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class MainActivity extends AppCompatActivity {
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +24,27 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(this::onNavigationItemSelected);
+        ImageView top_nav_imageview = findViewById(R.id.top_navbar_imageview);
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new PostsFragment()).commit();
+            // instantiate the PostsFragment fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new PostsFragment())
+                    .commit();
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
+        // Load image using glide into top nav bar imageview
+        if (Utils.isNetworkAvailable(this)) {
+//            Utils.Container<Drawable> tempDrawableContainer = new Utils.Container<>();
+//            Log.i(null, "mainactivity top nav bar: network avail, loading image...");
+////            postHolder.postImage.setImageResource(R.drawable.rendang_background);
+//            LoadImageFromWebOperations("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406", tempDrawableContainer);
+//            top_nav_imageview.setImageDrawable(tempDrawableContainer.getT());
 
-
-
+            Glide.with(this)
+                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
+                    .into(top_nav_imageview);
+        }
     }
 
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -58,24 +67,5 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
         return true;
     }
-
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-//        deviceLocationRetriever = new DeviceLocationRetriever();
-//
-//        if (requestCode == 100) {
-//            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//
-//                currentDeviceLocation = deviceLocationRetriever.getLastLocation(this, fusedLocationClient);
-//            } else {
-//                Toast.makeText(this, "Required Permission", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//
-//
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
-
-
 
 }

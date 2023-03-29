@@ -1,5 +1,7 @@
 package com.example.just_hungry.models;
 
+import java.util.HashMap;
+
 public class LocationModel {
 
     public double latitude;
@@ -13,6 +15,10 @@ public class LocationModel {
     public LocationModel(double latitude, double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+    public LocationModel(HashMap<String, Double> input){
+        this.latitude = Double.parseDouble(String.valueOf(input.get("latitude")));
+        this.longitude = Double.parseDouble(String.valueOf(input.get("longitude")));
     }
     // getter and setter methods
     public double getLatitude() {
