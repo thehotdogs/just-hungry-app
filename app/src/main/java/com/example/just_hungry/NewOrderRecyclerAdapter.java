@@ -67,6 +67,9 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        position = position -1 ;  // Adjust the position for the header view
+        PostViewHolder postHolder = (PostViewHolder) holder;
+        PostModel targetPost = posts.get(position);
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
             NewOrderRecyclerAdapter.HeaderViewHolder headerHolder = (NewOrderRecyclerAdapter.HeaderViewHolder) holder;
             Button newOrderButton = headerHolder.newOrderButton;
@@ -99,8 +102,7 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             });
             return;
         }
-        position = position -1 ;  // Adjust the position for the header view
-        PostViewHolder postHolder = (PostViewHolder) holder;
+
 
         postHolder.itemView.setOnClickListener(new OnClickListener() {
 
@@ -119,6 +121,8 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             public void onClick(View v) {
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
+                    String userId = preferences.getString("userId", "");
+                    String postId
                     postHolder.joinButton.setText("Leave");
                 } else {
                     // Leave function call

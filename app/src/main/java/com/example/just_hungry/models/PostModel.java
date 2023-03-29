@@ -17,8 +17,11 @@ public class PostModel {
     private ArrayList<AssetModel> assets;
     private LocationModel location;
     private String storeName;
+
     private Integer maxParticipants;
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
+    private String cuisine;
+    private String grabFoodUrl;
 
     public PostModel() {
         //set to default value
@@ -31,6 +34,9 @@ public class PostModel {
         this.location = new LocationModel();
         this.storeName = "oi";
         this.maxParticipants = 10;
+        this.cuisine = "western";
+        this.grabFoodUrl = "https://www.grabfood.com.sg/";
+
     }
     public PostModel(String posterId) {
         //set to default value
@@ -45,9 +51,11 @@ public class PostModel {
         this.location = new LocationModel();
         this.storeName = "oi";
         this.maxParticipants = 10;
+        this.cuisine = "western";
+        this.grabFoodUrl = "https://www.grabfood.com.sg/";
     }
 
-    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants) {
+    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants, String cuisine, String grabFoodUrl) {
         this.posterId = postId;
         this.posterId = posterId;
         this.dateCreated = dateCreated;
@@ -57,6 +65,8 @@ public class PostModel {
         this.location = location;
         this.storeName = storeName;
         this.maxParticipants = maxParticipants;
+        this.cuisine = cuisine;
+        this.grabFoodUrl = grabFoodUrl;
     }
 
     public PostModel(DocumentSnapshot documentSnapshot) {
@@ -70,6 +80,8 @@ public class PostModel {
         this.storeName = documentSnapshot.getString("storeName");
         if (documentSnapshot.getLong("maxParticipants") != null) this.maxParticipants = Math.toIntExact((documentSnapshot.getLong("maxParticipants")));
         else this.maxParticipants = 10;
+        this.cuisine = documentSnapshot.getString("cuisine");
+        this.grabFoodUrl = documentSnapshot.getString("grabFoodUrl");
     }
 
     public HashMap<String, Object> getHashMapForFirestore() {
@@ -83,6 +95,8 @@ public class PostModel {
         hashMap.put("location", this.location.getHashMapForFirestore());
         hashMap.put("storeName", this.storeName);
         hashMap.put("maxParticipants", this.maxParticipants);
+        hashMap.put("cuisine", this.cuisine);
+        hashMap.put("grabFoodUrl", this.grabFoodUrl);
         return hashMap;
     }
 
@@ -113,6 +127,18 @@ public class PostModel {
     }
     public Integer getMaxParticipants() {
         return maxParticipants;
+    }
+    public String getCuisine() {
+        return cuisine;
+    }
+    public String getGrabFoodUrl() {
+        return grabFoodUrl;
+    }
+    public void setCuisine(String cuisine) {
+        this.cuisine = cuisine;
+    }
+    public void setGrabFoodUrl(String grabFoodUrl) {
+        this.grabFoodUrl = grabFoodUrl;
     }
     public void setPostId(String postId) {
         this.postId = postId;
