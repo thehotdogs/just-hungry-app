@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewOrderFormFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class NewOrderFormFragment extends Fragment {
     public ArrayList<PostModel> yourOrders = new ArrayList<>();
     EditText listingTitle;
     EditText groupbuyURL;
@@ -60,8 +60,6 @@ public class NewOrderFormFragment extends Fragment implements AdapterView.OnItem
     // new form data to be added to the PostModel
     private String cuisine;
     private boolean isHalal;
-
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -140,16 +138,6 @@ public class NewOrderFormFragment extends Fragment implements AdapterView.OnItem
         super.onCreate(savedInstanceState);
     }
 
-    // cuisine spinner selecting
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        cuisine= (String) adapterView.getItemAtPosition(i);
-        Log.i(TAG, "onItemSelected: " + cuisine);
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
-    }
     public boolean validateFields(){
         if(listingTitle.getText().toString().isEmpty()){
             Toast.makeText(context, "Please enter a restaurant name", Toast.LENGTH_SHORT).show();
@@ -160,8 +148,12 @@ public class NewOrderFormFragment extends Fragment implements AdapterView.OnItem
             Toast.makeText(context, "Please enter a groupbuy URL", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(!groupbuyURLString.substring(groupbuyURLString.length()-4).equals(".com")){
-            Toast.makeText(context, "Please enter a valid groupbuy URL", Toast.LENGTH_SHORT).show();
+        if(groupbuyURLString.length() < 18){
+            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
+            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -169,8 +161,16 @@ public class NewOrderFormFragment extends Fragment implements AdapterView.OnItem
             Toast.makeText(context, "Please enter a time limit", Toast.LENGTH_SHORT).show();
             return false;
         }
+        if(!timeLimit.getText().toString().matches("[0-9]+")){
+            Toast.makeText(context, "Please enter a valid time limit", Toast.LENGTH_SHORT).show();
+            return false;
+        }
         if(maxParticipants.getText().toString().isEmpty()){
             Toast.makeText(context, "Please enter a maximum number of participants", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if(!maxParticipants.getText().toString().matches("[0-9]+")){
+            Toast.makeText(context, "Please enter a valid maximum number of participants", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(collectionPoint == null){
