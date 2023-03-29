@@ -5,6 +5,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class PostModel {
@@ -51,7 +52,7 @@ public class PostModel {
         this.timing = documentSnapshot.getString("timing");
         this.participants = (ArrayList<ParticipantModel>) documentSnapshot.get("participants");
         this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
-        this.location = (LocationModel) documentSnapshot.get("location");
+        this.location = new LocationModel((HashMap<String, Double>) documentSnapshot.get("location"));
         this.storeName = documentSnapshot.getString("storeName");
         if (documentSnapshot.getLong("maxParticipants") != null) this.maxParticipants = Math.toIntExact((documentSnapshot.getLong("maxParticipants")));
         else this.maxParticipants = 10;

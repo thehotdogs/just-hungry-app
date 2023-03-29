@@ -1,115 +1,105 @@
 package com.example.just_hungry;
 
-import android.os.Bundle;
-
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 
-import com.example.just_hungry.models.AssetModel;
-import com.example.just_hungry.models.LocationModel;
-import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.PostModel;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
-public class NewOrderFragment extends Fragment implements AdapterView.OnItemSelectedListener {
-    public ArrayList<PostModel> yourOrders = new ArrayList<>();
-    Spinner spinnerCuisine;
+public class NewOrderFragment extends Fragment {
 
-    // form data
-    private PostModel orderFormData = new PostModel();
-    private String posterId;
-    private String dateCreated;
-    private String timing;
-    private ArrayList<ParticipantModel> participants;
-    private ArrayList<AssetModel> assets;
-    private LocationModel location;
-    private String storeName;
-    private Integer maxParticipants;
-    SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
+    public ArrayList<PostModel> posts = new ArrayList<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    RecyclerView postRecyclerView;
+    NewOrderRecyclerAdapter adapter;
+    SharedPreferences preferences;
 
-    // new form data to be added to the PostModel
-    private String cuisine;
+    //scrolling stuff
+    private boolean loading = true;
+    int pastVisiblesItems, visibleItemCount, totalItemCount;
+    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
 
-
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
-
-        // Cuisine spinner code - is there a function to add to all spinners?
-        spinnerCuisine = (Spinner) rootView.findViewById(R.id.spinnerCuisine);
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(rootView.getContext(), R.array.spinner_cuisine, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerCuisine.setAdapter(adapter);
-
-
-
-        //
-
-        // Inflate the layout for this fragment
-        return rootView;
-
-
-    }
-
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public NewOrderFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
+    /** onCreateView mainly handles firestore database post getting
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AddOrderFragment.
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return
      */
-    // TODO: Rename and change types and number of parameters
-    public static AddOrderFragment newInstance(String param1, String param2) {
-        AddOrderFragment fragment = new AddOrderFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_post_main, container, false);
+
+        preferences= getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+
+        // firebase has its own threading operations
+        Task<QuerySnapshot> postsQuery = db.collection("posts").get();
+        Utils.OnGetPostByUserDataListener listener = new Utils.OnGetPostByUserDataListener() {
+            @Override
+            public void onSuccess(List<DocumentSnapshot> dataSnapshotValue) {
+                posts.clear();
+                // create a new posts ArrayList which stores all the PostModel objects
+                for (int i = 0; i < dataSnapshotValue.size(); i++) {
+                    HashMap<String, Object> post = (HashMap<String, Object>) dataSnapshotValue.get(i).getData();
+                    posts.add(new PostModel((DocumentSnapshot) dataSnapshotValue.get(i)));
+                    //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
+                    System.out.println(dataSnapshotValue.get(i).getData());
+                }
+                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts);
+                System.out.println("SETTING UP ADAPTER DONE" + posts);
+                postRecyclerView.setLayoutManager(mLayoutManager);
+                postRecyclerView.setAdapter(adapter);
+            }
+        };
+        String userId = preferences.getString("userId", "");
+        final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
+        pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Utils.getAllPostsByUserId(userId, listener); // your code
+                pullToRefresh.setRefreshing(false);
+            }
+        });
+        Utils.getAllPostsByUserId(userId, listener);
+        return rootView;
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-        cuisine= (String) adapterView.getItemAtPosition(i);
-        System.out.println(cuisine);
-    }
 
-    @Override
-    public void onNothingSelected(AdapterView<?> adapterView) {
+    // FIREBASE STACK OVER FLOW STUFF
 
-    }
+//    public void GetAllPostsFirestore(final OnGetDataListener listener) {
+//        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
+//        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
+//
+//            @Override
+//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                listener.onSuccess(queryDocumentSnapshots);
+//            }
+//        });
+//    }
 }

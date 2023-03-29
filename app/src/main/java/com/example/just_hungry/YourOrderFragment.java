@@ -59,7 +59,7 @@ public class YourOrderFragment extends Fragment {
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
-        OnGetPostByUserDataListener listener = new OnGetPostByUserDataListener() {
+        Utils.OnGetPostByUserDataListener listener = new Utils.OnGetPostByUserDataListener() {
             @Override
             public void onSuccess(List<DocumentSnapshot> dataSnapshotValue) {
                     posts.clear();
@@ -91,10 +91,10 @@ public class YourOrderFragment extends Fragment {
 
 
     // FIREBASE STACK OVER FLOW STUFF
-    public interface OnGetPostByUserDataListener {
-        //this is for callbacks
-        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
-    }
+//    public interface OnGetPostByUserDataListener {
+//        //this is for callbacks
+//        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
+//    }
 //    public void GetAllPostsFirestore(final OnGetDataListener listener) {
 //        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
 //        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){

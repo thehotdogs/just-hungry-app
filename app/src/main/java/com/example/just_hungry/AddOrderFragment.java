@@ -37,7 +37,7 @@ public class AddOrderFragment extends Fragment {
         newOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFragment()).commit();
+                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFormFragment()).commit();
             }
         });
 
