@@ -43,7 +43,7 @@ public class NewOrderFormFragment extends Fragment implements AdapterView.OnItem
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_new_order_form, container, false);
 
         // Cuisine spinner code - is there a function to add to all spinners?
         spinnerCuisine = (Spinner) rootView.findViewById(R.id.spinnerCuisine);

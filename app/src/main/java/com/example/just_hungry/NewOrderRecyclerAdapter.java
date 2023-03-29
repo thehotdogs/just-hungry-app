@@ -12,17 +12,25 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
@@ -31,12 +39,14 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private static final int HEADER_VIEW_TYPE = 0;
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
+    FragmentManager fragmentManager;
 
     //constructor
-    public NewOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
+    public NewOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager parentFragmentManager) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        this.fragmentManager = parentFragmentManager;
     }
 
     @NonNull
@@ -47,7 +57,7 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
-            View headerView = inflater.inflate(R.layout.your_order_header_view, parent, false);
+            View headerView = inflater.inflate(R.layout.new_order_header_view, parent, false);
             return new HeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
@@ -58,6 +68,35 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
+            NewOrderRecyclerAdapter.HeaderViewHolder headerHolder = (NewOrderRecyclerAdapter.HeaderViewHolder) holder;
+            Button newOrderButton = headerHolder.newOrderButton;
+            newOrderButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    System.out.println("HELLO");
+                    // TODO UNCOMMENT THIS to redirect to josh forms!
+                    // fragmentManager.beginTransaction().replace(R.id.fragment_container, new NewOrderFormFragment()).commit();
+                    // Generate new order and push to firebase
+                    SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+                    String userId = preferences.getString("userId", "");
+                    HashMap<String, Object> newRandomOrderHM = new PostModel(userId).getHashMapForFirestore();
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    System.out.println(userId);
+                    db.collection("posts").add(newRandomOrderHM)
+                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                @Override
+                                public void onSuccess(DocumentReference documentReference) {
+                                    Toast.makeText(context, "Random Post with posterId" +userId  + "added!", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(context, "Error adding post to Firestore", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            });
             return;
         }
         position = position -1 ;  // Adjust the position for the header view
@@ -110,7 +149,9 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         // get image from firebase db
         if (Utils.isNetworkAvailable(context)) {
             Glide.with(context)
-                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
+                    .load("https://loremflickr.com/320/240/tasty")
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(postHolder.postImage);
         }
         try {
@@ -152,11 +193,13 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     public static class HeaderViewHolder extends RecyclerView.ViewHolder {
         public TextView textViewHelloUser;
         public TextView textViewFancySomeFood;
+        public Button newOrderButton;
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-            textViewHelloUser = itemView.findViewById(R.id.textViewOrderYouJoined);
-            textViewFancySomeFood = itemView.findViewById(R.id.textViewYourOrderHint);
+            textViewHelloUser = itemView.findViewById(R.id.textViewNewOrder);
+            textViewFancySomeFood = itemView.findViewById(R.id.textViewNewOrderHint);
+            newOrderButton = itemView.findViewById(R.id.buttonAddOrder);
         }
     }
 
@@ -176,6 +219,7 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
         Button joinButton;
         Button chatButton;
+
 
 
         public PostViewHolder(@NonNull View itemView) {

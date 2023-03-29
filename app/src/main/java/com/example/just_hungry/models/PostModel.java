@@ -32,6 +32,20 @@ public class PostModel {
         this.storeName = "oi";
         this.maxParticipants = 10;
     }
+    public PostModel(String posterId) {
+        //set to default value
+        this.postId = UUID.randomUUID().toString();
+        this.posterId = posterId;
+        this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
+        this.timing = "oi";
+        this.participants = new ArrayList<ParticipantModel>();
+        this.assets = new ArrayList<AssetModel>();
+        this.assets.add(new AssetModel());
+        this.assets.add(new AssetModel());
+        this.location = new LocationModel();
+        this.storeName = "oi";
+        this.maxParticipants = 10;
+    }
 
     public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants) {
         this.posterId = postId;
@@ -56,6 +70,20 @@ public class PostModel {
         this.storeName = documentSnapshot.getString("storeName");
         if (documentSnapshot.getLong("maxParticipants") != null) this.maxParticipants = Math.toIntExact((documentSnapshot.getLong("maxParticipants")));
         else this.maxParticipants = 10;
+    }
+
+    public HashMap<String, Object> getHashMapForFirestore() {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("postId", this.postId);
+        hashMap.put("posterId", this.posterId);
+        hashMap.put("dateCreated", this.dateCreated);
+        hashMap.put("timing", this.timing);
+        hashMap.put("participants", this.participants);
+        hashMap.put("assets", this.assets);
+        hashMap.put("location", this.location.getHashMapForFirestore());
+        hashMap.put("storeName", this.storeName);
+        hashMap.put("maxParticipants", this.maxParticipants);
+        return hashMap;
     }
 
     // getters and setters

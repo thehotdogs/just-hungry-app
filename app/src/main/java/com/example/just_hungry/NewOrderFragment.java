@@ -13,9 +13,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.just_hungry.models.PostModel;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class NewOrderFragment extends Fragment {
+
 
     public ArrayList<PostModel> posts = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -52,8 +53,7 @@ public class NewOrderFragment extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_post_main, container, false);
-
+        View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
         preferences= getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
 
@@ -70,7 +70,7 @@ public class NewOrderFragment extends Fragment {
                     //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
                     System.out.println(dataSnapshotValue.get(i).getData());
                 }
-                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts);
+                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager());
                 System.out.println("SETTING UP ADAPTER DONE" + posts);
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
@@ -85,6 +85,9 @@ public class NewOrderFragment extends Fragment {
                 pullToRefresh.setRefreshing(false);
             }
         });
+
+
+
         Utils.getAllPostsByUserId(userId, listener);
         return rootView;
     }

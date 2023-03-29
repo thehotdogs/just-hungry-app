@@ -20,6 +20,13 @@ public class LocationModel {
         this.latitude = Double.parseDouble(String.valueOf(input.get("latitude")));
         this.longitude = Double.parseDouble(String.valueOf(input.get("longitude")));
     }
+    
+    public HashMap<String, Object> getHashMapForFirestore() {
+        HashMap<String, Object> output = new HashMap<>();
+        output.put("latitude", latitude);
+        output.put("longitude", longitude);
+        return output;
+    }
     // getter and setter methods
     public double getLatitude() {
         return latitude;

@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 import android.content.Intent;
@@ -110,7 +111,9 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
         // get image from firebase db
         if (Utils.isNetworkAvailable(context)) {
             Glide.with(context)
-                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
+                    .load("https://loremflickr.com/320/240/tasty")
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(true)
                     .into(postHolder.postImage);
         }
         try {
