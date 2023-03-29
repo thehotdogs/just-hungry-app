@@ -64,12 +64,15 @@ public class YourOrderFragment extends Fragment {
             public void onSuccess(List<DocumentSnapshot> dataSnapshotValue) {
                     posts.clear();
                     // create a new posts ArrayList which stores all the PostModel objects
-                    for (int i = 0; i < dataSnapshotValue.size(); i++) {
-                        HashMap<String, Object> post = (HashMap<String, Object>) dataSnapshotValue.get(i).getData();
-                        posts.add(new PostModel((DocumentSnapshot) dataSnapshotValue.get(i)));
-                        //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-                        System.out.println(dataSnapshotValue.get(i).getData());
+                    if (dataSnapshotValue != null){
+                        for (int i = 0; i < dataSnapshotValue.size(); i++) {
+                            HashMap<String, Object> post = (HashMap<String, Object>) dataSnapshotValue.get(i).getData();
+                            posts.add(new PostModel((DocumentSnapshot) dataSnapshotValue.get(i)));
+                            //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
+                            System.out.println(dataSnapshotValue.get(i).getData());
+                        }
                     }
+
                     adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts);
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
                     postRecyclerView.setLayoutManager(mLayoutManager);

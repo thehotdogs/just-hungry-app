@@ -8,9 +8,9 @@ public class LocationModel {
     public double longitude;
 
     public LocationModel() {
-        //set to default value
-        this.latitude = 0;
-        this.longitude = 0;
+        //set to default value, which is SUTD coordinates
+        this.latitude = 0; // 1.3402320075948917
+        this.longitude = 0; // 103.96296752039913
     }
     public LocationModel(double latitude, double longitude) {
         this.latitude = latitude;
