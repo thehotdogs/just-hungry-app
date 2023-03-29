@@ -31,13 +31,14 @@ public class AddOrderFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_order, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
         newOrderButton = rootView.findViewById(R.id.buttonAddOrder);
 
         newOrderButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFragment()).commit();
+                System.out.println("HELLO");
+                getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFormFragment()).commit();
             }
         });
 

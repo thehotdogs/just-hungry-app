@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputLayout;
@@ -23,11 +24,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class SignInActivity extends AppCompatActivity {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private TextInputLayout emailField;
     private TextInputLayout passwordField;
+    private TextInputLayout nameField;
     private Button signInButton;
 
 
@@ -44,28 +47,26 @@ public class SignInActivity extends AppCompatActivity {
         // getting the email and password ELement
         emailField = (TextInputLayout) findViewById(R.id.emailField);
         passwordField = (TextInputLayout) findViewById(R.id.passwordField);
+        nameField = (TextInputLayout) findViewById(R.id.nameField);
         signInButton = (Button) findViewById(R.id.signInButton);
         TextView haveAccountText = findViewById(R.id.haveaccount);
-        // getting the email and password from the text fields
-        String email = emailField.getEditText().getText().toString();
-        String password = passwordField.getEditText().getText().toString();
-        Log.d("signIn",email+ password);
 
         // Add logic to check if the username and password are correct
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
-//        if (preferences.getBoolean("logged_in", false)) {
-//            startHomeActivity();
-//        }
+        if (preferences.getBoolean("logged_in", false)) {
+            startHomeActivity();
+        }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String email = emailField.getEditText().getText().toString();
                 String password = passwordField.getEditText().getText().toString();
+                String name = nameField.getEditText().getText().toString();
 
-                Log.d("INPUTTED:", email+ password);
+//                Log.d("INPUTTED:", email+ password);
                 // Do logic to check if the email and password are correct
                 if (TextUtils.isEmpty(email)) {
                     emailField.setError("Please enter email");
@@ -84,6 +85,11 @@ public class SignInActivity extends AppCompatActivity {
                     passwordField.requestFocus();
                     return;
                 }
+                if (TextUtils.isEmpty(password)) {
+                    passwordField.setError("Please enter password");
+                    passwordField.requestFocus();
+                    return;
+                }
 
                 if (password.length() < 8) {
                     passwordField.setError("Password must be at least 8 characters");
@@ -93,9 +99,10 @@ public class SignInActivity extends AppCompatActivity {
 
                 //Firebase Stuff
                 // Create a new user object to store in Firestore
-                Map<String, Object> user = new HashMap<>();
-                user.put("email", email);
-                user.put("password", password);
+
+                String userId= UUID.randomUUID().toString();
+                UserModel UserObject = new UserModel(email, password, name, userId);
+                Map<String, Object> user = UserObject.getHashMapForFirestore();
 
                 db.collection("users").add(user)
                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
@@ -116,10 +123,13 @@ public class SignInActivity extends AppCompatActivity {
                 System.out.println("Email: " + email);
                 System.out.println("Password: " + password);
 
-
                 // If the username and password are correct, start the home activity and
                 // set the "logged_in" preference to true
                 editor.putBoolean("logged_in", true);
+                editor.putString("userId", userId);
+                editor.putString("email", email);
+                editor.putString("password", password);
+                editor.putString("name", name);
                 editor.apply();
                 startHomeActivity();
             }

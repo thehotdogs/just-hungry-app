@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -28,19 +27,21 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     ArrayList<PostModel> posts;
     UserModel resultUser = null;
     private static final int HEADER_VIEW_TYPE = 0;
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
+    Utils.OnGetPostByUserDataListener listener;
 
     //constructor
-    public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
+    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        this.listener = listener;
     }
 
     @NonNull
@@ -51,7 +52,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
-            View headerView = inflater.inflate(R.layout.post_header_view, parent, false);
+            View headerView = inflater.inflate(R.layout.your_order_header_view, parent, false);
             return new HeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
@@ -62,9 +63,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
-            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
-            String name = preferences.getString("name", "");
-            headerHolder.textViewHelloUser.setText("Hi, " + name + "!");
             return;
         }
         position = position -1 ;  // Adjust the position for the header view
@@ -85,28 +83,30 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String userId = preferences.getString("userId", "");
                 String postId = targetPost.getPostId();
-                String postName = targetPost.getStoreName();
+                String storeName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
                     Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(context, "Joined post" + postName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Joined post" + storeName, Toast.LENGTH_SHORT).show();
                         }
                     });
-
+                    // NEEDED TO REFRESH PAGE
+                    Utils.getAllPostsByUserId(userId, listener);
                     postHolder.joinButton.setText("Leave");
                 } else {
                     // Leave function call
                     Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(context, "Left post" + postName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Left post" + storeName, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    // NEEDED TO REFRESH PAGE
+                    Utils.getAllPostsByUserId(userId, listener);
                     postHolder.joinButton.setText("Join");
                 }
             }
@@ -149,11 +149,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                     resultUser = poster;
                     String name = resultUser.getName();
-                        if (resultUser != null && !name.equalsIgnoreCase("")) {
-                            postHolder.posterName.setText(name);
-                        }
-                    });
-                }
+                    if (resultUser != null && !name.equalsIgnoreCase("")) {
+                        postHolder.posterName.setText(name);
+                    }
+                });
+            }
         }catch (Exception e) {
             System.out.println("ERROR: " + e);
         }
@@ -181,8 +181,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-            textViewHelloUser = itemView.findViewById(R.id.textViewHelloUser);
-            textViewFancySomeFood = itemView.findViewById(R.id.textViewFancySomeFood);
+            textViewHelloUser = itemView.findViewById(R.id.textViewOrderYouJoined);
+            textViewFancySomeFood = itemView.findViewById(R.id.textViewYourOrderHint);
         }
     }
 
@@ -217,7 +217,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             participantCount = itemView.findViewById(R.id.participantCountCardText);
             joinButton = itemView.findViewById(R.id.joinButton);
             chatButton = itemView.findViewById(R.id.chatButton);
-//            joinButton.setVisibility(View.GONE);
+            joinButton.setText("Leave");
 //            chatButton.setVisibility(View.GONE);
             buttonContainer = itemView.findViewById(R.id.button_container);
         }

@@ -1,18 +1,29 @@
 package com.example.just_hungry;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+
+import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -22,12 +33,14 @@ import org.checkerframework.checker.units.qual.C;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Utils {
+    static final int COARSE_LOCATION_REQUEST_CODE = 100;
     static final String TAG = "UtilsTag";
     static final String UTILS_TAG = "UtilsTag";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -109,6 +122,91 @@ public class Utils {
                     successListener.onSuccess(null);
                 });
     }
+    public interface OnGetPostByUserDataListener {
+        //this is for callbacks
+        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
+    }
+    public static void getAllPostsByUserId(String userId, OnGetPostByUserDataListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereEqualTo("posterId", userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    // Convert the Firestore document to a User object.
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        // User with the specified ID exists.
+                        successListener.onSuccess(results);
+                    } else {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void addUserToPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+                .addOnSuccessListener(documentSnapshot -> {
+                    System.out.println(documentSnapshot);
+                    successListener.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error adding user to post participants " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void removeUserFromPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").document(postId).update("participants", FieldValue.arrayRemove(userId))
+                .addOnSuccessListener(documentSnapshot -> {
+                    successListener.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error removing user from post participants " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void getAllPostsThatUserJoined(String userId, OnGetPostByUserDataListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereArrayContains("participants", userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    // Convert the Firestore document to a User object.
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        // User with the specified ID exists.
+                        successListener.onSuccess(results);
+                    } else {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
 
     /**
      * Load the image from a url
@@ -179,6 +277,45 @@ public class Utils {
         boolean haveNetwork = activeNetworkInfo != null && activeNetworkInfo.isConnected();
         Log.i(UTILS_TAG, "Active Network: " + haveNetwork);
         return haveNetwork;
+    }
+
+    // location access
+    public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
+        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
+
+        if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
+                    .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
+                        @Override
+                        public void onSuccess(Location location) {
+                            System.out.println("location object " + location);
+                            if (location != null) {
+                                double latitude = location.getLatitude();
+                                double longitude = location.getLongitude();
+                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
+                                currentLocation.setLatitude(latitude);
+                                currentLocation.setLongitude(longitude);
+                            }
+                        }
+
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("TAG", "Exception: " + e.getMessage());
+                            System.out.println("KEGAGALAN HAKIKI " + e.getMessage());
+                        }
+                    })
+            ;
+        } else {
+            askPermission(activity, fusedLocationClient);
+            return getDeviceLocation(activity, fusedLocationClient, currentLocation);
+        }
+        return currentLocation;
+    }
+
+    public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
+        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }
 
 }

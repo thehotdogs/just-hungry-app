@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new PostsFragment();
                 break;
             case R.id.action_addorder:
-                selectedFragment = new AddOrderFragment();
+                selectedFragment = new NewOrderFragment();
                 break;
             case R.id.action_yourorder:
                 selectedFragment = new YourOrderFragment();
