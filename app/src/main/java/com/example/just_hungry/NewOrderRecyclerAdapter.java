@@ -31,6 +31,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.UUID;
 
 public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
@@ -40,13 +41,15 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
     FragmentManager fragmentManager;
+    Utils.OnGetPostByUserDataListener newOrderPostslistener;
 
     //constructor
-    public NewOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager parentFragmentManager) {
+    public NewOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager parentFragmentManager,Utils.OnGetPostByUserDataListener newOrderPostslistener) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
         this.fragmentManager = parentFragmentManager;
+        this.newOrderPostslistener = newOrderPostslistener;
     }
 
     @NonNull
@@ -67,9 +70,6 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        position = position -1 ;  // Adjust the position for the header view
-        PostViewHolder postHolder = (PostViewHolder) holder;
-        PostModel targetPost = posts.get(position);
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
             NewOrderRecyclerAdapter.HeaderViewHolder headerHolder = (NewOrderRecyclerAdapter.HeaderViewHolder) holder;
             Button newOrderButton = headerHolder.newOrderButton;
@@ -82,28 +82,21 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                     // Generate new order and push to firebase
                     SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
                     String userId = preferences.getString("userId", "");
-                    HashMap<String, Object> newRandomOrderHM = new PostModel(userId).getHashMapForFirestore();
+                    String postId = UUID.randomUUID().toString();
+                    HashMap<String, Object> newRandomOrderHM = new PostModel(userId, postId).getHashMapForFirestore();
                     FirebaseFirestore db = FirebaseFirestore.getInstance();
                     System.out.println(userId);
-                    db.collection("posts").add(newRandomOrderHM)
-                            .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                @Override
-                                public void onSuccess(DocumentReference documentReference) {
-                                    Toast.makeText(context, "Random Post with posterId" +userId  + "added!", Toast.LENGTH_SHORT).show();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(context, "Error adding post to Firestore", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                    db.collection("posts").document(postId).set(newRandomOrderHM);
+
+                    // NEEDED TO REFRESH PAGE
+                    Utils.getAllPostsByUserId(userId, newOrderPostslistener);
                 }
             });
             return;
         }
-
-
+        position = position -1 ;  // Adjust the position for the header view
+        PostViewHolder postHolder = (PostViewHolder) holder;
+        PostModel targetPost = posts.get(position);
         postHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -119,18 +112,30 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                String userId = preferences.getString("userId", "");
+                String postId = targetPost.getPostId();
+                String storeName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
-                    String userId = preferences.getString("userId", "");
-                    String postId
+                    Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Joined post" + storeName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     postHolder.joinButton.setText("Leave");
                 } else {
                     // Leave function call
+                    Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Left post" + storeName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     postHolder.joinButton.setText("Join");
                 }
             }
         });
-        int finalPosition = position;
         postHolder.chatButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {

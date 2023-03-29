@@ -33,6 +33,7 @@ public class NewOrderFragment extends Fragment {
     RecyclerView postRecyclerView;
     NewOrderRecyclerAdapter adapter;
     SharedPreferences preferences;
+    Utils.OnGetPostByUserDataListener newOrderPostslistener;
 
     //scrolling stuff
     private boolean loading = true;
@@ -59,18 +60,21 @@ public class NewOrderFragment extends Fragment {
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
-        Utils.OnGetPostByUserDataListener listener = new Utils.OnGetPostByUserDataListener() {
+        newOrderPostslistener = new Utils.OnGetPostByUserDataListener() {
             @Override
             public void onSuccess(List<DocumentSnapshot> dataSnapshotValue) {
+
                 posts.clear();
                 // create a new posts ArrayList which stores all the PostModel objects
-                for (int i = 0; i < dataSnapshotValue.size(); i++) {
-                    HashMap<String, Object> post = (HashMap<String, Object>) dataSnapshotValue.get(i).getData();
-                    posts.add(new PostModel((DocumentSnapshot) dataSnapshotValue.get(i)));
-                    //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-                    System.out.println(dataSnapshotValue.get(i).getData());
+                if (dataSnapshotValue != null) {
+                    for (int i = 0; i < dataSnapshotValue.size(); i++) {
+                        HashMap<String, Object> post = (HashMap<String, Object>) dataSnapshotValue.get(i).getData();
+                        posts.add(new PostModel((DocumentSnapshot) dataSnapshotValue.get(i)));
+                        //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
+                        System.out.println(dataSnapshotValue.get(i).getData());
+                    }
                 }
-                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager());
+                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager(), newOrderPostslistener);
                 System.out.println("SETTING UP ADAPTER DONE" + posts);
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
@@ -81,14 +85,14 @@ public class NewOrderFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utils.getAllPostsByUserId(userId, listener); // your code
+                Utils.getAllPostsByUserId(userId, newOrderPostslistener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
 
 
 
-        Utils.getAllPostsByUserId(userId, listener);
+        Utils.getAllPostsByUserId(userId, newOrderPostslistener);
         return rootView;
     }
 

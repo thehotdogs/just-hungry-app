@@ -32,6 +32,7 @@ public class YourOrderFragment extends Fragment {
     RecyclerView postRecyclerView;
     YourOrderRecyclerAdapter adapter;
     SharedPreferences preferences;
+    Utils.OnGetPostByUserDataListener yourJoinedOrderListener;
 
     //scrolling stuff
     private boolean loading = true;
@@ -59,7 +60,7 @@ public class YourOrderFragment extends Fragment {
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
-        Utils.OnGetPostByUserDataListener listener = new Utils.OnGetPostByUserDataListener() {
+        yourJoinedOrderListener = new Utils.OnGetPostByUserDataListener() {
             @Override
             public void onSuccess(List<DocumentSnapshot> dataSnapshotValue) {
                     posts.clear();
@@ -73,7 +74,7 @@ public class YourOrderFragment extends Fragment {
                         }
                     }
 
-                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts);
+                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener);
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
                     postRecyclerView.setLayoutManager(mLayoutManager);
                     postRecyclerView.setAdapter(adapter);
@@ -84,11 +85,11 @@ public class YourOrderFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utils.getAllPostsByUserId(userId, listener); // your code
+                Utils.getAllPostsThatUserJoined(userId, yourJoinedOrderListener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
-        Utils.getAllPostsByUserId(userId, listener);
+        Utils.getAllPostsThatUserJoined(userId, yourJoinedOrderListener);
         return rootView;
     }
 

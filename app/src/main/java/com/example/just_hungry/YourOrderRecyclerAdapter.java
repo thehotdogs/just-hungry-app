@@ -18,6 +18,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -32,12 +34,14 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int HEADER_VIEW_TYPE = 0;
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
+    Utils.OnGetPostByUserDataListener listener;
 
     //constructor
-    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
+    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        this.listener = listener;
     }
 
     @NonNull
@@ -63,7 +67,7 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         position = position -1 ;  // Adjust the position for the header view
         PostViewHolder postHolder = (PostViewHolder) holder;
-
+        PostModel targetPost = posts.get(position);
         postHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -79,11 +83,30 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                String userId = preferences.getString("userId", "");
+                String postId = targetPost.getPostId();
+                String storeName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
+                    Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Joined post" + storeName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    // NEEDED TO REFRESH PAGE
+                    Utils.getAllPostsByUserId(userId, listener);
                     postHolder.joinButton.setText("Leave");
                 } else {
                     // Leave function call
+                    Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Left post" + storeName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    // NEEDED TO REFRESH PAGE
+                    Utils.getAllPostsByUserId(userId, listener);
                     postHolder.joinButton.setText("Join");
                 }
             }
