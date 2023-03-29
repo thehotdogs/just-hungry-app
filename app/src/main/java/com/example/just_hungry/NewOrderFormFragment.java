@@ -3,6 +3,7 @@ package com.example.just_hungry;
 import static com.example.just_hungry.Utils.TAG;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -24,11 +25,14 @@ import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.PostModel;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class NewOrderFormFragment extends Fragment {
     public ArrayList<PostModel> yourOrders = new ArrayList<>();
@@ -114,7 +118,7 @@ public class NewOrderFormFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateFields()){
+//                if (validateFields()){
                     orderFormData.put("listingTitle", listingTitle.getText().toString());
                     orderFormData.put("groupbuyURL", groupbuyURL.getText().toString());
                     orderFormData.put("isHalal", chipHalal.isChecked());
@@ -124,7 +128,8 @@ public class NewOrderFormFragment extends Fragment {
                     orderFormData.put("cuisine", spinnerCuisine.getSelectedItem().toString());
                     orderFormData.put("location", spinnerLocation.getSelectedItem().toString());
                     System.out.println(orderFormData);
-                }
+                    pushToFirebase();
+//                }
             }});
 
         // Inflate the layout for this fragment
@@ -191,4 +196,58 @@ public class NewOrderFormFragment extends Fragment {
         }
         return true;
     }
+
+
+    public void pushToFirebase(){
+        // Generate new order and push to firebase
+        SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        String userId = preferences.getString("userId", "");
+        String postId = UUID.randomUUID().toString();
+
+        /**
+         *  String postId,
+         *     String posterId,
+         *     String dateCreated,
+         *     String timing,
+         *     ArrayList<ParticipantModel> participants,
+         *     ArrayList<AssetModel> assets,
+         *     LocationModel location,
+         *     String storeName,
+         *     Integer maxParticipants,
+         *     String cuisine,
+         *     String grabFoodUrl
+         */
+        ArrayList<ParticipantModel> participants = new ArrayList<>();
+        participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
+
+        ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
+        assets.add(new AssetModel());
+
+        HashMap<String, Object> newRandomOrderHM = new PostModel(
+                postId,
+                userId,
+                // get the current time
+                new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date()),
+                orderFormData.get("timeLimit").toString(),
+                // participants is just the current user
+                participants,
+                assets,
+                // TODO replace with actual location
+                new LocationModel(),
+                orderFormData.get("listingTitle").toString(),
+                Integer.parseInt(orderFormData.get("maxParticipants").toString()),
+                orderFormData.get("cuisine").toString(),
+                orderFormData.get("groupbuyURL").toString()
+
+                // TODO add the rest of the fields in the firebase
+//                orderFormData.get("isHalal"),
+//                orderFormData.get("collectionPoint"),
+//                orderFormData.get("location")
+        ).getHashMapForFirestore();
+        System.out.println(newRandomOrderHM);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        System.out.println(userId);
+        db.collection("posts").document(postId).set(newRandomOrderHM);
+    }
 }
+

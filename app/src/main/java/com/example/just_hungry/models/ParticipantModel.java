@@ -5,9 +5,9 @@ import java.util.Date;
 import java.util.UUID;
 
 public class ParticipantModel {
-    private String participantId;
-    private String userId;
-    private String dateJoined;
+    public String participantId;
+    public String userId;
+    public String dateJoined;
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
 
     public ParticipantModel() {

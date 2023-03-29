@@ -4,8 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayoutNewOrderFragment"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:layout_constrainedHeight="false">
+    android:layout_height="match_parent"
+    app:layout_constrainedHeight="false"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,6 +27,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/form_field_margin"
                 android:adjustViewBounds="true"
+                android:maxHeight="200dp"
+                android:scaleType="centerCrop"
                 app:srcCompat="@drawable/rendang_background" />
 
             <LinearLayout
@@ -42,7 +45,8 @@
                     android:layout_marginTop="@dimen/form_field_margin"
                     android:ems="10"
                     android:hint="Restaurant Name"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionNext"/>
 
                 <EditText
                     android:id="@+id/editTextGrabURL"
@@ -51,7 +55,8 @@
                     android:layout_marginTop="@dimen/form_field_margin"
                     android:ems="10"
                     android:hint="Paste Grab groupbuy URL here"
-                    android:inputType="textPersonName" />
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionDone"/>
 
                 <Spinner
                     android:id="@+id/spinnerCuisine"
@@ -64,11 +69,16 @@
 
                 <ToggleButton
                     android:id="@+id/chipHalal"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/toggle_selector"
                     android:checked="false"
                     android:clickable="true"
+                    android:fontFamily="sans-serif"
+                    android:padding="@dimen/button_margin"
+                    android:shadowRadius="2"
                     android:text="ToggleButton"
+                    android:textAllCaps="false"
                     android:textOff="Halal unavailable"
                     android:textOn="Halal available" />
 
@@ -80,7 +90,8 @@
                     android:layout_marginEnd="2dp"
                     android:ems="10"
                     android:hint="Set time Limit"
-                    android:inputType="time" />
+                    android:inputType="time"
+                    android:imeOptions="actionNext"/>
 
                 <EditText
                     android:id="@+id/editTextNumberPeopleLimit"
@@ -90,7 +101,8 @@
                     android:layout_marginTop="@dimen/form_field_margin"
                     android:ems="10"
                     android:hint="Choose how many people can join"
-                    android:inputType="number" />
+                    android:inputType="number"
+                    android:imeOptions="actionDone"/>
 
                 <TextView
                     android:id="@+id/textView3"
