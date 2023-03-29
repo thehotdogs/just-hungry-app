@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     ArrayList<PostModel> posts;
     UserModel resultUser = null;
@@ -33,7 +33,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     SharedPreferences preferences;
 
     //constructor
-    public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
+    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
@@ -47,7 +47,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
-            View headerView = inflater.inflate(R.layout.post_header_view, parent, false);
+            View headerView = inflater.inflate(R.layout.your_order_header_view, parent, false);
             return new HeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
@@ -58,9 +58,6 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
-            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
-            String name = preferences.getString("name", "");
-            headerHolder.textViewHelloUser.setText("Hi, " + name + "!");
             return;
         }
         position = position -1 ;  // Adjust the position for the header view
@@ -126,11 +123,11 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     }
                     resultUser = poster;
                     String name = resultUser.getName();
-                        if (resultUser != null && !name.equalsIgnoreCase("")) {
-                            postHolder.posterName.setText(name);
-                        }
-                    });
-                }
+                    if (resultUser != null && !name.equalsIgnoreCase("")) {
+                        postHolder.posterName.setText(name);
+                    }
+                });
+            }
         }catch (Exception e) {
             System.out.println("ERROR: " + e);
         }
@@ -158,8 +155,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public HeaderViewHolder(View itemView) {
             super(itemView);
-            textViewHelloUser = itemView.findViewById(R.id.textViewHelloUser);
-            textViewFancySomeFood = itemView.findViewById(R.id.textViewFancySomeFood);
+            textViewHelloUser = itemView.findViewById(R.id.textViewOrderYouJoined);
+            textViewFancySomeFood = itemView.findViewById(R.id.textViewYourOrderHint);
         }
     }
 
@@ -194,7 +191,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             participantCount = itemView.findViewById(R.id.participantCountCardText);
             joinButton = itemView.findViewById(R.id.joinButton);
             chatButton = itemView.findViewById(R.id.chatButton);
-//            joinButton.setVisibility(View.GONE);
+            joinButton.setText("Leave");
 //            chatButton.setVisibility(View.GONE);
             buttonContainer = itemView.findViewById(R.id.button_container);
         }

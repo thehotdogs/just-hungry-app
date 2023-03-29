@@ -22,6 +22,7 @@ import org.checkerframework.checker.units.qual.C;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -106,6 +107,34 @@ public class Utils {
                 .addOnFailureListener(e -> {
                     // Handle any errors.
                     System.err.println("Error getting user by ID: " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+
+    public static void getAllPostsByUserId(String userId, YourOrderFragment.OnGetPostByUserDataListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereEqualTo("posterId", userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    // Convert the Firestore document to a User object.
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        // User with the specified ID exists.
+                        successListener.onSuccess(results);
+                    } else {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
                     successListener.onSuccess(null);
                 });
     }
