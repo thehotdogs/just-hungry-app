@@ -1,14 +1,24 @@
 package com.example.just_hungry;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.Drawable;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+
+import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,6 +39,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class Utils {
+    static final int COARSE_LOCATION_REQUEST_CODE = 100;
     static final String TAG = "UtilsTag";
     static final String UTILS_TAG = "UtilsTag";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -211,6 +222,45 @@ public class Utils {
         boolean haveNetwork = activeNetworkInfo != null && activeNetworkInfo.isConnected();
         Log.i(UTILS_TAG, "Active Network: " + haveNetwork);
         return haveNetwork;
+    }
+
+    // location access
+    public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
+        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
+
+        if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
+                    .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
+                        @Override
+                        public void onSuccess(Location location) {
+                            System.out.println("location object " + location);
+                            if (location != null) {
+                                double latitude = location.getLatitude();
+                                double longitude = location.getLongitude();
+                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
+                                currentLocation.setLatitude(latitude);
+                                currentLocation.setLongitude(longitude);
+                            }
+                        }
+
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("TAG", "Exception: " + e.getMessage());
+                            System.out.println("KEGAGALAN HAKIKI " + e.getMessage());
+                        }
+                    })
+            ;
+        } else {
+            askPermission(activity, fusedLocationClient);
+            return getDeviceLocation(activity, fusedLocationClient, currentLocation);
+        }
+        return currentLocation;
+    }
+
+    public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
+        ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }
 
 }
