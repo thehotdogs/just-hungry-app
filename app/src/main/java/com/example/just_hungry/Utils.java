@@ -23,6 +23,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -129,6 +130,60 @@ public class Utils {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Query the 'users' collection for the user with the specified ID.
         db.collection("posts").whereEqualTo("posterId", userId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    // Convert the Firestore document to a User object.
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        // User with the specified ID exists.
+                        successListener.onSuccess(results);
+                    } else {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void addUserToPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+                .addOnSuccessListener(documentSnapshot -> {
+                    System.out.println(documentSnapshot);
+                    successListener.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error adding user to post participants " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void removeUserFromPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").document(postId).update("participants", FieldValue.arrayRemove(userId))
+                .addOnSuccessListener(documentSnapshot -> {
+                    successListener.onSuccess(null);
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error removing user from post participants " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+    public static void getAllPostsThatUserJoined(String userId, OnGetPostByUserDataListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereArrayContains("participants", userId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.isEmpty()) {
                         // User with the specified ID does not exist.

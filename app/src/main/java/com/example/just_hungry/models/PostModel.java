@@ -38,18 +38,18 @@ public class PostModel {
         this.grabFoodUrl = "https://www.grabfood.com.sg/";
 
     }
-    public PostModel(String posterId) {
+    public PostModel(String posterId, String postId) {
         //set to default value
-        this.postId = UUID.randomUUID().toString();
+        this.postId = postId;
         this.posterId = posterId;
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
-        this.timing = "oi";
+        this.timing = postId;
         this.participants = new ArrayList<ParticipantModel>();
         this.assets = new ArrayList<AssetModel>();
         this.assets.add(new AssetModel());
         this.assets.add(new AssetModel());
         this.location = new LocationModel();
-        this.storeName = "oi";
+        this.storeName = postId;
         this.maxParticipants = 10;
         this.cuisine = "western";
         this.grabFoodUrl = "https://www.grabfood.com.sg/";

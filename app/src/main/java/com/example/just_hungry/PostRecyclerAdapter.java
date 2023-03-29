@@ -19,6 +19,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.tasks.OnSuccessListener;
+
 import android.content.Intent;
 import android.view.View.OnClickListener;
 import android.widget.Toast;
@@ -67,7 +69,7 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         position = position -1 ;  // Adjust the position for the header view
         PostViewHolder postHolder = (PostViewHolder) holder;
-
+        PostModel targetPost = posts.get(position);
         postHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -83,11 +85,28 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String userId = preferences.getString("userId", "");
+                String postId = targetPost.getPostId();
+                String postName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
+                    Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Joined post" + postName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
                     postHolder.joinButton.setText("Leave");
                 } else {
                     // Leave function call
+                    Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void unused) {
+                            Toast.makeText(context, "Left post" + postName, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                     postHolder.joinButton.setText("Join");
                 }
             }
