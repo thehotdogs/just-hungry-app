@@ -4,4 +4,5 @@
     <dimen name="button_margin">16dp</dimen>
     <dimen name="form_field_margin">16dp</dimen>
     <dimen name="corner_radius">8dp</dimen>
+    <dimen name="form_field_touch_target_size">48dp</dimen>
 </resources>

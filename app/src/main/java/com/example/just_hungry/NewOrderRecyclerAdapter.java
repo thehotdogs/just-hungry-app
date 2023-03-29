@@ -78,18 +78,18 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
                 public void onClick(View view) {
                     System.out.println("HELLO");
                     // TODO UNCOMMENT THIS to redirect to josh forms!
-                    // fragmentManager.beginTransaction().replace(R.id.fragment_container, new NewOrderFormFragment()).commit();
+                     fragmentManager.beginTransaction().replace(R.id.fragment_container, new NewOrderFormFragment()).commit();
                     // Generate new order and push to firebase
-                    SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
-                    String userId = preferences.getString("userId", "");
-                    String postId = UUID.randomUUID().toString();
-                    HashMap<String, Object> newRandomOrderHM = new PostModel(userId, postId).getHashMapForFirestore();
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    System.out.println(userId);
-                    db.collection("posts").document(postId).set(newRandomOrderHM);
+//                    SharedPreferences preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+//                    String userId = preferences.getString("userId", "");
+//                    String postId = UUID.randomUUID().toString();
+//                    HashMap<String, Object> newRandomOrderHM = new PostModel(userId, postId).getHashMapForFirestore();
+//                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+//                    System.out.println(userId);
+//                    db.collection("posts").document(postId).set(newRandomOrderHM);
 
                     // NEEDED TO REFRESH PAGE
-                    Utils.getAllPostsByUserId(userId, newOrderPostslistener);
+//                    Utils.getAllPostsByUserId(userId, newOrderPostslistener);
                 }
             });
             return;

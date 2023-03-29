@@ -19,5 +19,14 @@
         <item>Indian</item>
         <item>Malay</item>
     </string-array>
-    
+
+    <string-array name="spinner_location">
+        <item>Please select a location</item>
+        <item>SUTD Hostel Blk 55 Level 2</item>
+        <item>SUTD Hostel Blk 57 Pick up point</item>
+        <item>SUTD Hostel Blk 59 Level 2</item>
+        <item>SUTD Campus Centre</item>
+        <item>SUTD Sports and Recreation Centre</item>
+    </string-array>
+
 </resources>
