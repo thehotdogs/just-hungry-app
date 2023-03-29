@@ -57,9 +57,9 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences("preferences", MODE_PRIVATE);
         final SharedPreferences.Editor editor = preferences.edit();
 
-//        if (preferences.getBoolean("logged_in", false)) {
-//            startHomeActivity();
-//        }
+        if (preferences.getBoolean("logged_in", false)) {
+            startHomeActivity();
+        }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override

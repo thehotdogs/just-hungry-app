@@ -11,15 +11,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
-<!--    <com.google.android.material.appbar.MaterialToolbar-->
-<!--        android:id="@+id/top_nav_bar"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="?attr/actionBarSize"-->
-<!--        android:background="?attr/colorPrimary"-->
-<!--        app:layout_constraintTop_toTopOf="parent"-->
-<!--        app:title="My App"-->
-<!--        app:titleTextColor="@android:color/white"-->
-<!--        app:menu="@menu/top_nav_menu" />-->
 
 
     <androidx.fragment.app.FragmentContainerView
