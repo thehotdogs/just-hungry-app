@@ -110,8 +110,11 @@ public class Utils {
                     successListener.onSuccess(null);
                 });
     }
-
-    public static void getAllPostsByUserId(String userId, YourOrderFragment.OnGetPostByUserDataListener successListener) {
+    public interface OnGetPostByUserDataListener {
+        //this is for callbacks
+        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
+    }
+    public static void getAllPostsByUserId(String userId, OnGetPostByUserDataListener successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Query the 'users' collection for the user with the specified ID.
         db.collection("posts").whereEqualTo("posterId", userId).get()

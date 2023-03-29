@@ -10,16 +10,20 @@
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/drawable/ic_launcher_background.xml" value="0.2525" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/drawable/rendang_background.xml" value="0.2525" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/activity_main.xml" value="0.13172043010752688" />
+        <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/add_order_topbig_button.xml" value="0.2671875" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/base_layout.xml" value="0.34375" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/bottom_nav_bar.xml" value="0.34479166666666666" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/bottom_navigation_menu.xml" value="0.34375" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/content_main.xml" value="0.34479166666666666" />
+        <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/fragment_new_order.xml" value="0.2671875" />
+        <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/fragment_new_order_form.xml" value="0.2635416666666667" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/fragment_order.xml" value="0.246875" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/fragment_post_main.xml" value="0.34479166666666666" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/fragment_your_order.xml" value="0.246875" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/header_view.xml" value="0.5" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/home_posts_main.xml" value="0.25" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/login_page.xml" value="0.34479166666666666" />
+        <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/new_order_header_view.xml" value="0.25" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/post_header_view.xml" value="0.34479166666666666" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/post_item.xml" value="0.34479166666666666" />
         <entry key="..\:/SUTD School Works/50.001 Information System and Programming/hungrybees/app/src/main/res/layout/post_main.xml" value="0.34479166666666666" />
