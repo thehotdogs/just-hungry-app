@@ -217,9 +217,9 @@ public class NewOrderFormFragment extends Fragment {
          *     String cuisine,
          *     String grabFoodUrl
          */
-        ArrayList<ParticipantModel> participants = new ArrayList<>();
-        participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
-
+        ArrayList<String> participants = new ArrayList<>();
+        //participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
+        participants.add(userId);
         ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
         assets.add(new AssetModel());
 

@@ -126,6 +126,10 @@ public class Utils {
         //this is for callbacks
         void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
     }
+    public interface OnGetChatFromPostIdListener {
+        //this is for callbacks
+        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
+    }
     public static void getAllPostsByUserId(String userId, OnGetPostByUserDataListener successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Query the 'users' collection for the user with the specified ID.
@@ -198,6 +202,31 @@ public class Utils {
                         successListener.onSuccess(results);
                     } else {
                         // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+
+    public static void getAllChatsInsidePost(String postId, OnGetChatFromPostIdListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereEqualTo("postId", postId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        successListener.onSuccess(results);
+                    } else {
                         successListener.onSuccess(null);
                     }
                 })
