@@ -13,6 +13,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -35,12 +37,14 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private static final int HEADER_VIEW_TYPE = 0;
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
+    FragmentManager fragmentManager;
 
     //constructor
-    public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts) {
+    public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        this.fragmentManager = supportFragmentManager;
     }
 
     @NonNull
@@ -82,12 +86,13 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 }
             }
         });
+        String userId = preferences.getString("userId", "");
+        String postId = targetPost.getPostId();
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String userId = preferences.getString("userId", "");
-                String postId = targetPost.getPostId();
+
                 String postName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
@@ -116,7 +121,8 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             @Override
             public void onClick(View v) {
                 //!TODO UNCOMMENT FOR CHAT
-                Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
 //                Intent intent = new Intent(context, ChatActivity.class);
 //                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
 //                context.startActivity(intent);

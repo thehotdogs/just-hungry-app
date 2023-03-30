@@ -59,10 +59,6 @@ public class Utils {
             return instance;
         }
     }
-    private interface OnGetDataListener {
-        //this is for callbacks
-        void onSuccess(QuerySnapshot dataSnapshotValue);
-    }
 //    private void GetAllPostsFirestore(final PostActivity.OnGetDataListener listener, String userId) {
 //        Task<QuerySnapshot> querySnapshotTask = db.collection("users").whereEqualTo("userId", userId).get();
 //        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
@@ -121,6 +117,15 @@ public class Utils {
                     System.err.println("Error getting user by ID: " + e.getMessage());
                     successListener.onSuccess(null);
                 });
+    }
+    public interface OnGetDataListener {
+        //this is for callbacks
+        void onSuccess(QuerySnapshot dataSnapshotValue);
+    }
+    public static void getAllPostsFirestore(final OnGetDataListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
+        querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> listener.onSuccess(queryDocumentSnapshots));
     }
     public interface OnGetPostByUserDataListener {
         //this is for callbacks

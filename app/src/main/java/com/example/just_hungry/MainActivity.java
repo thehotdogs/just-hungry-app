@@ -5,6 +5,7 @@ import static com.example.just_hungry.Utils.LoadImageFromWebOperations;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,6 +18,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
+    FragmentManager fragmentManager = getSupportFragmentManager();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             // instantiate the PostsFragment fragment
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new PostsFragment())
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, new PostsFragment(fragmentManager))
                     .commit();
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
@@ -48,11 +51,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment selectedFragment = new PostsFragment();
+        Fragment selectedFragment = new PostsFragment(fragmentManager);
 
         switch (item.getItemId()) {
             case R.id.action_posts:
-                selectedFragment = new PostsFragment();
+                selectedFragment = new PostsFragment(fragmentManager);
                 break;
             case R.id.action_addorder:
                 selectedFragment = new NewOrderFragment();
@@ -64,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
         }
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
         return true;
     }
 
