@@ -1,5 +1,6 @@
 package com.example.just_hungry.models;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class AssetModel {
@@ -18,6 +19,13 @@ public class AssetModel {
         this.assetUrl = assetUrl;
         this.title = title;
         this.assetId = UUID.randomUUID().toString();
+    }
+
+    public AssetModel(HashMap asset) {
+        //set to default value
+        this.assetUrl = (String) asset.get("assetUrl");
+        this.title = (String) asset.get("title");
+        this.assetId = (String) asset.get("assetId");
     }
 
     // getters and setters

@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,6 +28,8 @@ import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 
 public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
@@ -132,13 +135,25 @@ public class PostRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
         // get image from firebase db
-        if (Utils.isNetworkAvailable(context)) {
-            Glide.with(context)
-                    .load("https://loremflickr.com/320/240/tasty")
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(postHolder.postImage);
+
+        if (posts.get(position).getAssets() != null) {
+            String asset = String.valueOf(posts.get(position) // get the postModel
+                    .getAssets().get(0)); // get the assets arraylist <AssetModel>
+            String[] assetArray = asset.split("=");
+            String assetUrl = assetArray[Arrays.asList(assetArray).indexOf("assetTitle, assetUrl") + 1];
+
+            if (Utils.isNetworkAvailable(context)) {
+                Glide.with(context)
+                        .load(assetUrl)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .into(postHolder.postImage);
+            }
         }
+
+
+
+
         try {
             if (posts.get(position).getPosterId() != null) {
                 String posterId = posts.get(position).getPosterId();

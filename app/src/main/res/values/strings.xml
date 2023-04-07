@@ -19,6 +19,12 @@
         <item>Japanese</item>
         <item>Indian</item>
         <item>Malay</item>
+        <item>Thai</item>
+        <item>Italian</item>
+        <item>Vegetarian</item>
+        <item>Korean</item>
+        <item>Vietnamese</item>
+        <item>Others</item>
     </string-array>
 
     <string-array name="spinner_location">
