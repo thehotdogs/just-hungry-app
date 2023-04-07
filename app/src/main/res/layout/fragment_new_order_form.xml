@@ -99,6 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/form_field_margin"
+                    android:layout_marginEnd="2dp"
                     android:ems="10"
                     android:hint="Choose how many people can join"
                     android:inputType="number"

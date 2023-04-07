@@ -1,6 +1,7 @@
 package com.example.just_hungry;
 
 import static com.example.just_hungry.Utils.TAG;
+import static com.example.just_hungry.Utils.getDeviceLocation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -25,6 +26,8 @@ import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.PostModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
@@ -65,11 +68,15 @@ public class NewOrderFormFragment extends Fragment {
     private String cuisine;
     private boolean isHalal;
 
+    // location is default for now
+    LocationModel currentLocation = new LocationModel();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_new_order_form, container, false);
         context = rootView.getContext();
+
 
         // All edit texts
         listingTitle = (EditText) rootView.findViewById(R.id.etListingTitle);
@@ -111,6 +118,10 @@ public class NewOrderFormFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCuisine.setAdapter(adapter);
 
+        // get current location
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        currentLocation = getDeviceLocation(this.getActivity(), fusedLocationClient, currentLocation);
+
 
         // submit button
         submitButton = (Button) rootView.findViewById(R.id.newOrderSubmitButton);
@@ -118,7 +129,8 @@ public class NewOrderFormFragment extends Fragment {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (validateFields()){
+                if (validateFields()){
+                    // we should not handle the location server side
                     orderFormData.put("listingTitle", listingTitle.getText().toString());
                     orderFormData.put("groupbuyURL", groupbuyURL.getText().toString());
                     orderFormData.put("isHalal", chipHalal.isChecked());
@@ -126,10 +138,10 @@ public class NewOrderFormFragment extends Fragment {
                     orderFormData.put("maxParticipants", maxParticipants.getText().toString());
                     orderFormData.put("collectionPoint", collectionPoint);
                     orderFormData.put("cuisine", spinnerCuisine.getSelectedItem().toString());
-                    orderFormData.put("location", spinnerLocation.getSelectedItem().toString());
+                    orderFormData.put("locationSUTD", spinnerLocation.getSelectedItem().toString());
                     System.out.println(orderFormData);
                     pushToFirebase();
-//                }
+                }
             }});
 
         // Inflate the layout for this fragment
@@ -153,14 +165,14 @@ public class NewOrderFormFragment extends Fragment {
             Toast.makeText(context, "Please enter a groupbuy URL", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(groupbuyURLString.length() < 18){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        if(groupbuyURLString.length() < 18){
+//            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
+//            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
 
         if(timeLimit.getText().toString().isEmpty()){
             Toast.makeText(context, "Please enter a time limit", Toast.LENGTH_SHORT).show();
@@ -189,10 +201,13 @@ public class NewOrderFormFragment extends Fragment {
             Toast.makeText(context, "Please select a cuisine", Toast.LENGTH_SHORT).show();
             return false;
         }
-        String location = spinnerCuisine.getSelectedItem().toString();
-        if(location.equals("Please select a location")){
-            Toast.makeText(context, "Please select a location", Toast.LENGTH_SHORT).show();
-            return false;
+        if (collectionPoint.equals("Choose SUTD")) {
+            String locationSUTD = spinnerLocation.getSelectedItem().toString();
+            if(locationSUTD.equals("Please select a location")){
+                Toast.makeText(context, "Please select a location", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            currentLocation = getSUTDLocation(locationSUTD);
         }
         return true;
     }
@@ -217,9 +232,11 @@ public class NewOrderFormFragment extends Fragment {
          *     String cuisine,
          *     String grabFoodUrl
          */
+        // initialise new participants arraylist
         ArrayList<ParticipantModel> participants = new ArrayList<>();
         participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
 
+        // initialise new assets arraylist
         ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
         assets.add(new AssetModel());
 
@@ -232,8 +249,7 @@ public class NewOrderFormFragment extends Fragment {
                 // participants is just the current user
                 participants,
                 assets,
-                // TODO replace with actual location
-                new LocationModel(),
+                currentLocation,
                 orderFormData.get("listingTitle").toString(),
                 Integer.parseInt(orderFormData.get("maxParticipants").toString()),
                 orderFormData.get("cuisine").toString(),
@@ -241,13 +257,45 @@ public class NewOrderFormFragment extends Fragment {
 
                 // TODO add the rest of the fields in the firebase
 //                orderFormData.get("isHalal"),
-//                orderFormData.get("collectionPoint"),
-//                orderFormData.get("location")
         ).getHashMapForFirestore();
+
         System.out.println(newRandomOrderHM);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         System.out.println(userId);
         db.collection("posts").document(postId).set(newRandomOrderHM);
+
+        // redirect to the new order page
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFragment()).commit();
     }
+
+    // TODO Hardcoded for now, because we dont intend to change the locations in SUTD often
+    public LocationModel getSUTDLocation(String locationSUTD){
+        LocationModel location = new LocationModel();
+        if (locationSUTD.equals("SUTD Hostel Blk 55 Level 2")){
+            location.setLatitude(1.3422013952064185);
+            location.setLongitude(103.96446692148714);
+        }
+        else if (locationSUTD.equals("SUTD Hostel Blk 57 Pick up point")){
+            location.setLatitude(1.3419031583156191);
+            location.setLongitude(103.96438658928977);
+        }
+        else if (locationSUTD.equals("SUTD Hostel Blk 59 Level 2")){
+            location.setLatitude(1.3417702020042102);
+            location.setLongitude(103.96407607350737);
+        }
+        else if (locationSUTD.equals("SUTD Campus Centre")){
+            location.setLatitude(1.3406340270699488);
+            location.setLongitude(103.96317166232835);
+        }
+        else if (locationSUTD.equals("SUTD Sports and Recreation Centre Level 1")){
+            location.setLatitude(1.3416589687547023);
+            location.setLongitude(103.96483830118937);
+        }
+        else {
+            Log.e(TAG, "getSUTDLocation: Invalid spinnerLocation value", null);
+        }
+        return location;
+    }
+
 }
 

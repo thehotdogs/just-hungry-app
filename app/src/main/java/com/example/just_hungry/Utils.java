@@ -313,7 +313,6 @@ public class Utils {
         }
         return currentLocation;
     }
-
     public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }
