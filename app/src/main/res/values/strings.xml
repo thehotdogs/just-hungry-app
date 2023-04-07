@@ -13,11 +13,21 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     
     <string-array name="spinner_cuisine">
+        <item>Please select a cuisine</item>
         <item>Chinese</item>
         <item>Western</item>
         <item>Japanese</item>
         <item>Indian</item>
         <item>Malay</item>
     </string-array>
-    
+
+    <string-array name="spinner_location">
+        <item>Please select a location</item>
+        <item>SUTD Hostel Blk 55 Level 2</item>
+        <item>SUTD Hostel Blk 57 Pick up point</item>
+        <item>SUTD Hostel Blk 59 Level 2</item>
+        <item>SUTD Campus Centre</item>
+        <item>SUTD Sports and Recreation Centre Level 1</item>
+    </string-array>
+
 </resources>

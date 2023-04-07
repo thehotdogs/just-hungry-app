@@ -5,7 +5,7 @@
     android:id="@+id/top_nav_bar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/md_theme_light_primary"
+    android:background="@color/md_theme_light_secondary"
     app:itemIconTint="@color/md_theme_light_primaryContainer"
     app:itemTextColor="@color/md_theme_light_onPrimary"
     android:paddingTop="8dp"

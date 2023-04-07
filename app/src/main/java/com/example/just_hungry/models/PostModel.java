@@ -9,19 +9,22 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PostModel {
-    private String postId;
-    private String posterId;
-    private String dateCreated;
-    private String timing;
-    private ArrayList<ParticipantModel> participants;
-    private ArrayList<AssetModel> assets;
-    private LocationModel location;
-    private String storeName;
+    public String postId;
+    public String posterId;
+    public String dateCreated;
+    public String timing;
+    public ArrayList<ParticipantModel> participants;
+    public ArrayList<AssetModel> assets;
+    public LocationModel location;
+    public String storeName;
 
-    private Integer maxParticipants;
+    public Integer maxParticipants;
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
-    private String cuisine;
-    private String grabFoodUrl;
+    public String cuisine;
+    public String grabFoodUrl;
+    public boolean isHalal;
+    public String collectionPoint;
+    public String locationSUTD;
 
     public PostModel() {
         //set to default value
@@ -36,7 +39,8 @@ public class PostModel {
         this.maxParticipants = 10;
         this.cuisine = "western";
         this.grabFoodUrl = "https://www.grabfood.com.sg/";
-
+        this.isHalal = false;
+        // TODO add the collection point and lcoationsutd
     }
     public PostModel(String posterId, String postId) {
         //set to default value
@@ -56,7 +60,7 @@ public class PostModel {
     }
 
     public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants, String cuisine, String grabFoodUrl) {
-        this.posterId = postId;
+        this.postId = postId;
         this.posterId = posterId;
         this.dateCreated = dateCreated;
         this.timing = timing;
