@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.your_order;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,8 +14,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.just_hungry.R;
+import com.example.just_hungry.Utils;
 import com.example.just_hungry.models.PostModel;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -53,7 +54,7 @@ public class YourOrderFragment extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_post_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
 
         preferences= getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
@@ -73,7 +74,6 @@ public class YourOrderFragment extends Fragment {
                             System.out.println(dataSnapshotValue.get(i).getData());
                         }
                     }
-
                     adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
                     postRecyclerView.setLayoutManager(mLayoutManager);

@@ -1,5 +1,6 @@
 package com.example.just_hungry.models;
 
+import com.google.android.gms.common.server.converter.StringToIntConverter;
 import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.text.SimpleDateFormat;
@@ -13,7 +14,7 @@ public class PostModel {
     public String posterId;
     public String dateCreated;
     public String timing;
-    public ArrayList<ParticipantModel> participants;
+    public ArrayList<String> participants;
     public ArrayList<AssetModel> assets;
     public LocationModel location;
     public String storeName;
@@ -30,7 +31,7 @@ public class PostModel {
         this.posterId = UUID.randomUUID().toString();
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
         this.timing = "oi";
-        this.participants = new ArrayList<ParticipantModel>();
+        this.participants = new ArrayList<String>();
         this.assets = new ArrayList<AssetModel>();
         this.location = new LocationModel();
         this.storeName = "oi";
@@ -46,7 +47,7 @@ public class PostModel {
         this.posterId = posterId;
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
         this.timing = postId;
-        this.participants = new ArrayList<ParticipantModel>();
+        this.participants = new ArrayList<String>();
         this.assets = new ArrayList<AssetModel>();
         this.assets.add(new AssetModel());
         this.assets.add(new AssetModel());
@@ -58,7 +59,7 @@ public class PostModel {
         this.isHalal = false;
     }
 
-    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets,
+    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<String> participants, ArrayList<AssetModel> assets,
                      LocationModel location, String storeName, Integer maxParticipants, String cuisine, String grabFoodUrl, boolean isHalal) {
         this.postId = postId;
         this.posterId = posterId;
@@ -79,7 +80,7 @@ public class PostModel {
         this.posterId = documentSnapshot.getString("posterId");
         this.dateCreated = documentSnapshot.getString("dateCreated");
         this.timing = documentSnapshot.getString("timing");
-        this.participants = (ArrayList<ParticipantModel>) documentSnapshot.get("participants");
+        this.participants = (ArrayList<String>) documentSnapshot.get("participants");
         this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
         this.location = new LocationModel((HashMap<String, Double>) documentSnapshot.get("location"));
         this.storeName = documentSnapshot.getString("storeName");
@@ -120,7 +121,7 @@ public class PostModel {
     public String getTiming() {
         return timing;
     }
-    public ArrayList<ParticipantModel> getParticipants() {
+    public ArrayList<String> getParticipants() {
         return participants;
     }
     public ArrayList<AssetModel> getAssets() {
@@ -159,7 +160,7 @@ public class PostModel {
     public void setTiming(String timing) {
         this.timing = timing;
     }
-    public void setParticipants(ArrayList<ParticipantModel> participants) {
+    public void setParticipants(ArrayList<String> participants) {
         this.participants = participants;
     }
     public void setAssets(ArrayList<AssetModel> assets) {

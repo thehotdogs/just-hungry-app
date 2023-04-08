@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.new_order;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -9,9 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Locale;
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     private NewOrderFormFragment newOrderFormFragment;

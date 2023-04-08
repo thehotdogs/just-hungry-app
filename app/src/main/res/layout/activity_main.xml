@@ -3,11 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".activities.MainActivity"
     android:windowSoftInputMode="adjustResize">
 
     <include
-        layout="@layout/top_nav_bar"
+        layout="@layout/view_top_nav_bar"
         android:id="@+id/top_nav_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -28,7 +28,7 @@
         app:navGraph="@navigation/nav_graph"/>
 
     <include
-        layout="@layout/bottom_nav_bar"
+        layout="@layout/view_bottom_nav_bar"
         android:id="@+id/bottom_nav_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

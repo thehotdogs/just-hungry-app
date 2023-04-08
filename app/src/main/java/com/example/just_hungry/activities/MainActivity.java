@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.activities;
 
 import static com.example.just_hungry.Utils.deleteOutdatedPosts;
 
@@ -7,13 +7,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.just_hungry.new_order.NewOrderFragment;
+import com.example.just_hungry.browse_order.PostsFragment;
+import com.example.just_hungry.R;
+import com.example.just_hungry.Utils;
+import com.example.just_hungry.your_order.YourOrderFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {

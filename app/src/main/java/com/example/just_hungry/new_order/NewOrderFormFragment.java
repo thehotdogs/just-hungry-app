@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.new_order;
 
 import static com.example.just_hungry.Utils.TAG;
 import static com.example.just_hungry.Utils.getDeviceLocation;
@@ -21,6 +21,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.example.just_hungry.R;
 import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.ParticipantModel;
@@ -236,12 +237,12 @@ public class NewOrderFormFragment extends Fragment {
          */
         // initialise new participants arraylist
         // TODO: isOwner attribute
-        ArrayList<ParticipantModel> participants = new ArrayList<>();
+        ArrayList<String> participants = new ArrayList<>();
         HashMap<String, Object> ownerHM = new HashMap<>();
         ownerHM.put("dateJoined", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString());
         ownerHM.put("userId", userId);
 
-        participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
+        participants.add(userId);
 
         // initialise new assets arraylist
         ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
