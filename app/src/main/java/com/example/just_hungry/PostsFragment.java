@@ -86,7 +86,7 @@ public class PostsFragment extends Fragment {
                     HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
                     posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
                     //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-                    System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
+                    System.out.println("Getting post #"+i+" from firebase: "+queryDocumentSnapshots.getDocuments().get(i).getData());
                 }
                 Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
 
