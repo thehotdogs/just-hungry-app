@@ -1,6 +1,5 @@
 package com.example.just_hungry.browse_order;
 
-import static com.example.just_hungry.Utils.deleteOutdatedPosts;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,7 +75,6 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
-        deleteOutdatedPosts();
 
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
 
@@ -87,14 +85,14 @@ public class PostsFragment extends Fragment {
 
 
         Utils.OnGetDataListener listener = queryDocumentSnapshots -> {
-            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
+//            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
             posts.clear();
             // create a new posts ArrayList which stores all the PostModel objects
             for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
                 HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
                 posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
                 //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-                System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
+//                System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
             }
             Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
 
