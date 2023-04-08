@@ -1,6 +1,7 @@
 package com.example.just_hungry;
 
 import static com.example.just_hungry.Utils.TAG;
+import static com.example.just_hungry.Utils.getDeviceLocation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -12,7 +13,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -25,12 +25,16 @@ import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.PostModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,16 +44,16 @@ public class NewOrderFormFragment extends Fragment {
     EditText groupbuyURL;
     Spinner spinnerCuisine;
     ToggleButton chipHalal;
-    EditText timeLimit;
     EditText maxParticipants;
     String collectionPoint;
     Spinner spinnerLocation;
     Button submitButton;
-
+    Button timePickerButton;
+    String timeLimit;
     Context context;
 
     Map<String, Object> orderFormData = new HashMap<>();
-
+    // TODO Delete this
     // form data
     private String posterId;
     private String dateCreated;
@@ -65,6 +69,9 @@ public class NewOrderFormFragment extends Fragment {
     private String cuisine;
     private boolean isHalal;
 
+    // location is default for now
+    LocationModel currentLocation = new LocationModel();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,7 +80,6 @@ public class NewOrderFormFragment extends Fragment {
 
         // All edit texts
         listingTitle = (EditText) rootView.findViewById(R.id.etListingTitle);
-        timeLimit = (EditText) rootView.findViewById(R.id.editTextTime);
         maxParticipants = (EditText) rootView.findViewById(R.id.editTextNumberPeopleLimit);
         groupbuyURL = (EditText) rootView.findViewById(R.id.editTextGrabURL);
 
@@ -111,25 +117,37 @@ public class NewOrderFormFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCuisine.setAdapter(adapter);
 
+        // get current location
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
+        currentLocation = getDeviceLocation(this.getActivity(), fusedLocationClient, currentLocation);
+
+        // timepicker button
+        timePickerButton = (Button) rootView.findViewById(R.id.timePickerButton);
+        timePickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                popTimePicker();
+            }
+        });
 
         // submit button
         submitButton = (Button) rootView.findViewById(R.id.newOrderSubmitButton);
-
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (validateFields()){
+                if (validateFields()){
+                    // we should not handle the location server side
                     orderFormData.put("listingTitle", listingTitle.getText().toString());
                     orderFormData.put("groupbuyURL", groupbuyURL.getText().toString());
                     orderFormData.put("isHalal", chipHalal.isChecked());
-                    orderFormData.put("timeLimit", timeLimit.getText().toString());
+                    orderFormData.put("timeLimit", timeLimit);
                     orderFormData.put("maxParticipants", maxParticipants.getText().toString());
                     orderFormData.put("collectionPoint", collectionPoint);
                     orderFormData.put("cuisine", spinnerCuisine.getSelectedItem().toString());
-                    orderFormData.put("location", spinnerLocation.getSelectedItem().toString());
+                    orderFormData.put("locationSUTD", spinnerLocation.getSelectedItem().toString());
                     System.out.println(orderFormData);
                     pushToFirebase();
-//                }
+                }
             }});
 
         // Inflate the layout for this fragment
@@ -153,21 +171,17 @@ public class NewOrderFormFragment extends Fragment {
             Toast.makeText(context, "Please enter a groupbuy URL", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(groupbuyURLString.length() < 18){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        if(groupbuyURLString.length() < 18){
+//            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
+//            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
 
-        if(timeLimit.getText().toString().isEmpty()){
-            Toast.makeText(context, "Please enter a time limit", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(!timeLimit.getText().toString().matches("[0-9]+")){
-            Toast.makeText(context, "Please enter a valid time limit", Toast.LENGTH_SHORT).show();
+        if(timeLimit == null){
+            Toast.makeText(context, "Please set a time limit", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(maxParticipants.getText().toString().isEmpty()){
@@ -189,10 +203,13 @@ public class NewOrderFormFragment extends Fragment {
             Toast.makeText(context, "Please select a cuisine", Toast.LENGTH_SHORT).show();
             return false;
         }
-        String location = spinnerCuisine.getSelectedItem().toString();
-        if(location.equals("Please select a location")){
-            Toast.makeText(context, "Please select a location", Toast.LENGTH_SHORT).show();
-            return false;
+        if (collectionPoint.equals("Choose SUTD")) {
+            String locationSUTD = spinnerLocation.getSelectedItem().toString();
+            if(locationSUTD.equals("Please select a location")){
+                Toast.makeText(context, "Please select a location", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+            currentLocation = getSUTDLocation(locationSUTD);
         }
         return true;
     }
@@ -217,9 +234,16 @@ public class NewOrderFormFragment extends Fragment {
          *     String cuisine,
          *     String grabFoodUrl
          */
-        ArrayList<String> participants = new ArrayList<>();
-        //participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
-        participants.add(userId);
+        // initialise new participants arraylist
+        // TODO: isOwner attribute
+        ArrayList<ParticipantModel> participants = new ArrayList<>();
+        HashMap<String, Object> ownerHM = new HashMap<>();
+        ownerHM.put("dateJoined", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString());
+        ownerHM.put("userId", userId);
+
+        participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
+
+        // initialise new assets arraylist
         ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
         assets.add(new AssetModel());
 
@@ -228,26 +252,107 @@ public class NewOrderFormFragment extends Fragment {
                 userId,
                 // get the current time
                 new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date()),
+                // time limit is the time limit set by the user in String Simple Date time format
                 orderFormData.get("timeLimit").toString(),
                 // participants is just the current user
                 participants,
-                assets,
-                // TODO replace with actual location
-                new LocationModel(),
+                getAssetModelfromCuisine(orderFormData.get("cuisine").toString()),
+                currentLocation,
                 orderFormData.get("listingTitle").toString(),
                 Integer.parseInt(orderFormData.get("maxParticipants").toString()),
                 orderFormData.get("cuisine").toString(),
-                orderFormData.get("groupbuyURL").toString()
+                orderFormData.get("groupbuyURL").toString(),
 
                 // TODO add the rest of the fields in the firebase
-//                orderFormData.get("isHalal"),
-//                orderFormData.get("collectionPoint"),
-//                orderFormData.get("location")
+                (Boolean) orderFormData.get("isHalal")
         ).getHashMapForFirestore();
+
         System.out.println(newRandomOrderHM);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         System.out.println(userId);
         db.collection("posts").document(postId).set(newRandomOrderHM);
+
+        // redirect to the new order page
+        getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFragment()).commit();
+    }
+
+    // Hardcoded for now, because we dont intend to change the locations in SUTD often
+    public LocationModel getSUTDLocation(String locationSUTD){
+        LocationModel location = new LocationModel();
+        if (locationSUTD.equals("SUTD Hostel Blk 55 Level 2")){
+            location.setLatitude(1.3422013952064185);
+            location.setLongitude(103.96446692148714);
+        }
+        else if (locationSUTD.equals("SUTD Hostel Blk 57 Pick up point")){
+            location.setLatitude(1.3419031583156191);
+            location.setLongitude(103.96438658928977);
+        }
+        else if (locationSUTD.equals("SUTD Hostel Blk 59 Level 2")){
+            location.setLatitude(1.3417702020042102);
+            location.setLongitude(103.96407607350737);
+        }
+        else if (locationSUTD.equals("SUTD Campus Centre")){
+            location.setLatitude(1.3406340270699488);
+            location.setLongitude(103.96317166232835);
+        }
+        else if (locationSUTD.equals("SUTD Sports and Recreation Centre Level 1")){
+            location.setLatitude(1.3416589687547023);
+            location.setLongitude(103.96483830118937);
+        }
+        else {
+            Log.e(TAG, "getSUTDLocation: Invalid spinnerLocation value", null);
+        }
+        return location;
+    }
+
+    public ArrayList<AssetModel> getAssetModelfromCuisine(String cuisine){
+        ArrayList<AssetModel> assetList = new ArrayList<>();
+        AssetModel cuisineAsset = new AssetModel();
+
+        if (cuisine.equals("Chinese")) {//
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1623689046286-01d812cc8bad?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=875&q=80");
+        } else if (cuisine.equals("Western")) {//
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1603073163308-9654c3fb70b5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=427&q=80");
+        } else if (cuisine.equals("Japanese")) { //
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1580822184713-fc5400e7fe10?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8amFwYW5lc2UlMjBmb29kfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Indian")) { //
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1505253758473-96b7015fcd40?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8aW5kaWFuJTIwZm9vZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Malay")) { //
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1590809632480-2bd15d90c92f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bWFsYXklMjBmb29kfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Thai")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1627308595186-e6bb36712645?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8dGhhaSUyMGZvb2R8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Italian")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1546549032-9571cd6b27df?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8aXRhbGlhbiUyMGZvb2R8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Vegetarian")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1599020792689-9fde458e7e17?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmVnZXRhcmlhbiUyMGZvb2R8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Korean")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1635363638580-c2809d049eee?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8a29yZWFuJTIwZm9vZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Vietnamese")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8dmlldG5hbWVzZSUyMGZvb2R8ZW58MHx8MHx8&auto=format&fit=crop&w=500&q=60");
+        } else if (cuisine.equals("Others")) {
+            cuisineAsset.setAssetUrl("https://images.unsplash.com/photo-1555939594-58d7cb561ad1?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8Zm9vZHxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=500&q=60");
+        } else {
+            Log.e(TAG, "getAssetModelfromCuisine: Invalid cuisine value", null);
+        }
+        assetList.add(cuisineAsset);
+        Log.d(TAG, "getAssetModelfromCuisine: " + assetList.get(0).getAssetUrl() + "");
+        return assetList;
+    }
+
+    private void popTimePicker(){
+        TimePickerFragment timePickerFragment = new TimePickerFragment(this);
+        timePickerFragment.show(getChildFragmentManager(), "time picker");
+    }
+
+    public void onTimeSet(int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        timeLimit = simpleDateFormat.format(calendar.getTime());
+        Log.d(TAG, "onTimeSet: " + timeLimit);
+        timePickerButton.setText("Cut off time for joining: " + timeLimit);
     }
 }
 

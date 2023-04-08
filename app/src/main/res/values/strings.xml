@@ -19,6 +19,12 @@
         <item>Japanese</item>
         <item>Indian</item>
         <item>Malay</item>
+        <item>Thai</item>
+        <item>Italian</item>
+        <item>Vegetarian</item>
+        <item>Korean</item>
+        <item>Vietnamese</item>
+        <item>Others</item>
     </string-array>
 
     <string-array name="spinner_location">
@@ -27,7 +33,7 @@
         <item>SUTD Hostel Blk 57 Pick up point</item>
         <item>SUTD Hostel Blk 59 Level 2</item>
         <item>SUTD Campus Centre</item>
-        <item>SUTD Sports and Recreation Centre</item>
+        <item>SUTD Sports and Recreation Centre Level 1</item>
     </string-array>
 
 </resources>

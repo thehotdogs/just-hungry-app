@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.example.just_hungry.models.LocationModel;
+import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -32,8 +33,11 @@ import org.checkerframework.checker.units.qual.C;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -164,28 +168,102 @@ public class Utils {
     }
     public static void addUserToPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        // Query the 'users' collection for the user with the specified ID.
-        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+
+        ParticipantModel userParticipant = new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString());
+
+        // retrieve the 'post' document with the specified id
+        db.collection("posts").document(postId).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    System.out.println(documentSnapshot);
-                    successListener.onSuccess(null);
+                    // get the participants array from teh document
+                    List<Map<String, Object>> participants = (List<Map<String, Object>>) documentSnapshot.get("participants");
+                    Boolean userExists = false;
+
+                    for (Map<String, Object> participant:participants) {
+                        if (participant.get("userId").equals(userId)) {
+                            userExists = true;
+                            break;
+                        }
+                    }
+
+                    // if userExists is false, add the user to the document
+                    if (!userExists) {
+                        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userParticipant))
+                                .addOnSuccessListener(aVoid -> {
+                                    successListener.onSuccess(null);
+                                })
+                                .addOnFailureListener(e -> {
+                                    System.err.println("Error adding user to post participants: " + e.getMessage());
+                                    successListener.onSuccess(null);
+                                });
+                    } else {
+                        System.out.println("User already exists in the post participants");
+                        successListener.onSuccess(null);
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle any errors.
-                    System.err.println("Error adding user to post participants " + e.getMessage());
+                    System.err.println("Error retrieving post document: " + e.getMessage());
                     successListener.onSuccess(null);
                 });
+
+
+        // Query the 'users' collection for the user with the specified ID.
+//        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(participant))
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    System.out.println(documentSnapshot);
+//                    successListener.onSuccess(null);
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle any errors.
+//                    System.err.println("Error adding user to post participants " + e.getMessage());
+//                    successListener.onSuccess(null);
+//                });
     }
     public static void removeUserFromPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Query the 'users' collection for the user with the specified ID.
-        db.collection("posts").document(postId).update("participants", FieldValue.arrayRemove(userId))
-                .addOnSuccessListener(documentSnapshot -> {
-                    successListener.onSuccess(null);
+//        db.collection("posts").document(postId).update("participants", FieldValue.arrayRemove(userId))
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    successListener.onSuccess(null);
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle any errors.
+//                    System.err.println("Error removing user from post participants " + e.getMessage());
+//                    successListener.onSuccess(null);
+//                });
+
+        db.collection("posts").document(postId).get() // get the document with postId
+                .addOnSuccessListener(documentSnapshot -> { // if successful in finding
+                    // get the participants array from the document
+                    List<Map<String, Object>> participants = (List<Map<String,Object>>) documentSnapshot.get("participants");
+                    Map<String, Object> matchingParticipant = null;
+
+                    // search for the ParticipantModel with the matching userId
+                    for (Map<String, Object> participant: participants){
+                        if (participant.get("userId").equals(userId)) {
+                            matchingParticipant = participant;
+                            break;
+                        }
+                    }
+                    // If a matching ParticipantModel is found, remove it from the 'participants' array.
+                    if (matchingParticipant != null) {
+                        participants.remove(matchingParticipant);
+
+                        // Update the 'participants' field with the modified array.
+                        db.collection("posts").document(postId).update("participants", participants)
+                                .addOnSuccessListener(aVoid -> {
+                                    successListener.onSuccess(null);
+                                })
+                                .addOnFailureListener(e -> {
+                                    System.err.println("Error updating post participants: " + e.getMessage());
+                                    successListener.onSuccess(null);
+                                });
+                    } else {
+                        System.err.println("Matching ParticipantModel not found.");
+                        successListener.onSuccess(null);
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    // Handle any errors.
-                    System.err.println("Error removing user from post participants " + e.getMessage());
+                    System.err.println("Error retrieving post document: " + e.getMessage());
                     successListener.onSuccess(null);
                 });
     }
@@ -347,7 +425,6 @@ public class Utils {
         }
         return currentLocation;
     }
-
     public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }

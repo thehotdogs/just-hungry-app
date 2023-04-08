@@ -13,7 +13,7 @@ public class PostModel {
     public String posterId;
     public String dateCreated;
     public String timing;
-    public ArrayList<String> participants;
+    public ArrayList<ParticipantModel> participants;
     public ArrayList<AssetModel> assets;
     public LocationModel location;
     public String storeName;
@@ -22,6 +22,7 @@ public class PostModel {
     SimpleDateFormat ISO_8601_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'");
     public String cuisine;
     public String grabFoodUrl;
+    public boolean isHalal;
 
     public PostModel() {
         //set to default value
@@ -29,14 +30,15 @@ public class PostModel {
         this.posterId = UUID.randomUUID().toString();
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
         this.timing = "oi";
-        this.participants = new ArrayList<String>();
+        this.participants = new ArrayList<ParticipantModel>();
         this.assets = new ArrayList<AssetModel>();
         this.location = new LocationModel();
         this.storeName = "oi";
         this.maxParticipants = 10;
         this.cuisine = "western";
         this.grabFoodUrl = "https://www.grabfood.com.sg/";
-
+        this.isHalal = false;
+        // TODO add the collection point and lcoationsutd
     }
     public PostModel(String posterId, String postId) {
         //set to default value
@@ -44,7 +46,7 @@ public class PostModel {
         this.posterId = posterId;
         this.dateCreated =ISO_8601_FORMAT.format(new Date()).toString();
         this.timing = postId;
-        this.participants = new ArrayList<String>();
+        this.participants = new ArrayList<ParticipantModel>();
         this.assets = new ArrayList<AssetModel>();
         this.assets.add(new AssetModel());
         this.assets.add(new AssetModel());
@@ -53,9 +55,11 @@ public class PostModel {
         this.maxParticipants = 10;
         this.cuisine = "western";
         this.grabFoodUrl = "https://www.grabfood.com.sg/";
+        this.isHalal = false;
     }
 
-    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<String> participants, ArrayList<AssetModel> assets, LocationModel location, String storeName, Integer maxParticipants, String cuisine, String grabFoodUrl) {
+    public PostModel(String postId, String posterId, String dateCreated, String timing, ArrayList<ParticipantModel> participants, ArrayList<AssetModel> assets,
+                     LocationModel location, String storeName, Integer maxParticipants, String cuisine, String grabFoodUrl, boolean isHalal) {
         this.postId = postId;
         this.posterId = posterId;
         this.dateCreated = dateCreated;
@@ -67,6 +71,7 @@ public class PostModel {
         this.maxParticipants = maxParticipants;
         this.cuisine = cuisine;
         this.grabFoodUrl = grabFoodUrl;
+        this.isHalal = isHalal;
     }
 
     public PostModel(DocumentSnapshot documentSnapshot) {
@@ -74,7 +79,7 @@ public class PostModel {
         this.posterId = documentSnapshot.getString("posterId");
         this.dateCreated = documentSnapshot.getString("dateCreated");
         this.timing = documentSnapshot.getString("timing");
-        this.participants = (ArrayList<String>) documentSnapshot.get("participants");
+        this.participants = (ArrayList<ParticipantModel>) documentSnapshot.get("participants");
         this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
         this.location = new LocationModel((HashMap<String, Double>) documentSnapshot.get("location"));
         this.storeName = documentSnapshot.getString("storeName");
@@ -82,6 +87,7 @@ public class PostModel {
         else this.maxParticipants = 10;
         this.cuisine = documentSnapshot.getString("cuisine");
         this.grabFoodUrl = documentSnapshot.getString("grabFoodUrl");
+        this.isHalal = Boolean.TRUE.equals(documentSnapshot.getBoolean("isHalal"));
     }
 
     public HashMap<String, Object> getHashMapForFirestore() {
@@ -97,6 +103,7 @@ public class PostModel {
         hashMap.put("maxParticipants", this.maxParticipants);
         hashMap.put("cuisine", this.cuisine);
         hashMap.put("grabFoodUrl", this.grabFoodUrl);
+        hashMap.put("isHalal", this.isHalal);
         return hashMap;
     }
 
@@ -113,7 +120,7 @@ public class PostModel {
     public String getTiming() {
         return timing;
     }
-    public ArrayList<String> getParticipants() {
+    public ArrayList<ParticipantModel> getParticipants() {
         return participants;
     }
     public ArrayList<AssetModel> getAssets() {
@@ -152,7 +159,7 @@ public class PostModel {
     public void setTiming(String timing) {
         this.timing = timing;
     }
-    public void setParticipants(ArrayList<String> participants) {
+    public void setParticipants(ArrayList<ParticipantModel> participants) {
         this.participants = participants;
     }
     public void setAssets(ArrayList<AssetModel> assets) {
@@ -168,11 +175,13 @@ public class PostModel {
         this.storeName = storeName;
     }
 
+    public boolean isHalal() {
+        return isHalal;
+    }
 
-
-
-
-
+    public void setHalal(boolean halal) {
+        isHalal = halal;
+    }
 }
 
 
