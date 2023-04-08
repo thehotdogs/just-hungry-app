@@ -13,25 +13,21 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
 import com.example.just_hungry.models.LocationModel;
-import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.UUID;
 
 public class Utils {
     public static final int COARSE_LOCATION_REQUEST_CODE = 100;
@@ -118,7 +114,13 @@ public class Utils {
     }
     public static void getAllPostsFirestore(final OnGetDataListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
+
+        Timestamp currentTime = new Timestamp(new Date());
+        Log.d(TAG, "getAllPostsFirestore: current time is " + currentTime.toDate().toString());
+
+        // Query the "posts" collection for posts with "timing" field greater than the current time
+        Query query = db.collection("posts").whereGreaterThan("timing", currentTime);
+        Task<QuerySnapshot> querySnapshotTask = query.get();
         querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> listener.onSuccess(queryDocumentSnapshots));
     }
     public interface OnGetPostByUserDataListener {
@@ -159,49 +161,9 @@ public class Utils {
     public static void addUserToPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-
-
-     //   ParticipantModel userParticipant = new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString());
-
-        // retrieve the 'post' document with the specified id
-//        db.collection("posts").document(postId).get()
-//                .addOnSuccessListener(documentSnapshot -> {
-//                    // get the participants array from teh document
-//                    List<Map<String, Object>> participants = (List<Map<String, Object>>) documentSnapshot.get("participants");
-//                    Boolean userExists = false;
-//
-//                    for (Map<String, Object> participant:participants) {
-//                        if (participant.get("userId").equals(userId)) {
-//                            userExists = true;
-//                            break;
-//                        }
-//                    }
-//
-//                    // if userExists is false, add the user to the document
-//                    if (!userExists) {
-//                        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userParticipant))
-//                                .addOnSuccessListener(aVoid -> {
-//                                    successListener.onSuccess(null);
-//                                })
-//                                .addOnFailureListener(e -> {
-//                                    System.err.println("Error adding user to post participants: " + e.getMessage());
-//                                    successListener.onSuccess(null);
-//                                });
-//                    } else {
-//                        System.out.println("User already exists in the post participants");
-//                        successListener.onSuccess(null);
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    System.err.println("Error retrieving post document: " + e.getMessage());
-//                    successListener.onSuccess(null);
-//                });
-
-
         // Query the 'users' collection for the user with the specified ID.
         db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
                 .addOnSuccessListener(documentSnapshot -> {
-                    System.out.println(documentSnapshot);
                     successListener.onSuccess(null);
                 })
                 .addOnFailureListener(e -> {
@@ -222,42 +184,6 @@ public class Utils {
                     System.err.println("Error removing user from post participants " + e.getMessage());
                     successListener.onSuccess(null);
                 });
-
-//        db.collection("posts").document(postId).get() // get the document with postId
-//                .addOnSuccessListener(documentSnapshot -> { // if successful in finding
-//                    // get the participants array from the document
-//                    List<Map<String, Object>> participants = (List<Map<String,Object>>) documentSnapshot.get("participants");
-//                    Map<String, Object> matchingParticipant = null;
-//
-//                    // search for the ParticipantModel with the matching userId
-//                    for (Map<String, Object> participant: participants){
-//                        if (participant.get("userId").equals(userId)) {
-//                            matchingParticipant = participant;
-//                            break;
-//                        }
-//                    }
-//                    // If a matching ParticipantModel is found, remove it from the 'participants' array.
-//                    if (matchingParticipant != null) {
-//                        participants.remove(matchingParticipant);
-//
-//                        // Update the 'participants' field with the modified array.
-//                        db.collection("posts").document(postId).update("participants", participants)
-//                                .addOnSuccessListener(aVoid -> {
-//                                    successListener.onSuccess(null);
-//                                })
-//                                .addOnFailureListener(e -> {
-//                                    System.err.println("Error updating post participants: " + e.getMessage());
-//                                    successListener.onSuccess(null);
-//                                });
-//                    } else {
-//                        System.err.println("Matching ParticipantModel not found.");
-//                        successListener.onSuccess(null);
-//                    }
-//                })
-//                .addOnFailureListener(e -> {
-//                    System.err.println("Error retrieving post document: " + e.getMessage());
-//                    successListener.onSuccess(null);
-//                });
     }
     public static void getAllPostsThatUserJoined(String userId, OnGetPostByUserDataListener successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -312,70 +238,6 @@ public class Utils {
                 });
     }
 
-//    public static void LoadImageFromWebOperations(String url, Container<Drawable> tempDrawableContainer) {
-//        ExecutorService executor = Executors.newSingleThreadExecutor();
-//        final Handler handler = new Handler(Looper.getMainLooper());
-//
-//        executor.execute(new Runnable() {
-//            @Override
-//            public void run() {
-//                // we are in background thread
-//                // We want to store the Drawable object into the container so that it can be accessed later
-//
-//                Log.i(TAG, "LoadImageFromWebOperations: using Utils function load image form web operations");
-//                try {
-//                    InputStream is = (InputStream) new URL(url).getContent();
-//                    Drawable d = Drawable.createFromStream(is, "src name");
-//                    Log.i(null, "Displaying image");
-//                    tempDrawableContainer.setT(d);
-//                    handler.post(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            // back in the main thread
-//                            tempDrawableContainer.getT();
-
-    public static void deleteOutdatedPosts() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'", Locale.getDefault());
-
-        db.collection("posts")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot != null) {
-                            Date currentDate = new Date();
-                            for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
-                                String postTimeLimit = documentSnapshot.getString("timeLimit");
-                                try {
-                                    Log.d(TAG, "deleteOutdatedPosts: Successfully got document: " + documentSnapshot.getId() + " with timeLimit: " + postTimeLimit + ".");
-                                    if (postTimeLimit == null) {
-                                        Log.d(TAG, "deleteOutdatedPosts: Post with ID: " + documentSnapshot.getId() + " has no timeLimit.");
-                                        continue;
-                                    }
-                                    Date postTimeLimitDate = simpleDateFormat.parse(postTimeLimit);
-                                    if (postTimeLimitDate != null && currentDate.after(postTimeLimitDate)) {
-                                        // The post has exceeded its time limit.
-                                        db.collection("posts").document(documentSnapshot.getId())
-                                                .delete()
-                                                .addOnSuccessListener(aVoid -> {
-                                                    System.out.println("Post with ID: " + documentSnapshot.getId() + " deleted.");
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    System.err.println("Error deleting post: " + e.getMessage());
-                                                });
-                                    }
-                                } catch (ParseException e) {
-                                    System.err.println("Error parsing timeLimit: " + e.getMessage());
-                                }
-                            }
-                        }
-                    } else {
-                        System.err.println("Error getting posts: " + task.getException().getMessage());
-                    }
-                });
-    }
-
     /**
      * This method checks if an Activity has a network connection
      * @param  context a Context object (Context is the superclass of AppCompatActivity
@@ -391,18 +253,18 @@ public class Utils {
 
     // location access
     public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
-        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
+//        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
 
         if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
                     .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
                         @Override
                         public void onSuccess(Location location) {
-                            System.out.println("location object " + location);
+//                            System.out.println("location object " + location);
                             if (location != null) {
                                 double latitude = location.getLatitude();
                                 double longitude = location.getLongitude();
-                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
+//                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
                                 currentLocation.setLatitude(latitude);
                                 currentLocation.setLongitude(longitude);
                             }

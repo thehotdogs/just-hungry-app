@@ -33,15 +33,15 @@
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/postImage"
-                    android:layout_width="137dp"
-                    android:layout_height="185dp"
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
                     android:src="@drawable/rendang_background"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.079"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.453" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/posterCardImage"
@@ -64,10 +64,10 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.514"
+                    app:layout_constraintHorizontal_bias="0.142"
                     app:layout_constraintStart_toEndOf="@+id/postImage"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.088" />
+                    app:layout_constraintVertical_bias="0.094" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/timingCardText"
@@ -76,9 +76,10 @@
                     android:text="Time"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.071"
                     app:layout_constraintStart_toEndOf="@+id/postImage"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.303" />
+                    app:layout_constraintTop_toBottomOf="@+id/storeNameCardText"
+                    app:layout_constraintVertical_bias="0.066" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/locationCardText"

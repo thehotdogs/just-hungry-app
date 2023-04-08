@@ -24,7 +24,6 @@ import android.widget.ToggleButton;
 import com.example.just_hungry.R;
 import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
-import com.example.just_hungry.models.ParticipantModel;
 import com.example.just_hungry.models.PostModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
