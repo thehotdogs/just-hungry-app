@@ -71,7 +71,7 @@ public class SignInActivity extends AppCompatActivity {
                                 if (queryDocumentSnapshots.size() > 0) {
                                     // Password matches
                                     // TODO UPDATE preferences if password matches
-                                    Toast.makeText(SignInActivity.this, "Password matches", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(SignInActivity.this, "Logging in...", Toast.LENGTH_LONG).show();
                                     String userId = queryDocumentSnapshots.getDocuments().get(0).get("userId").toString();
                                     String email = queryDocumentSnapshots.getDocuments().get(0).get("email").toString();
                                     String password = queryDocumentSnapshots.getDocuments().get(0).get("password").toString();

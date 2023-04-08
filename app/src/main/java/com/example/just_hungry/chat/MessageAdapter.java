@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
 import com.example.just_hungry.models.ChatModel;
@@ -49,8 +50,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
             UserModel resultUser = null;
             resultUser = poster;
             String name = resultUser.getName();
+            String userProfileUrl = resultUser.getProfilePictureUrl().getAssetUrl();
             if (!name.equalsIgnoreCase("")) {
                 holder.senderNameTextView.setText(resultUser.getName());
+                if (Utils.isNetworkAvailable(inflater.getContext())) {
+                    Glide.with(inflater.getContext())
+                            .load(userProfileUrl)
+                            .into(holder.profileImageView);
+                }
             }
         });
 

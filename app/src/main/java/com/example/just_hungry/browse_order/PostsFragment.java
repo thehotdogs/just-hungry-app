@@ -99,8 +99,10 @@ public class PostsFragment extends Fragment {
 
             System.out.println("SETTING UP ADAPTER DONE" + posts);
             adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+//            postRecyclerView.setItemAnimator(null);
             postRecyclerView.setLayoutManager(mLayoutManager);
             postRecyclerView.setAdapter(adapter);
+
 
         };
 
