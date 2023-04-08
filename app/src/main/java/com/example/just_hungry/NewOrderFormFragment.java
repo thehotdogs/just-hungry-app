@@ -346,14 +346,38 @@ public class NewOrderFormFragment extends Fragment {
     }
 
     public void onTimeSet(int hourOfDay, int minute) {
+        // Convert the selected hour and minute into a SimpleDateFormat string
         Calendar calendar = Calendar.getInstance();
+        int currentHour = calendar.get(Calendar.HOUR_OF_DAY);
+        int currentMinute = calendar.get(Calendar.MINUTE);
+
+        // If the selected time is before the current time, set the timeLimit to the next day
+        if (hourOfDay < currentHour || (hourOfDay == currentHour && minute <= currentMinute)) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+        }
+
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'", Locale.getDefault());
         timeLimit = simpleDateFormat.format(calendar.getTime());
-        Log.d(TAG, "onTimeSet: " + timeLimit);
-        timePickerButton.setText("Cut off time for joining: " + timeLimit);
+
+        SimpleDateFormat simpleDateFormatDisplayed = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        String timeLimitDisplayed = simpleDateFormatDisplayed.format(calendar.getTime());
+
+        // Do something with the time chosen by the user, e.g. update a TextView.
+        timePickerButton.setText("Cut off time for joining: " + timeLimitDisplayed);
+
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+//        calendar.set(Calendar.MINUTE, minute);
+//
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
+//        timeLimit = simpleDateFormat.format(calendar.getTime());
+//        Log.d(TAG, "onTimeSet: " + timeLimit);
+//        timePickerButton.setText("Cut off time for joining: " + timeLimit);
     }
 }
 

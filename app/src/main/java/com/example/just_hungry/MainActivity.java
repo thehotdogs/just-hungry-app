@@ -1,6 +1,6 @@
 package com.example.just_hungry;
 
-import static com.example.just_hungry.Utils.LoadImageFromWebOperations;
+import static com.example.just_hungry.Utils.deleteOutdatedPosts;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,12 +35,7 @@ public class MainActivity extends AppCompatActivity {
         }
         // Load image using glide into top nav bar imageview
         if (Utils.isNetworkAvailable(this)) {
-//            Utils.Container<Drawable> tempDrawableContainer = new Utils.Container<>();
-//            Log.i(null, "mainactivity top nav bar: network avail, loading image...");
-////            postHolder.postImage.setImageResource(R.drawable.rendang_background);
-//            LoadImageFromWebOperations("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406", tempDrawableContainer);
-//            top_nav_imageview.setImageDrawable(tempDrawableContainer.getT());
-
+            deleteOutdatedPosts();
             Glide.with(this)
                     .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
                     .into(top_nav_imageview);
