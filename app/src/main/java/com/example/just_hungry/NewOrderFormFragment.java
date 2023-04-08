@@ -236,12 +236,12 @@ public class NewOrderFormFragment extends Fragment {
          */
         // initialise new participants arraylist
         // TODO: isOwner attribute
-        ArrayList<ParticipantModel> participants = new ArrayList<>();
+        ArrayList<String> participants = new ArrayList<>();
         HashMap<String, Object> ownerHM = new HashMap<>();
         ownerHM.put("dateJoined", new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString());
         ownerHM.put("userId", userId);
 
-        participants.add(new ParticipantModel(UUID.randomUUID().toString(), userId, new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'").toString()));
+        participants.add(userId);
 
         // initialise new assets arraylist
         ArrayList<AssetModel> assets = new ArrayList<AssetModel>();
