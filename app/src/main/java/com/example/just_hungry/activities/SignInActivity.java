@@ -22,6 +22,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.Map;
 import java.util.UUID;
@@ -56,7 +57,51 @@ public class SignInActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = preferences.edit();
 
         if (preferences.getBoolean("logged_in", false)) {
-            startHomeActivity();
+            //TODO update user id and name, if failed then log out
+            try {
+                db.collection("users")
+                        .whereEqualTo("email", preferences.getString("email", ""))
+                        .whereEqualTo("password", preferences.getString("password", ""))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
+                                if (queryDocumentSnapshots.size() > 0) {
+                                    // Password matches
+                                    // TODO UPDATE preferences if password matches
+                                    Toast.makeText(SignInActivity.this, "Password matches", Toast.LENGTH_SHORT).show();
+                                    String userId = queryDocumentSnapshots.getDocuments().get(0).get("userId").toString();
+                                    String email = queryDocumentSnapshots.getDocuments().get(0).get("email").toString();
+                                    String password = queryDocumentSnapshots.getDocuments().get(0).get("password").toString();
+                                    String name = queryDocumentSnapshots.getDocuments().get(0).get("name").toString();
+                                    editor.putBoolean("logged_in", true);
+                                    editor.putString("userId", userId);
+                                    editor.putString("email", email);
+                                    editor.putString("password", password);
+                                    editor.putString("name", name);
+                                    editor.apply();
+                                    startHomeActivity();
+
+                                } else {
+                                    // Password does not match
+                                    Toast.makeText(SignInActivity.this, "Password does not match", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(SignInActivity.this, "Error querying Firestore", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+
         }
 
         signInButton.setOnClickListener(new View.OnClickListener() {
@@ -104,11 +149,12 @@ public class SignInActivity extends AppCompatActivity {
                 UserModel UserObject = new UserModel(email, password, name, userId);
                 Map<String, Object> user = UserObject.getHashMapForFirestore();
 
-                db.collection("users").add(user)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                db.collection("users").document(userId).set(user)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                    Toast.makeText(SignInActivity.this, "User added to Firestore", Toast.LENGTH_SHORT).show();
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(SignInActivity.this, "User added to Firestore", Toast.LENGTH_SHORT).show();
+
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
