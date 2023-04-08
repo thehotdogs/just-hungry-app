@@ -73,7 +73,6 @@ public class YourOrderFragment extends Fragment {
                             System.out.println(dataSnapshotValue.get(i).getData());
                         }
                     }
-
                     adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
                     postRecyclerView.setLayoutManager(mLayoutManager);

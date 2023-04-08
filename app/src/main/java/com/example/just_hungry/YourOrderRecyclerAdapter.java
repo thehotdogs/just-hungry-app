@@ -28,50 +28,37 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    Context context;
-    ArrayList<PostModel> posts;
-    UserModel resultUser = null;
-    private static final int HEADER_VIEW_TYPE = 0;
-    private static final int ITEM_VIEW_TYPE = 1;
-    SharedPreferences preferences;
-    Utils.OnGetPostByUserDataListener listener;
-    FragmentManager fragmentManager;
+public class YourOrderRecyclerAdapter extends BaseRecyclerAdapter {
 
-    //constructor
-    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener, FragmentManager parentFragmentManager) {
-        this.context = context;
-        this.posts = posts;
-        this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+    Utils.OnGetPostByUserDataListener listener;
+
+    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener, FragmentManager supportFragmentManager) {
+        super(context, posts, supportFragmentManager);
         this.listener = listener;
-        this.fragmentManager = parentFragmentManager;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-
-        // This is where you inflate the layout (giving look to our rows)
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
             View headerView = inflater.inflate(R.layout.your_order_header_view, parent, false);
-            return new HeaderViewHolder(headerView);
+            return new YourOrderHeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.post_row, parent, false);
-            return new PostViewHolder(itemView);
+            return new YourOrderPostViewHolder(itemView, listener);
         }
     }
-
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        if (getItemViewType(position) == HEADER_VIEW_TYPE) {
-            return;
-        }
-        position = position -1 ;  // Adjust the position for the header view
-        PostViewHolder postHolder = (PostViewHolder) holder;
+    protected void onBindHeaderViewHolder(RecyclerView.ViewHolder holder) {
+        // Add any header-related data binding here if needed, otherwise leave empty
+    }
+
+    protected void onBindPostViewHolder(RecyclerView.ViewHolder holder, int position) {
+        YourOrderPostViewHolder postHolder = (YourOrderPostViewHolder) holder;
         PostModel targetPost = posts.get(position);
-        postHolder.itemView.setOnClickListener(new OnClickListener() {
+        postHolder.itemView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -83,148 +70,43 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
                 }
             }
         });
-        String userId = preferences.getString("userId", "");
-        String postId = targetPost.getPostId();
-        postHolder.joinButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                String storeName = targetPost.getStoreName();
-                if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
-                    // Join function call
-                    Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(context, "Joined post" + storeName, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    // NEEDED TO REFRESH PAGE
-                    Utils.getAllPostsByUserId(userId, listener);
-                    postHolder.joinButton.setText("Leave");
-                } else {
-                    // Leave function call
-                    Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            Toast.makeText(context, "Left post" + storeName, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    // NEEDED TO REFRESH PAGE
-                    Utils.getAllPostsByUserId(userId, listener);
-                    postHolder.joinButton.setText("Join");
-                }
-            }
-        });
-        int finalPosition = position;
-        postHolder.chatButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //!TODO UNCOMMENT FOR CHAT
-                Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
-                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
-//                Intent intent = new Intent(context, ChatActivity.class);
-//                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
-//                context.startActivity(intent);
-            }
-        });
-
-        // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file
-        // based on the position of the row
-        postHolder.storeName.setText(posts.get(position).getStoreName());
-        postHolder.timing.setText(posts.get(position).getTiming());
-        if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
-        if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
-        // holder.participantCount.setText(posts.get(position).getParticipantCount());
-
-        // get image from firebase db
-        if (Utils.isNetworkAvailable(context)) {
-            Glide.with(context)
-                    .load("https://loremflickr.com/320/240/tasty")
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .into(postHolder.postImage);
-        }
-        try {
-            if (posts.get(position).getPosterId() != null) {
-                String posterId = posts.get(position).getPosterId();
-
-                Utils.getUserById(posterId, poster -> {
-                    if (poster == null) {
-                        return;
-                    }
-                    resultUser = poster;
-                    String name = resultUser.getName();
-                    if (resultUser != null && !name.equalsIgnoreCase("")) {
-                        postHolder.posterName.setText(name);
-                    }
-                });
-            }
-        }catch (Exception e) {
-            System.out.println("ERROR: " + e);
-        }
-
+        // Add any other specific onBindPostViewHolder logic here
     }
 
-    @Override
-    public int getItemCount() {
-        // This is where you return the number of rows
-        // the recycler vie just wants to know the number of rows you want to display (add 1 for header)
-        return posts.size() + 1;
-    }
+    static class YourOrderHeaderViewHolder extends HeaderViewHolder {
+        TextView textViewHelloUser;
+        TextView textViewFancySomeFood;
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0) {
-            return HEADER_VIEW_TYPE;
-        } else {
-            return ITEM_VIEW_TYPE;
-        }
-    }
-    public static class HeaderViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewHelloUser;
-        public TextView textViewFancySomeFood;
-
-        public HeaderViewHolder(View itemView) {
+        public YourOrderHeaderViewHolder(@NonNull View itemView) {
             super(itemView);
             textViewHelloUser = itemView.findViewById(R.id.textViewOrderYouJoined);
             textViewFancySomeFood = itemView.findViewById(R.id.textViewYourOrderHint);
         }
     }
 
-    public static class PostViewHolder extends RecyclerView.ViewHolder{
-        // This is where you declare the views you want to use in the recycler view row layout file
-        // grabbing the views from our post row layout file kinda like onCreate method
-
-        ImageView postImage;
-        TextView storeName;
-        TextView timing;
-        TextView location;
-        TextView posterName;
-        ImageView posterImage;
-        TextView dateCreated;
-        TextView participantCount;
-        ConstraintLayout buttonContainer;
-
+    static class YourOrderPostViewHolder extends PostViewHolder {
         Button joinButton;
         Button chatButton;
+        ConstraintLayout buttonContainer;
 
-
-        public PostViewHolder(@NonNull View itemView) {
+        public YourOrderPostViewHolder(@NonNull View itemView,  Utils.OnGetPostByUserDataListener listener) {
             super(itemView);
-            // This is where you initialize the views
-            postImage = itemView.findViewById(R.id.postImage);
-            storeName = itemView.findViewById(R.id.storeNameCardText);
-            timing = itemView.findViewById(R.id.timingCardText);
-            posterName = itemView.findViewById(R.id.posterNameCardText);
-            location = itemView.findViewById(R.id.locationCardText);
-            posterImage = itemView.findViewById(R.id.posterCardImage);
-            dateCreated = itemView.findViewById(R.id.dateCreatedCardText);
-            participantCount = itemView.findViewById(R.id.participantCountCardText);
             joinButton = itemView.findViewById(R.id.joinButton);
             chatButton = itemView.findViewById(R.id.chatButton);
             joinButton.setText("Leave");
-//            chatButton.setVisibility(View.GONE);
+            joinButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SharedPreferences preferences = itemView.getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
+                    String userId = preferences.getString("userId", "");
+
+                    // Call the method here
+                    Utils.getAllPostsByUserId(userId, listener);
+                }
+            });
             buttonContainer = itemView.findViewById(R.id.button_container);
+
         }
     }
 }

@@ -381,7 +381,7 @@ public class Utils {
      * @param  context a Context object (Context is the superclass of AppCompatActivity
      * @return a boolean object
      */
-    static boolean isNetworkAvailable(Context context) {
+    public static boolean isNetworkAvailable(Context context) {
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
