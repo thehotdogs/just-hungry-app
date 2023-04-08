@@ -4,12 +4,9 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -21,27 +18,19 @@ import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.units.qual.C;
 
-import java.io.InputStream;
-import java.net.URL;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class Utils {
     static final int COARSE_LOCATION_REQUEST_CODE = 100;
@@ -350,44 +339,59 @@ public class Utils {
                         public void run() {
                             // back in the main thread
                             tempDrawableContainer.getT();
+
+    public static void deleteOutdatedPosts() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'", Locale.getDefault());
+
+        db.collection("posts")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        QuerySnapshot querySnapshot = task.getResult();
+                        if (querySnapshot != null) {
+                            Date currentDate = new Date();
+                            for (DocumentSnapshot documentSnapshot : querySnapshot.getDocuments()) {
+                                String postTimeLimit = documentSnapshot.getString("timeLimit");
+                                try {
+                                    Log.d(TAG, "deleteOutdatedPosts: Successfully got document: " + documentSnapshot.getId() + " with timeLimit: " + postTimeLimit + ".");
+                                    if (postTimeLimit == null) {
+                                        Log.d(TAG, "deleteOutdatedPosts: Post with ID: " + documentSnapshot.getId() + " has no timeLimit.");
+                                        continue;
+                                    }
+                                    Date postTimeLimitDate = simpleDateFormat.parse(postTimeLimit);
+                                    if (postTimeLimitDate != null && currentDate.after(postTimeLimitDate)) {
+                                        // The post has exceeded its time limit.
+                                        db.collection("posts").document(documentSnapshot.getId())
+                                                .delete()
+                                                .addOnSuccessListener(aVoid -> {
+                                                    System.out.println("Post with ID: " + documentSnapshot.getId() + " deleted.");
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    System.err.println("Error deleting post: " + e.getMessage());
+                                                });
+                                    }
+                                } catch (ParseException e) {
+                                    System.err.println("Error parsing timeLimit: " + e.getMessage());
+                                }
+                            }
                         }
-                    });
-                } catch (Exception e) {
-                    Log.i(null, "Couldn't load the image, error: " +e);
-                }
-
-            }
-        });
-
+                    } else {
+                        System.err.println("Error getting posts: " + task.getException().getMessage());
+                    }
+                });
     }
-
-    final static class Container<T> {
-        private T t;
-
-        public T getT() {
-            return t;
-        }
-
-        public void setT(T t) {
-            this.t = t;
-        }
-    }
-
-
 
     /**
      * This method checks if an Activity has a network connection
      * @param  context a Context object (Context is the superclass of AppCompatActivity
      * @return a boolean object
      */
-
     static boolean isNetworkAvailable(Context context) {
-
         ConnectivityManager connectivityManager
                 = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         boolean haveNetwork = activeNetworkInfo != null && activeNetworkInfo.isConnected();
-        Log.i(UTILS_TAG, "Active Network: " + haveNetwork);
         return haveNetwork;
     }
 

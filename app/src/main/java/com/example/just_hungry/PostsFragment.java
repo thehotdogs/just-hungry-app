@@ -1,5 +1,7 @@
 package com.example.just_hungry;
 
+import static com.example.just_hungry.Utils.deleteOutdatedPosts;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -78,7 +80,7 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_post_main, container, false);
-
+        deleteOutdatedPosts();
 
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
 
