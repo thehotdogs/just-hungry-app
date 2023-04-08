@@ -1,7 +1,5 @@
 package com.example.just_hungry.activities;
 
-import static com.example.just_hungry.Utils.deleteOutdatedPosts;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -41,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
         }
         // Load image using glide into top nav bar imageview
         if (Utils.isNetworkAvailable(this)) {
-            deleteOutdatedPosts();
             Glide.with(this)
                     .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
                     .into(top_nav_imageview);

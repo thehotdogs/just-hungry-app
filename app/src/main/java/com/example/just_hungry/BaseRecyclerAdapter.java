@@ -117,7 +117,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file
         // based on the position of the row
         postHolder.storeName.setText(posts.get(position).getStoreName());
-        postHolder.timing.setText(posts.get(position).getTiming());
+        postHolder.timing.setText(posts.get(position).getTiming().toString());
         if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());

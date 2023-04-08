@@ -1,6 +1,5 @@
 package com.example.just_hungry.browse_order;
 
-import static com.example.just_hungry.Utils.deleteOutdatedPosts;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -76,7 +75,6 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
-        deleteOutdatedPosts();
 
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
 

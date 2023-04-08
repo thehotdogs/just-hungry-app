@@ -50,7 +50,7 @@ public class NewOrderFormFragment extends Fragment {
     Spinner spinnerLocation;
     Button submitButton;
     Button timePickerButton;
-    String timeLimit;
+    Date timeLimit;
     Context context;
 
     Map<String, Object> orderFormData = new HashMap<>();
@@ -59,7 +59,7 @@ public class NewOrderFormFragment extends Fragment {
     private String posterId;
     private String dateCreated;
     private String timing;
-    private ArrayList<ParticipantModel> participants;
+    private ArrayList<String> participants;
     private ArrayList<AssetModel> assets;
     private LocationModel location;
     private String storeName;
@@ -227,7 +227,7 @@ public class NewOrderFormFragment extends Fragment {
          *     String posterId,
          *     String dateCreated,
          *     String timing,
-         *     ArrayList<ParticipantModel> participants,
+         *     ArrayList<String> participants,
          *     ArrayList<AssetModel> assets,
          *     LocationModel location,
          *     String storeName,
@@ -254,7 +254,7 @@ public class NewOrderFormFragment extends Fragment {
                 // get the current time
                 new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date()),
                 // time limit is the time limit set by the user in String Simple Date time format
-                orderFormData.get("timeLimit").toString(),
+                (Date) orderFormData.get("timeLimit"),
                 // participants is just the current user
                 participants,
                 getAssetModelfromCuisine(orderFormData.get("cuisine").toString()),
@@ -361,8 +361,7 @@ public class NewOrderFormFragment extends Fragment {
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:sss'Z'", Locale.getDefault());
-        timeLimit = simpleDateFormat.format(calendar.getTime());
+        timeLimit = calendar.getTime();
 
         SimpleDateFormat simpleDateFormatDisplayed = new SimpleDateFormat("HH:mm", Locale.getDefault());
         String timeLimitDisplayed = simpleDateFormatDisplayed.format(calendar.getTime());
