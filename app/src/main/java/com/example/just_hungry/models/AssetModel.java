@@ -14,7 +14,7 @@ public class AssetModel {
         this.title = "assetTitle";
         this.assetId = UUID.randomUUID().toString();
     }
-    AssetModel(String title, String assetUrl) {
+    public AssetModel(String title, String assetUrl) {
         //set to default value
         this.assetUrl = assetUrl;
         this.title = title;
@@ -50,5 +50,13 @@ public class AssetModel {
     public String setAssetId(String assetId) {
         this.assetId = assetId;
         return assetId;
+    }
+
+    public HashMap<String, Object> getHashMapForFirestore() {
+        HashMap<String, Object> asset = new HashMap<>();
+        asset.put("assetUrl", this.assetUrl);
+        asset.put("title", this.title);
+        asset.put("assetId", this.assetId);
+        return asset;
     }
 }

@@ -58,7 +58,42 @@ public class LoginActivity extends AppCompatActivity {
         final SharedPreferences.Editor editor = preferences.edit();
 
         if (preferences.getBoolean("logged_in", false)) {
-            startHomeActivity();
+            //TODO update user id and name, if failed then log out
+            try {
+                db.collection("users")
+                        .whereEqualTo("email", preferences.getString("email", ""))
+                        .whereEqualTo("password", preferences.getString("password", ""))
+                        .get()
+                        .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+                            @Override
+                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                                System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
+                                if (queryDocumentSnapshots.size() > 0) {
+                                    // Password matches
+                                    // TODO UPDATE preferences if password matches
+                                    Toast.makeText(LoginActivity.this, "Password matches", Toast.LENGTH_SHORT).show();
+                                    startHomeActivity();
+
+                                } else {
+                                    // Password does not match
+                                    isPasswordCorrect = false;
+                                    Toast.makeText(LoginActivity.this, "Password does not match", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(LoginActivity.this, "Error querying Firestore", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            } catch (Exception e) {
+                e.printStackTrace();
+
+            }
+
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -111,8 +146,18 @@ public class LoginActivity extends AppCompatActivity {
                                 System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
                                 if (queryDocumentSnapshots.size() > 0) {
                                     // Password matches
-
+                                    // TODO UPDATE preferences if password matches
                                     Toast.makeText(LoginActivity.this, "Password matches", Toast.LENGTH_SHORT).show();
+                                    String userId = queryDocumentSnapshots.getDocuments().get(0).get("userId").toString();
+                                    String email = queryDocumentSnapshots.getDocuments().get(0).get("email").toString();
+                                    String password = queryDocumentSnapshots.getDocuments().get(0).get("password").toString();
+                                    String name = queryDocumentSnapshots.getDocuments().get(0).get("name").toString();
+                                    editor.putBoolean("logged_in", true);
+                                    editor.putString("userId", userId);
+                                    editor.putString("email", email);
+                                    editor.putString("password", password);
+                                    editor.putString("name", name);
+                                    editor.apply();
                                     handleSuccessfulLogin();
 
                                 } else {

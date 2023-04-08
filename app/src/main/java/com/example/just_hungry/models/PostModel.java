@@ -79,7 +79,7 @@ public class PostModel {
         this.postId = documentSnapshot.getString("postId");
         this.posterId = documentSnapshot.getString("posterId");
         this.dateCreated = documentSnapshot.getString("dateCreated");
-        this.timing = documentSnapshot.getString("timing");
+        //if (documentSnapshot.getDate("timing") != null) this.timing = documentSnapshot.getDate("timing");
         this.participants = (ArrayList<String>) documentSnapshot.get("participants");
         this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
         this.location = new LocationModel((HashMap<String, Double>) documentSnapshot.get("location"));

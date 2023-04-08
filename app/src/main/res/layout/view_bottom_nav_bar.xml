@@ -8,6 +8,7 @@
     android:background="@color/md_theme_light_secondary"
     app:itemIconTint="@color/md_theme_light_onPrimary"
     app:itemTextColor="@color/md_theme_light_onPrimary"
-    app:menu="@menu/bottom_navigation_menu" />
+    app:menu="@menu/bottom_navigation_menu"
+    app:labelVisibilityMode="labeled"/>
 
 <!--note: reference abt color pls see here;https://github.com/material-components/material-components-android/blob/master/docs/components/BottomNavigation.md -->

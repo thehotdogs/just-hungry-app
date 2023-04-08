@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.example.just_hungry.account.AccountManagementFragment;
 import com.example.just_hungry.new_order.NewOrderFragment;
 import com.example.just_hungry.browse_order.PostsFragment;
 import com.example.just_hungry.R;
@@ -60,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case R.id.action_yourorder:
                 selectedFragment = new YourOrderFragment();
+                break;
+            case R.id.action_account_management: // Add this case
+                selectedFragment = new AccountManagementFragment();
                 break;
             default:
                 return false;

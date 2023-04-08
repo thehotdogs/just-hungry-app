@@ -81,9 +81,9 @@ public class UserModel {
             this.reputation = 0;
         }
         // this.reputation = Math.toIntExact((documentSnapshot.getLong("reputation")));
-        //this.profilePictureUrl = (AssetModel) documentSnapshot.get("profilePictureUrl");
+        this.profilePictureUrl = new AssetModel((HashMap) documentSnapshot.get("profilePictureUrl"));
         //this.assets = (ArrayList<AssetModel>) documentSnapshot.get("assets");
-        //this.location = (LocationModel) documentSnapshot.get("location");
+        this.location = new LocationModel((HashMap<String, Double>) documentSnapshot.get("location"));
         this.dateCreated = documentSnapshot.getString("dateCreated");
     }
 
