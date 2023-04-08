@@ -2,7 +2,6 @@ package com.example.just_hungry;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.just_hungry.chat.ChatFragment;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,13 +26,13 @@ import java.util.Arrays;
 
 public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // ...
-    Context context;
-    ArrayList<PostModel> posts;
-    UserModel resultUser = null;
+    protected Context context;
+    protected ArrayList<PostModel> posts;
+    protected UserModel resultUser = null;
     protected static final int HEADER_VIEW_TYPE = 0;
     protected static final int ITEM_VIEW_TYPE = 1;
-    SharedPreferences preferences;
-    FragmentManager fragmentManager;
+    protected SharedPreferences preferences;
+    protected FragmentManager fragmentManager;
 
     public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
@@ -133,8 +133,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             if (Utils.isNetworkAvailable(context)) {
                 Glide.with(context)
                         .load(assetUrl)
-                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                        .skipMemoryCache(true)
+//                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                        .skipMemoryCache(true)
                         .into(postHolder.postImage);
             }
         }

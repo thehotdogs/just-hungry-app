@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.new_order;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.just_hungry.BaseRecyclerAdapter;
+import com.example.just_hungry.R;
+import com.example.just_hungry.Utils;
 import com.example.just_hungry.models.PostModel;
 
 import java.util.ArrayList;
@@ -33,10 +36,10 @@ public class NewOrderRecyclerAdapter extends BaseRecyclerAdapter {
         LayoutInflater inflater = LayoutInflater.from(context);
 
         if (viewType == HEADER_VIEW_TYPE) {
-            View headerView = inflater.inflate(R.layout.new_order_header_view, parent, false);
+            View headerView = inflater.inflate(R.layout.view_header_new_order, parent, false);
             return new NewOrderHeaderViewHolder(headerView);
         } else {
-            View itemView = inflater.inflate(R.layout.post_row, parent, false);
+            View itemView = inflater.inflate(R.layout.item_order_post_row, parent, false);
             return new NewOrderPostViewHolder(itemView);
         }
     }

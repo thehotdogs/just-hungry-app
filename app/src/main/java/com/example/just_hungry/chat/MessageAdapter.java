@@ -1,5 +1,4 @@
-package com.example.just_hungry;
-import android.content.Context;
+package com.example.just_hungry.chat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.just_hungry.R;
+import com.example.just_hungry.Utils;
 import com.example.just_hungry.models.ChatModel;
 import com.example.just_hungry.models.UserModel;
 

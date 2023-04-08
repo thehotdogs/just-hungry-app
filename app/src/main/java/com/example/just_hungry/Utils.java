@@ -34,10 +34,10 @@ import java.util.Map;
 import java.util.UUID;
 
 public class Utils {
-    static final int COARSE_LOCATION_REQUEST_CODE = 100;
-    static final String TAG = "UtilsTag";
-    static final String UTILS_TAG = "UtilsTag";
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public static final int COARSE_LOCATION_REQUEST_CODE = 100;
+    public static final String TAG = "UtilsTag";
+    public static final String UTILS_TAG = "UtilsTag";
+    public FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static Utils instance;
 

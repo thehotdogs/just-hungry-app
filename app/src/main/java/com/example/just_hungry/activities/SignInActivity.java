@@ -1,4 +1,4 @@
-package com.example.just_hungry;
+package com.example.just_hungry.activities;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.just_hungry.activities.LoginActivity;
+import com.example.just_hungry.R;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +37,7 @@ public class SignInActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.sign_in_page);
+        setContentView(R.layout.activity_sign_in);
 
         // Initialize Firebase
         FirebaseApp.initializeApp(this);
