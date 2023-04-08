@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -35,13 +36,15 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
     private static final int ITEM_VIEW_TYPE = 1;
     SharedPreferences preferences;
     Utils.OnGetPostByUserDataListener listener;
+    FragmentManager fragmentManager;
 
     //constructor
-    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener) {
+    public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener, FragmentManager parentFragmentManager) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
         this.listener = listener;
+        this.fragmentManager = parentFragmentManager;
     }
 
     @NonNull
@@ -80,11 +83,12 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
                 }
             }
         });
+        String userId = preferences.getString("userId", "");
+        String postId = targetPost.getPostId();
         postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                String userId = preferences.getString("userId", "");
-                String postId = targetPost.getPostId();
+
                 String storeName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
@@ -117,6 +121,7 @@ public class YourOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.
             public void onClick(View v) {
                 //!TODO UNCOMMENT FOR CHAT
                 Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
 //                Intent intent = new Intent(context, ChatActivity.class);
 //                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
 //                context.startActivity(intent);

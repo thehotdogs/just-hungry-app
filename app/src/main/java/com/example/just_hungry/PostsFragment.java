@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -50,7 +51,18 @@ public class PostsFragment extends Fragment {
 
     FusedLocationProviderClient fusedLocationProviderClient;
     LocationModel deviceLocation = new LocationModel(0, 0); // instantiate on SUTD coordinates
+    FragmentManager fragmentManager;
+    Activity activity;
 
+//
+    public PostsFragment(FragmentManager fragmentManager) {
+        // Required empty public constructor
+        this.fragmentManager = fragmentManager;
+    }
+
+    public PostsFragment() {
+
+    }
 
 
     /** onCreateView mainly handles firestore database post getting
@@ -78,53 +90,39 @@ public class PostsFragment extends Fragment {
         deviceLocation = Utils.getDeviceLocation(this.getActivity(), fusedLocationProviderClient, deviceLocation);
 
 
-        OnGetDataListener listener = new OnGetDataListener() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
-                posts.clear();
-                // create a new posts ArrayList which stores all the PostModel objects
-                for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
-                    HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
-                    posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
-                    //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-                    System.out.println("Getting post #"+i+" from firebase: "+queryDocumentSnapshots.getDocuments().get(i).getData());
-                }
-                Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
-
-                adapter = new PostRecyclerAdapter(rootView.getContext(), posts);
-                System.out.println("SETTING UP ADAPTER DONE" + posts);
-                postRecyclerView.setLayoutManager(mLayoutManager);
-                postRecyclerView.setAdapter(adapter);
+        Utils.OnGetDataListener listener = queryDocumentSnapshots -> {
+            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
+            posts.clear();
+            // create a new posts ArrayList which stores all the PostModel objects
+            for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
+                HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
+                posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
+                //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
+                System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
             }
+            Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
+
+
+            System.out.println("SETTING UP ADAPTER DONE" + posts);
+            adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+            postRecyclerView.setLayoutManager(mLayoutManager);
+            postRecyclerView.setAdapter(adapter);
+
         };
 
         final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                GetAllPostsFirestore(listener); // your code
+                Utils.getAllPostsFirestore(listener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
-        GetAllPostsFirestore(listener);
+        Utils.getAllPostsFirestore(listener);
         return rootView;
     }
 
 
     // FIREBASE STACK OVER FLOW STUFF
-    public interface OnGetDataListener {
-        //this is for callbacks
-        void onSuccess(QuerySnapshot dataSnapshotValue);
-    }
-    public void GetAllPostsFirestore(final OnGetDataListener listener) {
-        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
-        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
 
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                listener.onSuccess(queryDocumentSnapshots);
-            }
-        });
-    }
 }

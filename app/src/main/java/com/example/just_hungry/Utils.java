@@ -52,10 +52,6 @@ public class Utils {
             return instance;
         }
     }
-    private interface OnGetDataListener {
-        //this is for callbacks
-        void onSuccess(QuerySnapshot dataSnapshotValue);
-    }
 //    private void GetAllPostsFirestore(final PostActivity.OnGetDataListener listener, String userId) {
 //        Task<QuerySnapshot> querySnapshotTask = db.collection("users").whereEqualTo("userId", userId).get();
 //        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
@@ -115,7 +111,20 @@ public class Utils {
                     successListener.onSuccess(null);
                 });
     }
+    public interface OnGetDataListener {
+        //this is for callbacks
+        void onSuccess(QuerySnapshot dataSnapshotValue);
+    }
+    public static void getAllPostsFirestore(final OnGetDataListener listener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
+        querySnapshotTask.addOnSuccessListener(queryDocumentSnapshots -> listener.onSuccess(queryDocumentSnapshots));
+    }
     public interface OnGetPostByUserDataListener {
+        //this is for callbacks
+        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
+    }
+    public interface OnGetChatFromPostIdListener {
         //this is for callbacks
         void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
     }
@@ -274,6 +283,62 @@ public class Utils {
                     successListener.onSuccess(null);
                 });
     }
+
+    public static void getAllChatsInsidePost(String postId, OnGetChatFromPostIdListener successListener) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Query the 'users' collection for the user with the specified ID.
+        db.collection("posts").whereEqualTo("postId", postId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.isEmpty()) {
+                        // User with the specified ID does not exist.
+                        successListener.onSuccess(null);
+                        return;
+                    }
+                    List<DocumentSnapshot> results = documentSnapshot.getDocuments();
+
+                    if (results.size() > 0) {
+                        successListener.onSuccess(results);
+                    } else {
+                        successListener.onSuccess(null);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle any errors.
+                    System.err.println("Error getting posts by user Id " + e.getMessage());
+                    successListener.onSuccess(null);
+                });
+    }
+
+    /**
+     * Load the image from a url
+     *
+     * Code is taken from below
+     * https://stackoverflow.com/questions/6407324/how-to-display-image-from-url-on-android
+     *
+     * @param url
+     * @return
+     */
+    public static void LoadImageFromWebOperations(String url, Container<Drawable> tempDrawableContainer) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        final Handler handler = new Handler(Looper.getMainLooper());
+
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                // we are in background thread
+                // We want to store the Drawable object into the container so that it can be accessed later
+
+                Log.i(TAG, "LoadImageFromWebOperations: using Utils function load image form web operations");
+                try {
+                    InputStream is = (InputStream) new URL(url).getContent();
+                    Drawable d = Drawable.createFromStream(is, "src name");
+                    Log.i(null, "Displaying image");
+                    tempDrawableContainer.setT(d);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            // back in the main thread
+                            tempDrawableContainer.getT();
 
     public static void deleteOutdatedPosts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();

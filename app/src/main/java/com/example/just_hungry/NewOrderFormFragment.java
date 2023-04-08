@@ -78,7 +78,6 @@ public class NewOrderFormFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_new_order_form, container, false);
         context = rootView.getContext();
 
-
         // All edit texts
         listingTitle = (EditText) rootView.findViewById(R.id.etListingTitle);
         maxParticipants = (EditText) rootView.findViewById(R.id.editTextNumberPeopleLimit);

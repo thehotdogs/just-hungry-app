@@ -74,7 +74,7 @@ public class YourOrderFragment extends Fragment {
                         }
                     }
 
-                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener);
+                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
                     postRecyclerView.setLayoutManager(mLayoutManager);
                     postRecyclerView.setAdapter(adapter);
@@ -93,20 +93,4 @@ public class YourOrderFragment extends Fragment {
         return rootView;
     }
 
-
-    // FIREBASE STACK OVER FLOW STUFF
-//    public interface OnGetPostByUserDataListener {
-//        //this is for callbacks
-//        void onSuccess(List<DocumentSnapshot> dataSnapshotValue);
-//    }
-//    public void GetAllPostsFirestore(final OnGetDataListener listener) {
-//        Task<QuerySnapshot> querySnapshotTask = db.collection("posts").get();
-//        querySnapshotTask.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>(){
-//
-//            @Override
-//            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-//                listener.onSuccess(queryDocumentSnapshots);
-//            }
-//        });
-//    }
 }

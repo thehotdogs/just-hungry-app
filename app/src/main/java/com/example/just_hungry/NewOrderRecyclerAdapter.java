@@ -42,6 +42,7 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
     SharedPreferences preferences;
     FragmentManager fragmentManager;
     Utils.OnGetPostByUserDataListener newOrderPostslistener;
+    //String postId;
 
     //constructor
     public NewOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager parentFragmentManager,Utils.OnGetPostByUserDataListener newOrderPostslistener) {
@@ -97,6 +98,7 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
         position = position -1 ;  // Adjust the position for the header view
         PostViewHolder postHolder = (PostViewHolder) holder;
         PostModel targetPost = posts.get(position);
+        String postId = targetPost.getPostId();
         postHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
@@ -140,7 +142,8 @@ public class NewOrderRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.V
             @Override
             public void onClick(View v) {
                 //!TODO UNCOMMENT FOR CHAT
-                Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+                // Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
 //                Intent intent = new Intent(context, ChatActivity.class);
 //                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
 //                context.startActivity(intent);
