@@ -20,9 +20,13 @@ import com.example.just_hungry.chat.ChatFragment;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
 
 public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // ...
@@ -117,7 +121,11 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file
         // based on the position of the row
         postHolder.storeName.setText(posts.get(position).getStoreName());
-        postHolder.timing.setText(posts.get(position).getTiming());
+
+        // we only want to show the hours and minutes of the timelimit
+        Date timingDate = posts.get(position).getTiming();
+        SimpleDateFormat dt = new SimpleDateFormat("HH:mm", Locale.getDefault());
+        postHolder.timing.setText(dt.format(timingDate));
         if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
