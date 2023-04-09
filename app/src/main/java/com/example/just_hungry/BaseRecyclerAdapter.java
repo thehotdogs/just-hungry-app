@@ -30,7 +30,10 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.Locale;
+import java.util.Locale;import android.transition.TransitionManager;
+import android.transition.ChangeBounds;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 
 public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
     // ...
@@ -71,11 +74,14 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onClick(View v) {
                 //System.out.println("TOGGLED");
+                //TransitionManager.beginDelayedTransition((ViewGroup) v.getRootView(), new ChangeBounds());
+                //int position = postHolder.getLayoutPosition();
                 if (postHolder.buttonContainer.getVisibility() == View.GONE) {
                     postHolder.buttonContainer.setVisibility(View.VISIBLE);
                 } else {
                     postHolder.buttonContainer.setVisibility(View.GONE);
                 }
+                // notifyItemChanged(position);
             }
         });
         String userId = preferences.getString("userId", "");
@@ -187,8 +193,14 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                     }
                     resultUser = poster;
                     String name = resultUser.getName();
+                    String userProfileUrl = resultUser.getProfilePictureUrl().getAssetUrl();
                     if (resultUser != null && !name.equalsIgnoreCase("")) {
                         postHolder.posterName.setText(name);
+                        if (Utils.isNetworkAvailable(context)) {
+                            Glide.with(context)
+                                    .load(userProfileUrl)
+                                    .into(postHolder.posterImage);
+                        }
                     }
                 });
             }

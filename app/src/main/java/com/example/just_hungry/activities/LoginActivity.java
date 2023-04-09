@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity {
                                 if (queryDocumentSnapshots.size() > 0) {
                                     // Password matches
                                     // TODO UPDATE preferences if password matches
-                                    Toast.makeText(LoginActivity.this, "Password matches", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, "Logging in...", Toast.LENGTH_LONG).show();
                                     startHomeActivity();
 
                                 } else {
