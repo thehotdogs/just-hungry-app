@@ -12,6 +12,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.example.just_hungry.browse_order.PostQueryBuilder;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -111,12 +112,15 @@ public class Utils {
     public interface OnGetDataListener {
         //this is for callbacks
         void onSuccess(QuerySnapshot dataSnapshotValue);
+
+//        void onFailure(Exception exception);
     }
+
+    
     public static void getAllPostsFirestore(final OnGetDataListener listener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         Timestamp currentTime = new Timestamp(new Date());
-        Log.d(TAG, "getAllPostsFirestore: current time is " + currentTime.toDate().toString());
 
         // Query the "posts" collection for posts with "timing" field greater than the current time
         Query query = db.collection("posts").whereGreaterThan("timing", currentTime);

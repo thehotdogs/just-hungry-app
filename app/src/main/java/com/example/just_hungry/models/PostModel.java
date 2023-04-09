@@ -1,5 +1,10 @@
 package com.example.just_hungry.models;
 
+import static com.example.just_hungry.Utils.TAG;
+
+import android.util.Log;
+
+import com.example.just_hungry.Utils;
 import com.google.android.gms.common.server.converter.StringToIntConverter;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -9,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class PostModel {
     public String postId;
@@ -108,6 +114,29 @@ public class PostModel {
         hashMap.put("grabFoodUrl", this.grabFoodUrl);
         hashMap.put("isHalal", this.isHalal);
         return hashMap;
+    }
+
+    // create a public method to return an arraylist of strings of the participants name
+    public ArrayList<String> getParticipantsName() throws InterruptedException {
+        ArrayList<String> participantsNameList = new ArrayList<String>();
+        CountDownLatch latch = new CountDownLatch(this.participants.size());
+
+        for (String participantId : this.participants) {
+            Utils.getUserById(participantId, participantName -> {
+                    if (participantName == null) {
+                        latch.countDown();
+                        return;
+                    }
+                    UserModel currentParticipantName = participantName;
+                    String name = currentParticipantName.getName();
+                    participantsNameList.add(name);
+                    Log.d(TAG, "getParticipantsName: participantsNameList: " + participantsNameList.toString() + " updated");
+                    latch.countDown();
+                });
+        }
+        latch.await();
+        Log.d(TAG, "getParticipantsName: participantsNameList: " + participantsNameList.toString() + " returned");
+        return participantsNameList;
     }
 
     // getters and setters

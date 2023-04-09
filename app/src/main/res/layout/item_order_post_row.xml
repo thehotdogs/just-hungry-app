@@ -20,7 +20,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -29,7 +28,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp">
+                android:layout_height="150dp">
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/postImage"
@@ -43,31 +42,18 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/posterCardImage"
-                    android:layout_width="56dp"
-                    android:layout_height="49dp"
-                    android:src="@drawable/doge"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/locationCardText"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.947"
-                    tools:srcCompat="@tools:sample/avatars" />
-
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/storeNameCardText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
                     android:text="Store Name"
+                    android:textAlignment="viewStart"
                     android:textAppearance="@style/TextAppearance.AppCompat.Large"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.261"
                     app:layout_constraintStart_toEndOf="@+id/postImage"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.094" />
+                    app:layout_constraintVertical_bias="0.133" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/timingCardText"
@@ -105,31 +91,6 @@
                     app:layout_constraintStart_toEndOf="@+id/imageView4"
                     app:layout_constraintTop_toBottomOf="@+id/timingCardText" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/dateCreatedCardText"
-                    android:layout_width="113dp"
-                    android:layout_height="25dp"
-                    android:text="2022-9-11:08:57"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="@+id/posterNameCardText"
-                    app:layout_constraintTop_toBottomOf="@+id/posterNameCardText"
-                    app:layout_constraintVertical_bias="0.384" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/posterNameCardText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="Poster Name"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.175"
-                    app:layout_constraintStart_toEndOf="@+id/posterCardImage"
-                    app:layout_constraintTop_toTopOf="@+id/posterCardImage"
-                    app:layout_constraintVertical_bias="0.0" />
-
                 <ImageView
                     android:id="@+id/imageView3"
                     android:layout_width="wrap_content"
@@ -148,6 +109,25 @@
                     app:layout_constraintTop_toBottomOf="@+id/imageView3"
                     app:srcCompat="@drawable/baseline_person_24" />
 
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/halalChip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="Halal"
+                    android:textColor="@color/ic_justhungry_background"
+                    android:textSize="14sp"
+                    android:visibility="visible"
+                    app:chipBackgroundColor="@color/md_theme_dark_onTertiary"
+                    app:chipCornerRadius="20dp"
+                    app:chipStrokeColor="@color/ic_justhungry_background"
+                    app:chipStrokeWidth="2dp"
+                    app:closeIcon="@drawable/baseline_star_rate_24"
+                    app:closeIconEnabled="false"
+                    app:closeIconTint="@color/ic_justhungry_background"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -156,35 +136,90 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:visibility="gone">
-
-                <Button
-                    android:id="@+id/joinButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:layout_weight="1"
-                    android:text="Join"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.217"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_bias="0.0" />
+                android:visibility="gone"
+                tools:visibility="gone">
 
                 <Button
                     android:id="@+id/chatButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
                     android:layout_marginBottom="8dp"
                     android:layout_weight="1"
                     android:text="Chat"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.816"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/joinButton"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewParticipants"
                     app:layout_constraintVertical_bias="0.0" />
+
+                <Button
+                    android:id="@+id/joinButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    android:text="Join"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/chatButton"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewParticipants"
+                    app:layout_constraintVertical_bias="0.0" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/posterCardImage"
+                    android:layout_width="56dp"
+                    android:layout_height="49dp"
+                    android:layout_marginTop="28dp"
+                    android:src="@drawable/doge"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.054"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textViewCuisine"
+                    tools:srcCompat="@tools:sample/avatars" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/posterNameCardText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Poster Name"
+                    app:layout_constraintStart_toEndOf="@+id/posterCardImage"
+                    app:layout_constraintTop_toTopOf="@+id/posterCardImage" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/dateCreatedCardText"
+                    android:layout_width="205dp"
+                    android:layout_height="32dp"
+                    android:text="2022-9-11:08:57"
+                    app:layout_constraintBottom_toBottomOf="@+id/posterCardImage"
+                    app:layout_constraintStart_toStartOf="@+id/posterNameCardText" />
+
+                <TextView
+                    android:id="@+id/textViewParticipants"
+                    android:layout_width="292dp"
+                    android:layout_height="43dp"
+                    android:layout_marginTop="28dp"
+                    android:text="Current Participants: "
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/posterCardImage" />
+
+                <TextView
+                    android:id="@+id/textViewCuisine"
+                    android:layout_width="297dp"
+                    android:layout_height="28dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Cuisine: "
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
             </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

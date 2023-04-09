@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="MyToggleButtonStyle" parent="Widget.AppCompat.CompoundButton.Switch">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">@dimen/cardview_default_elevation</item>
+        <item name="android:background">@drawable/toggle_selector</item>
+        <item name="android:checked">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="android:padding">@dimen/button_margin</item>
+        <item name="android:shadowRadius">2</item>
+        <item name="android:textOff">Halal unavailable</item>
+        <item name="android:textOn">Halal available</item>
+        <item name="android:textColor">@color/md_theme_light_shadow</item>
+        <item name="android:textAllCaps">false</item>
+        <!-- add more attributes as needed -->
+    </style>
+</resources>

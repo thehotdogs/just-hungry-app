@@ -1,7 +1,10 @@
 package com.example.just_hungry;
 
+import static com.example.just_hungry.Utils.TAG;
+
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,6 +23,7 @@ import com.example.just_hungry.chat.ChatFragment;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.chip.Chip;
 import com.google.firebase.Timestamp;
 
 import java.text.SimpleDateFormat;
@@ -122,6 +126,33 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         // based on the position of the row
         postHolder.storeName.setText(posts.get(position).getStoreName());
 
+        // halalChip set visibility
+        if (posts.get(position).isHalal()) {
+            postHolder.halalChip.setVisibility(View.VISIBLE);
+        } else {
+            postHolder.halalChip.setVisibility(View.GONE);
+        }
+
+        // TODO text view of participants
+//        String participantsString = "Participants: \n";
+//        try {
+//            Log.d(TAG, "onBindViewHolder: participants" + posts.get(position).getParticipantsName());
+//            ArrayList<String> participants = posts.get(position).getParticipantsName();
+//            for (int i = 0; i < participants.size(); i++) {
+//                Log.d(TAG, "onBindViewHolder: " + participants.get(i) + "");
+//
+//                participantsString += participants.get(i) + "\n";
+//            }
+//            postHolder.participantCount.setText(String.valueOf(participantsString));
+//        } catch (InterruptedException e) {
+//            Log.e(TAG, "onBindViewHolder: error getting participants", e);
+//            throw new RuntimeException(e);
+//        }
+
+        // text view of cuisine
+        String cuisineString = "Cuisine: "+posts.get(position).getCuisine();
+        postHolder.textViewCuisine.setText(cuisineString);
+
         // we only want to show the hours and minutes of the timelimit
         Date timingDate = posts.get(position).getTiming();
         SimpleDateFormat dt = new SimpleDateFormat("HH:mm", Locale.getDefault());
@@ -206,8 +237,13 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         TextView participantCount;
         ConstraintLayout buttonContainer;
 
+        TextView textViewParticipants;
+
         Button joinButton;
         Button chatButton;
+
+        Chip halalChip;
+        TextView textViewCuisine;
 
 
         public PostViewHolder(@NonNull View itemView) {
@@ -226,6 +262,9 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 //            joinButton.setVisibility(View.GONE);
 //            chatButton.setVisibility(View.GONE);
             buttonContainer = itemView.findViewById(R.id.button_container);
+            halalChip = itemView.findViewById(R.id.halalChip);
+            textViewParticipants = itemView.findViewById(R.id.textViewParticipants);
+            textViewCuisine = itemView.findViewById(R.id.textViewCuisine);
         }
     }
 }

@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 import com.example.just_hungry.PostsByDistanceComparator;
 import com.example.just_hungry.R;
@@ -35,6 +37,8 @@ public class PostsFragment extends Fragment {
 
     public ArrayList<PostModel> posts = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ToggleButton chipHalalOnly;
+    Spinner spinnerCuisineFilter;
     RecyclerView postRecyclerView;
     PostRecyclerAdapter adapter;
 
@@ -77,12 +81,13 @@ public class PostsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
 
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+        chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
+        spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
         deviceLocation = Utils.getDeviceLocation(this.getActivity(), fusedLocationProviderClient, deviceLocation);
-
 
         Utils.OnGetDataListener listener = queryDocumentSnapshots -> {
 //            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);

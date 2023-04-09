@@ -84,7 +84,7 @@ public class NewOrderFormFragment extends Fragment {
         groupbuyURL = (EditText) rootView.findViewById(R.id.editTextGrabURL);
 
         // chipHalal
-        chipHalal = rootView.findViewById(R.id.chipHalal);
+        chipHalal = rootView.findViewById(R.id.chipHalalFilter);
 
         // collectionPoint radio buttons
         RadioButton useLocation = (RadioButton) rootView.findViewById(R.id.radioButtonUseLocation);
