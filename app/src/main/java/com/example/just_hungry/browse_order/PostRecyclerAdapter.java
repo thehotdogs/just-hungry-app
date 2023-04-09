@@ -34,6 +34,7 @@ public class PostRecyclerAdapter extends BaseRecyclerAdapter {
 
         if (viewType == HEADER_VIEW_TYPE) {
             View headerView = inflater.inflate(R.layout.view_header_browse_order, parent, false);
+
             return new PostHeaderViewHolder(headerView);
         } else {
             View itemView = inflater.inflate(R.layout.item_order_post_row, parent, false);
