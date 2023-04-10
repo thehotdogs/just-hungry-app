@@ -5,7 +5,9 @@ import static com.example.just_hungry.Utils.getDeviceLocation;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -106,6 +108,13 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                     });
 
                     postHolder.joinButton.setText("Leave");
+                    Intent grabIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetPost.getGrabFoodUrl()));
+                    grabIntent.setPackage("com.grab");
+                    if (grabIntent.resolveActivity(context.getPackageManager()) != null) {
+                        context.startActivity(grabIntent);
+                    } else {
+                        Toast.makeText(context, "Grab app not installed", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     // Leave function call
                     Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
