@@ -3,7 +3,9 @@ package com.example.just_hungry.browse_order;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +16,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.ToggleButton;
 
@@ -41,19 +44,18 @@ public class PostsFragment extends Fragment {
     Spinner spinnerCuisineFilter;
     RecyclerView postRecyclerView;
     PostRecyclerAdapter adapter;
+    FragmentActivity activity = getActivity();
 
     //scrolling stuff
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
     private final static int COARSE_LOCATION_REQUEST_CODE = 100;
-
-    FusedLocationProviderClient fusedLocationProviderClient;
     LocationModel deviceLocation = new LocationModel(0, 0); // instantiate on SUTD coordinates
     FragmentManager fragmentManager;
-    Activity activity;
 
-//
+    private android.widget.ArrayAdapter<Object> ArrayAdapter;
+
     public PostsFragment(FragmentManager fragmentManager) {
         // Required empty public constructor
         this.fragmentManager = fragmentManager;
@@ -79,15 +81,64 @@ public class PostsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
-
+        this.activity = getActivity();
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
         chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
+        chipHalalOnly.setOnClickListener(v -> {
+            if (chipHalalOnly.isChecked()) {
+                // filter by halal
+                ArrayList<PostModel> halalPosts = new ArrayList<>();
+                for (PostModel post : posts) {
+                    if (post.isHalal()) {
+                        halalPosts.add(post);
+                    }
+                }
+                adapter = new PostRecyclerAdapter(rootView.getContext(), halalPosts, fragmentManager);
+                postRecyclerView.setAdapter(adapter);
+            } else {
+                // show all posts
+                adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+                postRecyclerView.setAdapter(adapter);
+            }
+        });
+
         spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
+        spinnerCuisineFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+                String selectedCuisine = parent.getItemAtPosition(position).toString();
+                if (!selectedCuisine.equals("Please select a cuisine")) {
+                    ArrayList<PostModel> filteredPosts = new ArrayList<>();
+                    for (PostModel post : posts) {
+                        if (post.getCuisine().equals(selectedCuisine)) {
+                            filteredPosts.add(post);
+                        }
+                    }
+                    adapter = new PostRecyclerAdapter(rootView.getContext(), filteredPosts, fragmentManager);
+                    postRecyclerView.setAdapter(adapter);
+                } else {
+                    adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+                    postRecyclerView.setAdapter(adapter);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+
+            }
+        });
+
+        // Cuisine spinner code - is there a function to add to all spinners?
+        Spinner spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
+        ArrayAdapter<CharSequence> adapterCuisineSpinner = ArrayAdapter.createFromResource(rootView.getContext(),
+                R.array.spinner_cuisine, android.R.layout.simple_spinner_item);
+        adapterCuisineSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCuisineFilter.setAdapter(adapterCuisineSpinner);
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getActivity());
-        deviceLocation = Utils.getDeviceLocation(this.getActivity(), fusedLocationProviderClient, deviceLocation);
+
+//        deviceLocation = Utils.getDeviceLocation(this.getActivity(), fusedLocationProviderClient, deviceLocation);
 
         Utils.OnGetDataListener listener = queryDocumentSnapshots -> {
 //            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
@@ -99,14 +150,22 @@ public class PostsFragment extends Fragment {
                 //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
 //                System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
             }
-            Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
 
+            Utils.getDeviceLocation(activity, locationModel -> {
+                this.deviceLocation = locationModel;
+                Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
 
-            System.out.println("SETTING UP ADAPTER DONE" + posts);
-            adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+                for (PostModel post : posts) {
+                    post.distanceFromDevice = (Utils.calculateDistance(deviceLocation, post.getLocation()));
+                }
+
+                System.out.println("SETTING UP ADAPTER DONE" + posts);
+                adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
 //            postRecyclerView.setItemAnimator(null);
-            postRecyclerView.setLayoutManager(mLayoutManager);
-            postRecyclerView.setAdapter(adapter);
+                postRecyclerView.setLayoutManager(mLayoutManager);
+                postRecyclerView.setAdapter(adapter);
+            });
+
 
 
         };

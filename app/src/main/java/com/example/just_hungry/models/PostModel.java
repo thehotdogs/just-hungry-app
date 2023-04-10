@@ -31,6 +31,7 @@ public class PostModel {
     public String cuisine;
     public String grabFoodUrl;
     public boolean isHalal;
+    public double distanceFromDevice;
 
     public PostModel() {
         //set to default value

@@ -3,23 +3,28 @@ package com.example.just_hungry;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
+import com.example.just_hungry.activities.MainActivity;
 import com.example.just_hungry.browse_order.PostQueryBuilder;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -27,6 +32,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -109,6 +115,44 @@ public class Utils {
                     successListener.onSuccess(null);
                 });
     }
+
+    public static double calculateDistance(LocationModel deviceLocation, LocationModel location) {
+        Location device = new Location("");
+        device.setLatitude(deviceLocation.getLatitude());
+        device.setLongitude(deviceLocation.getLongitude());
+
+        Location postLocation = new Location("");
+        postLocation.setLatitude(location.getLatitude());
+        postLocation.setLongitude(location.getLongitude());
+
+        double distanceInMeters = device.distanceTo(postLocation);
+        double distanceInKilometers = distanceInMeters / 1000.0;
+
+        // Round the distance to at most 2 decimal points
+        double roundedDistance = Math.round(distanceInKilometers * 100.0) / 100.0;
+
+        return roundedDistance;
+    }
+
+
+    public static void saveLocationToSharedPreferencesAndFirestore(Activity activity, LocationModel locationModel) {
+        // Save location to SharedPreferences
+        SharedPreferences sharedPreferences = activity.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("latitude", String.valueOf(locationModel.getLatitude()));
+        editor.putString("longitude", String.valueOf(locationModel.getLongitude()));
+        editor.apply();
+
+        String userId = sharedPreferences.getString("userId", "");
+        // Update the location in Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference userRef = db.collection("users").document(userId);
+        userRef.update("location", locationModel.getHashMapForFirestore())
+                .addOnSuccessListener(aVoid -> Log.d("Firestore", "Location updated successfully"))
+                .addOnFailureListener(e -> Log.e("Firestore", "Error updating location", e));
+    }
+
+
     public interface OnGetDataListener {
         //this is for callbacks
         void onSuccess(QuerySnapshot dataSnapshotValue);
@@ -165,17 +209,48 @@ public class Utils {
     public static void addUserToPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Query the 'users' collection for the user with the specified ID.
-        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+        // Query the 'posts' collection for the post with the specified ID.
+        db.collection("posts").document(postId).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    successListener.onSuccess(null);
+                    ArrayList<String> participants = (ArrayList<String>) documentSnapshot.get("participants");
+                    int currentSize = participants.size();
+                    int maxSize = Integer.parseInt(documentSnapshot.get("maxParticipants").toString());
+
+                    if (currentSize >= maxSize) {
+                        // Capacity is full
+                        System.err.println("Error adding user to post participants: capacity is full");
+                        successListener.onSuccess(null);
+                    } else {
+                        // Add the user to the 'participants' array.
+                        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+                                .addOnSuccessListener(aVoid -> {
+                                    successListener.onSuccess(null);
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle any errors.
+                                    System.err.println("Error adding user to post participants " + e.getMessage());
+                                    successListener.onSuccess(null);
+                                });
+                    }
                 })
                 .addOnFailureListener(e -> {
                     // Handle any errors.
-                    System.err.println("Error adding user to post participants " + e.getMessage());
+                    System.err.println("Error getting post document: " + e.getMessage());
                     successListener.onSuccess(null);
                 });
+
+//        // Query the 'users' collection for the user with the specified ID.
+//        db.collection("posts").document(postId).update("participants", FieldValue.arrayUnion(userId))
+//                .addOnSuccessListener(documentSnapshot -> {
+//                    successListener.onSuccess(null);
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle any errors.
+//                    System.err.println("Error adding user to post participants " + e.getMessage());
+//                    successListener.onSuccess(null);
+//                });
     }
+
     public static void removeUserFromPostParticipants(String postId, String userId, OnSuccessListener<Void> successListener) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         // Query the 'users' collection for the user with the specified ID.
@@ -256,39 +331,85 @@ public class Utils {
     }
 
     // location access
-    public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
-//        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
+//    public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
+////        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
+//
+//        if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
+//                    .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
+//                        @Override
+//                        public void onSuccess(Location location) {
+////                            System.out.println("location object " + location);
+//                            if (location != null) {
+//                                double latitude = location.getLatitude();
+//                                double longitude = location.getLongitude();
+////                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
+//                                currentLocation.setLatitude(latitude);
+//                                currentLocation.setLongitude(longitude);
+//                            }
+//                        }
+//
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            Log.e("TAG", "Exception: " + e.getMessage());
+//                        }
+//                    })
+//            ;
+//        } else {
+//            askPermission(activity, fusedLocationClient);
+//            return getDeviceLocation(activity, fusedLocationClient, currentLocation);
+//        }
+//        return currentLocation;
+//    }
 
-        if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
-                    .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
-                        @Override
-                        public void onSuccess(Location location) {
-//                            System.out.println("location object " + location);
-                            if (location != null) {
-                                double latitude = location.getLatitude();
-                                double longitude = location.getLongitude();
-//                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
-                                currentLocation.setLatitude(latitude);
-                                currentLocation.setLongitude(longitude);
-                            }
-                        }
-
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.e("TAG", "Exception: " + e.getMessage());
-                            System.out.println("KEGAGALAN HAKIKI " + e.getMessage());
+    public static void getDeviceLocation(Activity activity, OnSuccessListener<LocationModel> onSuccessListener) {
+        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
+        if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(location -> {
+                        if (location != null) {
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            LocationModel currentLocation = new LocationModel(latitude, longitude);
+                            onSuccessListener.onSuccess(currentLocation);
+                        } else {
+                            Log.e("TAG", "Location is null");
                         }
                     })
-            ;
+                    .addOnFailureListener(e -> {
+                        Log.e("TAG", "Exception: " + e.getMessage());
+                    });
         } else {
             askPermission(activity, fusedLocationClient);
-            return getDeviceLocation(activity, fusedLocationClient, currentLocation);
         }
-        return currentLocation;
     }
+
+
+    public interface LocationUpdateCallback {
+        void onLocationUpdate();
+    }
+
+    public static double distFrom(double lat1, double lon1, double lat2, double lon2) {
+        double earthRadius = 3958.75; // miles (or 6371.0 kilometers)
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lon2-lon1);
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double dist = earthRadius * c;
+
+        return dist;
+    }
+
+    public static double convertDistIntoTime(double dist) {
+        double time = dist / 3.1;
+        return time;
+    }
+
     public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }

@@ -30,20 +30,28 @@ https://developer.android.com/guide/fragments/create#add
                 android:checked="false"
                 android:clickable="true"
                 android:fontFamily="sans-serif"
-                android:padding="@dimen/button_margin"
+                android:padding="0dp"
                 android:shadowRadius="2"
                 android:text="ToggleButton"
                 android:textAllCaps="false"
                 android:textColor="@color/md_theme_light_shadow"
-                android:textOff="Halal Options"
-                android:textOn="Halal Options"
+                android:textOff="Halal"
+                android:textOn="Only Halal"
                 android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <Button
+                android:id="@+id/button2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calibrate 🛰️"
+                android:layout_gravity="center"
+
+                />
             <Spinner
                 android:id="@+id/spinnerCuisineFilter"
-                android:layout_width="184dp"
+                android:layout_width="150dp"
                 android:layout_height="49dp"
                 android:layout_weight="1"
                 android:visibility="visible"
@@ -51,6 +59,8 @@ https://developer.android.com/guide/fragments/create#add
                 app:layout_constraintTop_toTopOf="@+id/chipHalalFilter"
                 android:layout_gravity="end" />
         </androidx.appcompat.widget.Toolbar>
+
+
 
     </com.google.android.material.appbar.AppBarLayout>
 

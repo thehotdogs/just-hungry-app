@@ -96,7 +96,7 @@ public class UserModel {
         user.put("reputation", this.reputation);
         user.put("profilePictureUrl", this.profilePictureUrl);
         user.put("assets", this.assets);
-        user.put("location", this.location);
+        user.put("location", this.location.getHashMapForFirestore());
         user.put("dateCreated", this.dateCreated);
         return user;
     }

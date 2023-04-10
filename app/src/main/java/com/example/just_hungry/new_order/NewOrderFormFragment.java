@@ -3,6 +3,7 @@ package com.example.just_hungry.new_order;
 import static com.example.just_hungry.Utils.TAG;
 import static com.example.just_hungry.Utils.getDeviceLocation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.just_hungry.R;
+import com.example.just_hungry.Utils;
 import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
@@ -117,9 +119,11 @@ public class NewOrderFormFragment extends Fragment {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCuisine.setAdapter(adapter);
 
-        // get current location
-        FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
-        currentLocation = getDeviceLocation(this.getActivity(), fusedLocationClient, currentLocation);
+        // !TODO this is not working
+        Utils.getDeviceLocation((Activity) context, locationModel -> {
+            currentLocation = locationModel;
+        });
+//        currentLocation = getDeviceLocation(this.getActivity(), fusedLocationClient, currentLocation);
 
         // timepicker button
         timePickerButton = (Button) rootView.findViewById(R.id.timePickerButton);
@@ -199,7 +203,7 @@ public class NewOrderFormFragment extends Fragment {
 
         // can be refactored to a function
         String cuisine = spinnerCuisine.getSelectedItem().toString();
-        if(cuisine.equals("Please select a cuisine")){
+        if(cuisine.equals("No Category")){
             Toast.makeText(context, "Please select a cuisine", Toast.LENGTH_SHORT).show();
             return false;
         }
