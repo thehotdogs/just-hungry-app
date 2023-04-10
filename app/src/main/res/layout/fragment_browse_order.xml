@@ -44,7 +44,7 @@ https://developer.android.com/guide/fragments/create#add
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/button2"
+                android:id="@+id/calibrateButton"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
                 android:text="Calibrate 🛰️"

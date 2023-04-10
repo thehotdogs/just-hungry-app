@@ -73,7 +73,9 @@ dependencies {
     // FirebaseUI for Cloud Storage
     implementation 'com.firebaseui:firebase-ui-storage:8.0.2'
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'androidx.core:core:1.7.0'
     implementation 'com.balysv:material-ripple:1.0.2' // for ripple effect
+    implementation 'androidx.work:work-runtime:2.7.1'
 //    implementation 'com.androidx.recyclerview:1.3.0' //recyclerView
 }
 

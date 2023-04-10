@@ -17,12 +17,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.example.just_hungry.PostsByDistanceComparator;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
+import com.example.just_hungry.activities.MainActivity;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -83,6 +86,7 @@ public class PostsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_browse_order, container, false);
         this.activity = getActivity();
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+        Button calibrateButton = rootView.findViewById(R.id.calibrateButton);
         chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
         chipHalalOnly.setOnClickListener(v -> {
             if (chipHalalOnly.isChecked()) {
@@ -175,6 +179,26 @@ public class PostsFragment extends Fragment {
 
 
         };
+
+        calibrateButton.setOnClickListener(v -> {
+            Utils.getDeviceLocation(activity, locationModel -> {
+                this.deviceLocation = locationModel;
+                Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
+
+                for (PostModel post : posts) {
+                    post.distanceFromDevice = (Utils.calculateDistance(deviceLocation, post.getLocation()));
+                }
+
+                System.out.println("SETTING UP ADAPTER DONE" + posts);
+                Toast.makeText(rootView.getContext(), "Updated" + this.deviceLocation.getStringLocation() , Toast.LENGTH_SHORT).show();
+                adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+            });
+            }
+        );
+//        Utils.getDeviceLocation(MainActivity.this, locationModel -> {
+//            System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
+//            Utils.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
+//        });
 
         final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

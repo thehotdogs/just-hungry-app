@@ -373,6 +373,7 @@ public class Utils {
                             double latitude = location.getLatitude();
                             double longitude = location.getLongitude();
                             LocationModel currentLocation = new LocationModel(latitude, longitude);
+                            saveLocationToSharedPreferencesAndFirestore(activity, currentLocation);
                             onSuccessListener.onSuccess(currentLocation);
                         } else {
                             Log.e("TAG", "Location is null");
