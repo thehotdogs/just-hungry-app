@@ -119,6 +119,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         });
         String userId = preferences.getString("userId", "");
         String postId = targetPost.getPostId();
+        String postTitle = targetPost.getStoreName();
         postHolder.joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,7 +162,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onClick(View v) {
                 //!TODO UNCOMMENT FOR CHAT
-                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId, postTitle)).commit();
             }
         });
 
