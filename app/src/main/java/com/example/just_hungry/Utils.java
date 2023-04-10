@@ -330,40 +330,6 @@ public class Utils {
         return haveNetwork;
     }
 
-    // location access
-//    public static LocationModel getDeviceLocation(Activity activity, FusedLocationProviderClient fusedLocationClient, LocationModel currentLocation){
-////        System.out.println("FUSED LOCATION CLIENT INSIDE getLastLocation()" + fusedLocationClient);
-//
-//        if (ActivityCompat.checkSelfPermission(activity, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            fusedLocationClient.getLastLocation() // 100 is HIGH_ACCURACY
-//                    .addOnSuccessListener(new OnSuccessListener<Location>() { // try addOnCompleteListener
-//                        @Override
-//                        public void onSuccess(Location location) {
-////                            System.out.println("location object " + location);
-//                            if (location != null) {
-//                                double latitude = location.getLatitude();
-//                                double longitude = location.getLongitude();
-////                                System.out.println(String.valueOf(latitude) + " " + String.valueOf(longitude));
-//                                currentLocation.setLatitude(latitude);
-//                                currentLocation.setLongitude(longitude);
-//                            }
-//                        }
-//
-//                    })
-//                    .addOnFailureListener(new OnFailureListener() {
-//                        @Override
-//                        public void onFailure(@NonNull Exception e) {
-//                            Log.e("TAG", "Exception: " + e.getMessage());
-//                        }
-//                    })
-//            ;
-//        } else {
-//            askPermission(activity, fusedLocationClient);
-//            return getDeviceLocation(activity, fusedLocationClient, currentLocation);
-//        }
-//        return currentLocation;
-//    }
-
     public static void getDeviceLocation(Activity activity, OnSuccessListener<LocationModel> onSuccessListener) {
         FusedLocationProviderClient fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity);
         if (ActivityCompat.checkSelfPermission(activity, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -386,11 +352,6 @@ public class Utils {
         }
     }
 
-
-    public interface LocationUpdateCallback {
-        void onLocationUpdate();
-    }
-
     public static double distFrom(double lat1, double lon1, double lat2, double lon2) {
         double earthRadius = 3958.75; // miles (or 6371.0 kilometers)
         double dLat = Math.toRadians(lat2-lat1);
@@ -403,11 +364,6 @@ public class Utils {
         double dist = earthRadius * c;
 
         return dist;
-    }
-
-    public static double convertDistIntoTime(double dist) {
-        double time = dist / 3.1;
-        return time;
     }
 
     public static void askPermission(Activity activity, FusedLocationProviderClient fusedLocationClient) {
