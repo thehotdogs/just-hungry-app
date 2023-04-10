@@ -144,7 +144,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/button_container"
                 android:layout_width="match_parent"
-                android:layout_height="350dp"
+                android:layout_height="400dp"
                 android:layout_marginTop="5dp"
                 android:visibility="visible"
                 tools:visibility="visible">
@@ -161,7 +161,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/joinButton"
-                    app:layout_constraintTop_toBottomOf="@+id/gmapScreenshot"
+                    app:layout_constraintTop_toBottomOf="@+id/gmapsScreenshot"
                     app:layout_constraintVertical_bias="0.287" />
 
                 <Button
@@ -176,7 +176,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/chatButton"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/gmapScreenshot"
+                    app:layout_constraintTop_toBottomOf="@+id/gmapsScreenshot"
                     app:layout_constraintVertical_bias="0.287" />
 
                 <com.google.android.material.imageview.ShapeableImageView
@@ -244,24 +244,25 @@
                     app:layout_constraintVertical_bias="1.0" />
 
                 <ImageView
-                    android:id="@+id/gmapScreenshot"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
+                    android:id="@+id/gmapsScreenshot"
+                    android:layout_width="200dp"
+                    android:layout_height="150dp"
+                    android:layout_marginTop="24dp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView4"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.255"
                     app:layout_constraintStart_toEndOf="@+id/textView4"
                     app:layout_constraintTop_toTopOf="@+id/textView4"
                     app:layout_constraintVertical_bias="0.504"
+
                     tools:srcCompat="@tools:sample/avatars" />
 
                 <TextView
                     android:id="@+id/textView4"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="60dp"
-                    android:text="TextView"
+                    android:layout_marginTop="68dp"
+                    android:text="Location:"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.054"
                     app:layout_constraintStart_toStartOf="parent"
