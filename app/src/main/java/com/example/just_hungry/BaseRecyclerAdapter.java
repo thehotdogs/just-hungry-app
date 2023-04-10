@@ -111,6 +111,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 
                     postHolder.joinButton.setText("Leave");
                     Intent grabIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetPost.getGrabFoodUrl()));
+                    Log.d(TAG, "onClick: " + targetPost.getGrabFoodUrl());
 //                    grabIntent.setPackage("com.grabtaxi.passenger");
                     try {
                         context.startActivity(grabIntent);

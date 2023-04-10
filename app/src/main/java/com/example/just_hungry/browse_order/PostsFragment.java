@@ -107,7 +107,8 @@ public class PostsFragment extends Fragment {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
                 String selectedCuisine = parent.getItemAtPosition(position).toString();
-                if (!selectedCuisine.equals("Please select a cuisine")) {
+                String noCategory = getResources().getStringArray(R.array.spinner_cuisine)[0];
+                if (!selectedCuisine.equals(noCategory)) {
                     ArrayList<PostModel> filteredPosts = new ArrayList<>();
                     for (PostModel post : posts) {
                         if (post.getCuisine().equals(selectedCuisine)) {
