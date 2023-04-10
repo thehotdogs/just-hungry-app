@@ -108,8 +108,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                             Toast.makeText(context, "Joined post: " + postName, Toast.LENGTH_SHORT).show();
                         }
                     });
-
                     postHolder.joinButton.setText("Leave");
+
                     Intent grabIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetPost.getGrabFoodUrl()));
                     Log.d(TAG, "onClick: " + targetPost.getGrabFoodUrl());
 //                    grabIntent.setPackage("com.grabtaxi.passenger");
@@ -136,11 +136,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             @Override
             public void onClick(View v) {
                 //!TODO UNCOMMENT FOR CHAT
-                //Toast.makeText(context, "Chat button clicked", Toast.LENGTH_SHORT).show();
                 fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId)).commit();
-//                Intent intent = new Intent(context, ChatActivity.class);
-//                intent.putExtra("invitationId", posts.get(finalPosition).getPosterId());
-//                context.startActivity(intent);
             }
         });
 
@@ -166,18 +162,21 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         postHolder.timing.setText(dt.format(timingDate));
         String participantCountString = posts.get(position).getParticipants().size()+"/"+posts.get(position).getMaxParticipants();
         postHolder.participantCount.setText(participantCountString);
-//        if (posts.get(position).getLocation() != null && userLocation != null) {
-//            LocationModel postLocation = posts.get(position).getLocation();
-//            double distance = Utils.distFrom(userLocation.getLatitude(), userLocation.getLongitude(), postLocation.getLatitude(), postLocation.getLongitude());
-//            double distanceInTime = Utils.convertDistIntoTime(distance);
-//            String distanceString = String.format("%.2f", distance) + " km      " + String.format("%.2f", distanceInTime) + " mins";
-//            postHolder.location.setText(postLocation.getStringLocation());
-//        }
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
-        // get image from firebase db
+        postHolder.gmapsScrenshot.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String lat = String.valueOf(targetPost.getLocation().getLatitude());
+                String lon = String.valueOf(targetPost.getLocation().getLongitude());
+                String geoUri = "http://maps.google.com/maps?q=loc:" + lat + "," + lon + " (" + targetPost.getStoreName() + ")";
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+                context.startActivity(intent);
+            }
+        });
 
+        // get image from firebase db
         if (posts.get(position).getAssets() != null) {
             String asset = String.valueOf(posts.get(position) // get the postModel
                     .getAssets().get(0)); // get the assets arraylist <AssetModel>
@@ -278,6 +277,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 
         Chip halalChip;
         TextView textViewCuisine;
+
 
 
         public PostViewHolder(@NonNull View itemView) {
