@@ -1,7 +1,10 @@
 package com.example.just_hungry.activities;
 
+import static com.example.just_hungry.Utils.TAG;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -10,12 +13,17 @@ import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -77,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putLong(LAST_CHECK_KEY, new Date().getTime());
         editor.apply();
     }
+
     private void startCheckingForUpdates() {
         handler = new Handler();
         runnable = new Runnable() {
@@ -96,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
             handler.removeCallbacks(runnable);
         }
     }
+
 //    private void sendNotification(int newOrdersCount) {
 //        Context context = getApplicationContext();
 //        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "HungryBeesChannelId")
@@ -116,43 +127,101 @@ public class MainActivity extends AppCompatActivity {
 //                        .bigPicture(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)))
 //                .build();
 //        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+//            // TODO: Consider calling
+//            //    ActivityCompat#requestPermissions
+//            // here to request the missing permissions, and then overriding
+//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+//            //                                          int[] grantResults)
+//            // to handle the case where the user grants the permission. See the documentation
+//            // for ActivityCompat#requestPermissions for more details.
+//            return;
+//        }
 //        notificationManager.notify(new Random().nextInt(10), notification);
 //    }
 
     private void sendNotification(int newOrdersCount) {
-        Context context = getApplicationContext();
+        String id = "HungryBeesChannelId";
 
-        // Create a custom view for the floating notification
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.activity_main, null);
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = notificationManager.getNotificationChannel(id);
+            if (notificationChannel == null) {
+                notificationChannel = new NotificationChannel(id, "HungryBees", NotificationManager.IMPORTANCE_HIGH);
+                notificationChannel.setDescription("HungryBees");
+                notificationChannel.enableVibration(true);
+                notificationChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+                notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
 
-        // Set the text of the notification
-        TextView textView = view.findViewById(R.id.notification_text_view);
-        textView.setText(newOrdersCount + " new order(s) posted on HungryBees");
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_MUTABLE);
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(this, id)
+                    .setSmallIcon(R.drawable.hungrybees)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.hungrybees))
+                    .setStyle(new NotificationCompat.BigPictureStyle()
+                            .bigPicture(BitmapFactory.decodeResource(getResources(), R.drawable.hungrybees))
+                            .bigLargeIcon(null))
+                    .setContentTitle("HungryBees")
+                    .setContentText(newOrdersCount + " new order(s) posted on HungryBees")
+                    .setPriority(NotificationCompat.PRIORITY_MAX)
+                    .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                    .setAutoCancel(false) // true douch on notifcaiont menu dismissed, but swipe to dismiss
+                    .setTicker("HungryBees");
+            builder.setContentIntent(contentIntent);
+            NotificationManagerCompat m = NotificationManagerCompat.from(getApplicationContext());
+            // id to generate new notification in notification tray
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.POST_NOTIFICATIONS}, 1);
 
-        // Create a layout params object to specify the position of the notification
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.WRAP_CONTENT,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-                PixelFormat.TRANSLUCENT);
+                return;
+            }
+            m.notify(1, builder.build());
+            notificationManager.notify(new Random().nextInt(10),builder.build());
+        }
 
-        // Set the position of the notification
-        layoutParams.gravity = Gravity.TOP | Gravity.END;
-        layoutParams.x = 0;
-        layoutParams.y = 200;
-
-        // Add the view to the current window
-        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-        windowManager.addView(view, layoutParams);
+//        Context context = getApplicationContext();
+//
+//        // Create a custom view for the floating notification
+//        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View view = inflater.inflate(R.layout.activity_main, null);
+//
+//        // Set the text of the notification
+//        TextView textView = view.findViewById(R.id.notification_text_view);
+//        textView.setText(newOrdersCount + " new order(s) posted on HungryBees");
+//
+//        // Create a layout params object to specify the position of the notification
+//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
+//                WindowManager.LayoutParams.WRAP_CONTENT,
+//                WindowManager.LayoutParams.WRAP_CONTENT,
+//                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+//                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+//                PixelFormat.TRANSLUCENT);
+//
+//        // Set the position of the notification
+//        layoutParams.gravity = Gravity.TOP | Gravity.END;
+//        layoutParams.x = 0;
+//        layoutParams.y = 200;
+//
+//        // Add the view to the current window
+//        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+//        windowManager.addView(view, layoutParams);
     }
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "HungryBeesChannel";
             String description = "Channel for HungryBees notifications";
-            int importance = NotificationManager.IMPORTANCE_MAX;
+            int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel("HungryBeesChannelId", name, importance);
             channel.setDescription(description);
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
@@ -192,7 +261,8 @@ public class MainActivity extends AppCompatActivity {
         createNotificationChannel();
         // scheduleNewOrderWorker(); // remove this line
         startCheckingForUpdates();
-        sendNotification(4);
+        // TODO UNCOMMENT FOR NOTIFICATIONS!!
+//        sendNotification(4);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
