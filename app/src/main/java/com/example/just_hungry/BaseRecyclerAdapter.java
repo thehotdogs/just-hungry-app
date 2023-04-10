@@ -243,7 +243,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         PostModel currPost = posts.get(position);
         LocationModel postLocation = currPost.getLocation();
         String gmapsUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + postLocation.getLatitude() + ","
-                + postLocation.getLongitude() + "&zoom=15&size=400x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
+                + postLocation.getLongitude() + "&zoom=16&size=520x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
                 + postLocation.getLatitude() + "," + postLocation.getLongitude() + "&key=AIzaSyBMr4Hb8-qc05vI3ScH8Qy85Fc3_PVKA5Q";
         if (Utils.isNetworkAvailable(context)) {
             Glide.with(context)
