@@ -164,7 +164,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         Date timingDate = posts.get(position).getTiming();
         SimpleDateFormat dt = new SimpleDateFormat("HH:mm", Locale.getDefault());
         postHolder.timing.setText(dt.format(timingDate));
-        if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
+        //if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
