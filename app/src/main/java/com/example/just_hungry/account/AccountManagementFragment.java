@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -27,6 +28,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
+import com.example.just_hungry.activities.LoginActivity;
 import com.example.just_hungry.models.AssetModel;
 import com.example.just_hungry.models.UserModel;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -62,6 +64,7 @@ public class AccountManagementFragment extends Fragment {
     private TextView currentPassword;
     private EditText emailInput;
     private EditText passwordInput;
+    private Button signOutButton;
 
     Context context = getContext();
 
@@ -94,6 +97,7 @@ public class AccountManagementFragment extends Fragment {
         editPasswordButton = view.findViewById(R.id.edit_password_button);
         saveEmailButton = view.findViewById(R.id.save_email_button);
         savePasswordButton = view.findViewById(R.id.save_password_button);
+        signOutButton = view.findViewById(R.id.signOutButton);
 
         // Initialize SharedPreferences
         sharedPreferences = getActivity().getSharedPreferences("preferences", Context.MODE_PRIVATE);
@@ -348,6 +352,27 @@ public class AccountManagementFragment extends Fragment {
                     }
                 }
         });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clear the shared preferences
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putBoolean("logged_in", false);
+                editor.putString("name", "");
+                editor.putString("userId", "");
+                editor.putString("email", "");
+                editor.putString("password", "");
+                editor.apply();
+
+                // Start the LoginActivity and clear the back stack
+                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
+
 
         profileImage.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -176,11 +176,11 @@ public class NewOrderFormFragment extends Fragment {
             return false;
         }
         if(groupbuyURLString.length() < 18){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
             return false;
         }
         if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
-            Toast.makeText(context, "Please enter a valid groupbuy URL - it should be in the form: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
             return false;
         }
 
