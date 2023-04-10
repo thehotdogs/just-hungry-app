@@ -155,21 +155,6 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             postHolder.halalChip.setVisibility(View.GONE);
         }
 
-        // TODO text view of participants
-//        String participantsString = "Participants: \n";
-//        try {
-//            Log.d(TAG, "onBindViewHolder: participants" + posts.get(position).getParticipantsName());
-//            ArrayList<String> participants = posts.get(position).getParticipantsName();
-//            for (int i = 0; i < participants.size(); i++) {
-//                Log.d(TAG, "onBindViewHolder: " + participants.get(i) + "");
-//
-//                participantsString += participants.get(i) + "\n";
-//            }
-//            postHolder.participantCount.setText(String.valueOf(participantsString));
-//        } catch (InterruptedException e) {
-//            Log.e(TAG, "onBindViewHolder: error getting participants", e);
-//            throw new RuntimeException(e);
-//        }
 
         // text view of cuisine
         String cuisineString = "Cuisine: "+posts.get(position).getCuisine();

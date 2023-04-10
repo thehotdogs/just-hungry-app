@@ -1,40 +1,41 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".account.AccountManagementFragment">
-
-    <ScrollView
-        android:layout_width="410dp"
-        android:layout_height="632dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0">
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayoutNewOrderFragment"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constrainedHeight="false">
+            android:layout_height="match_parent"
+            tools:context=".account.AccountManagementFragment">
 
-            <ImageView
-                android:id="@+id/profile_image"
-                android:layout_width="200dp"
-                android:layout_height="200dp"
-                android:layout_marginTop="24dp"
-                android:contentDescription="Profile image"
+            <ScrollView
+                android:layout_width="410dp"
+                android:layout_height="match_parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.498"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.087"
-                tools:src="@tools:sample/avatars" />
+                app:layout_constraintVertical_bias="0.0">
+
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayoutNewOrderFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:layout_constrainedHeight="false">
+
+                    <ImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="200dp"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="24dp"
+                        android:contentDescription="Profile image"
+                        android:scaleType="centerCrop"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.498"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.087"
+                        tools:src="@tools:sample/avatars" />
 
             <EditText
                 android:id="@+id/name_input"
@@ -63,20 +64,17 @@
                 app:layout_constraintVertical_bias="0.75"
                 app:srcCompat="@android:drawable/ic_menu_edit" />
 
-            <TextView
-                android:id="@+id/PasswordHint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="252dp"
-                android:layout_marginBottom="32dp"
-                android:text="Password:"
-                android:textSize="14sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.104"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image"
-                app:layout_constraintVertical_bias="1.0" />
+                    <TextView
+                        android:id="@+id/PasswordHint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="252dp"
+                        android:text="Password:"
+                        android:textSize="14sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.104"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
             <EditText
                 android:id="@+id/password_input"
@@ -252,6 +250,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_image"
                 app:layout_constraintVertical_bias="0.051" />
+
+                    <Button
+                        android:id="@+id/signOutButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="32dp"
+                        android:text="Sign out"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.501"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/password_input" />
 
             <!-- Password -->
         </androidx.constraintlayout.widget.ConstraintLayout>
