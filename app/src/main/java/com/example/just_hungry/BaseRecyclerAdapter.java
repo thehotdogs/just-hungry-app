@@ -51,6 +51,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     protected static final int ITEM_VIEW_TYPE = 1;
     protected SharedPreferences preferences;
     protected FragmentManager fragmentManager;
+    private SharedPreferences sharedPreferences;
 
     public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
@@ -69,6 +70,28 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
             onBindHeaderViewHolder(holder);
+            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+            ImageView profilePictureImageView = headerHolder.itemView.findViewById(R.id.profilePictureImageView);
+            sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
+            String userId = sharedPreferences.getString("userId", "");
+            Utils.getUserById(userId, poster -> {
+                if (poster == null) {
+                    return;
+                }
+                String currentUserId = poster.getUserId();
+                String userProfileUrl = poster.getProfilePictureUrl().getAssetUrl();
+                System.out.println("userProfileUrl: " + userProfileUrl );
+                if (!userProfileUrl.equalsIgnoreCase("")) {
+                    if (Utils.isNetworkAvailable(context)) {
+                        Glide.with(context)
+                                .load(userProfileUrl)
+//                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                        .skipMemoryCache(true)
+                                .into(profilePictureImageView);
+                    }
+                }
+            });
+
             return;
         }
 
@@ -220,7 +243,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         PostModel currPost = posts.get(position);
         LocationModel postLocation = currPost.getLocation();
         String gmapsUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + postLocation.getLatitude() + ","
-                + postLocation.getLongitude() + "&zoom=15&size=400x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
+                + postLocation.getLongitude() + "&zoom=16&size=520x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
                 + postLocation.getLatitude() + "," + postLocation.getLongitude() + "&key=AIzaSyBMr4Hb8-qc05vI3ScH8Qy85Fc3_PVKA5Q";
         if (Utils.isNetworkAvailable(context)) {
             Glide.with(context)
@@ -278,6 +301,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         Chip halalChip;
         TextView textViewCuisine;
 
+        ImageView profilePictureImageView;
+
 
 
         public PostViewHolder(@NonNull View itemView) {
@@ -300,6 +325,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             textViewParticipants = itemView.findViewById(R.id.textViewParticipants);
             textViewCuisine = itemView.findViewById(R.id.textViewCuisine);
             gmapsScrenshot = itemView.findViewById(R.id.gmapsScreenshot);
+            profilePictureImageView = itemView.findViewById(R.id.profilePictureImageView);
         }
     }
 }
