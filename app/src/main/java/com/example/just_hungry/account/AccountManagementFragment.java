@@ -70,6 +70,8 @@ public class AccountManagementFragment extends Fragment {
 
     UserModel currentUserObject = null;
 
+    Utils utilsInstance = Utils.getInstance();
+
 
     @Nullable
     @Override
@@ -180,7 +182,7 @@ public class AccountManagementFragment extends Fragment {
             }
         });
 
-        Utils.getUserById(userId, poster -> {
+        utilsInstance.getUserById(userId, poster -> {
             if (poster == null) {
                 return;
             }

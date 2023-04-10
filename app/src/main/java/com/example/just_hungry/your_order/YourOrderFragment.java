@@ -77,53 +77,8 @@ public class YourOrderFragment extends Fragment {
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
         AppBarLayout appbar = rootView.findViewById(R.id.appbar);
         appbar.setVisibility(View.GONE);
-//        chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
-//
-//        chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
-//        chipHalalOnly.setOnClickListener(v -> {
-//            if (chipHalalOnly.isChecked()) {
-//                // filter by halal
-//                ArrayList<PostModel> halalPosts = new ArrayList<>();
-//                for (PostModel post : posts) {
-//                    if (post.isHalal()) {
-//                        halalPosts.add(post);
-//                    }
-//                }
-//                adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
-//                postRecyclerView.setAdapter(adapter);
-//            } else {
-//                // show all posts
-//                adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
-//                postRecyclerView.setAdapter(adapter);
-//            }
-//        });
-//
-//        spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
-//        spinnerCuisineFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-//                String selectedCuisine = parent.getItemAtPosition(position).toString();
-//                String noCategory = getResources().getStringArray(R.array.spinner_cuisine)[0];
-//                if (!selectedCuisine.equals(noCategory)) {
-//                    ArrayList<PostModel> filteredPosts = new ArrayList<>();
-//                    for (PostModel post : posts) {
-//                        if (post.getCuisine().equals(selectedCuisine)) {
-//                            filteredPosts.add(post);
-//                        }
-//                    }
-//                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
-//                    postRecyclerView.setAdapter(adapter);
-//                } else {
-//                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
-//                    postRecyclerView.setAdapter(adapter);
-//                }
-//            }
-//
-//            @Override
-//            public void onNothingSelected(android.widget.AdapterView<?> parent) {
-//
-//            }
-//        });
+
+        Utils utilsInstance = Utils.getInstance();
 
         // Cuisine spinner code - is there a function to add to all spinners?
         Spinner spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
@@ -145,11 +100,11 @@ public class YourOrderFragment extends Fragment {
                         System.out.println(dataSnapshotValue.get(i).getData());
                     }
                 }
-                Utils.getDeviceLocation(activity, locationModel -> {
+                utilsInstance.getDeviceLocation(activity, locationModel -> {
                     posts.sort(new PostsByDistanceComparator(locationModel));
 
                     for (PostModel post : posts) {
-                        post.distanceFromDevice = (Utils.calculateDistance(locationModel, post.getLocation()));
+                        post.distanceFromDevice = (utilsInstance.calculateDistance(locationModel, post.getLocation()));
                     }
 
                     System.out.println("SETTING UP ADAPTER DONE" + posts);
@@ -168,11 +123,11 @@ public class YourOrderFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utils.getAllPostsThatUserJoined(userId, yourJoinedOrderListener); // your code
+                utilsInstance.getAllPostsThatUserJoined(userId, yourJoinedOrderListener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
-        Utils.getAllPostsThatUserJoined(userId, yourJoinedOrderListener);
+        utilsInstance.getAllPostsThatUserJoined(userId, yourJoinedOrderListener);
         return rootView;
     }
 

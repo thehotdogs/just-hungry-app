@@ -25,6 +25,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         this.chatList = chatList;
     }
 
+    Utils utilsInstance = Utils.getInstance();
+
     @NonNull
     @Override
     public MessageViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -43,7 +45,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MessageV
         // Load the sender's name and profile picture
         // TODO You can use a library like Glide or Picasso to load the profile image from a URL
 //        holder.senderNameTextView.setText(getUserByUserId(chat.getSenderId()).getName());
-        Utils.getUserById(chat.getSenderId(), poster -> {
+        utilsInstance.getUserById(chat.getSenderId(), poster -> {
             if (poster == null) {
                 return;
             }

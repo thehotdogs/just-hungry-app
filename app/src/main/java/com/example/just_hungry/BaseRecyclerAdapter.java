@@ -53,6 +53,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     protected FragmentManager fragmentManager;
     private SharedPreferences sharedPreferences;
 
+    Utils utilsInstance = Utils.getInstance();
+
     public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
         this.posts = posts;
@@ -74,7 +76,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             ImageView profilePictureImageView = headerHolder.itemView.findViewById(R.id.profilePictureImageView);
             sharedPreferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
             String userId = sharedPreferences.getString("userId", "");
-            Utils.getUserById(userId, poster -> {
+            utilsInstance.getUserById(userId, poster -> {
                 if (poster == null) {
                     return;
                 }
@@ -82,7 +84,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                 String userProfileUrl = poster.getProfilePictureUrl().getAssetUrl();
                 System.out.println("userProfileUrl: " + userProfileUrl );
                 if (!userProfileUrl.equalsIgnoreCase("")) {
-                    if (Utils.isNetworkAvailable(context)) {
+                    if (utilsInstance.isNetworkAvailable(context)) {
                         Glide.with(context)
                                 .load(userProfileUrl)
 //                        .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -125,7 +127,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                 String postName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
-                    Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                    utilsInstance.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
                             Toast.makeText(context, "Joined post: " + postName, Toast.LENGTH_SHORT).show();
@@ -143,7 +145,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                     }
                 } else {
                     // Leave function call
-                    Utils.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
+                    utilsInstance.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
                             Toast.makeText(context, "Left post" + postName, Toast.LENGTH_SHORT).show();
@@ -206,7 +208,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             String[] assetArray = asset.split("=");
             String assetUrl = assetArray[Arrays.asList(assetArray).indexOf("assetTitle, assetUrl") + 1];
 
-            if (Utils.isNetworkAvailable(context)) {
+            if (utilsInstance.isNetworkAvailable(context)) {
                 Glide.with(context)
                         .load(assetUrl)
 //                        .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -218,7 +220,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             if (posts.get(position).getPosterId() != null) {
                 String posterId = posts.get(position).getPosterId();
 
-                Utils.getUserById(posterId, poster -> {
+                utilsInstance.getUserById(posterId, poster -> {
                     if (poster == null) {
                         return;
                     }
@@ -227,7 +229,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                     String userProfileUrl = resultUser.getProfilePictureUrl().getAssetUrl();
                     if (resultUser != null && !name.equalsIgnoreCase("")) {
                         postHolder.posterName.setText(name);
-                        if (Utils.isNetworkAvailable(context)) {
+                        if (utilsInstance.isNetworkAvailable(context)) {
                             Glide.with(context)
                                     .load(userProfileUrl)
                                     .into(postHolder.posterImage);
@@ -245,7 +247,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         String gmapsUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + postLocation.getLatitude() + ","
                 + postLocation.getLongitude() + "&zoom=15&size=400x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
                 + postLocation.getLatitude() + "," + postLocation.getLongitude() + "&key=AIzaSyBMr4Hb8-qc05vI3ScH8Qy85Fc3_PVKA5Q";
-        if (Utils.isNetworkAvailable(context)) {
+        if (utilsInstance.isNetworkAvailable(context)) {
             Glide.with(context)
                     .load(gmapsUrl)
                     .into(postHolder.gmapsScrenshot);

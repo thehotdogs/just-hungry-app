@@ -44,6 +44,8 @@ public class ChatFragment extends Fragment {
         this.postId = postId;
     }
 
+    Utils utilsInstance = Utils.getInstance();
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -94,7 +96,7 @@ public class ChatFragment extends Fragment {
             }
         };
         loadMessages(chatFetchListener);
-        Utils.getAllChatsInsidePost(postId, chatFetchListener);
+        utilsInstance.getAllChatsInsidePost(postId, chatFetchListener);
         return view;
     }
 

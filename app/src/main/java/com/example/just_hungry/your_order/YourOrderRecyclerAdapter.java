@@ -23,6 +23,8 @@ import java.util.ArrayList;
 
 public class YourOrderRecyclerAdapter extends BaseRecyclerAdapter {
 
+    Utils utilsInstance = Utils.getInstance();
+
     Utils.OnGetPostByUserDataListener listener;
 
     public YourOrderRecyclerAdapter(Context context, ArrayList<PostModel> posts, Utils.OnGetPostByUserDataListener listener, FragmentManager supportFragmentManager) {
@@ -94,8 +96,10 @@ public class YourOrderRecyclerAdapter extends BaseRecyclerAdapter {
                     SharedPreferences preferences = itemView.getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
                     String userId = preferences.getString("userId", "");
 
+                    Utils utilsInstance = Utils.getInstance();
+
                     // Call the method here
-                    Utils.getAllPostsByUserId(userId, listener);
+                    utilsInstance.getAllPostsByUserId(userId, listener);
                 }
             });
             buttonContainer = itemView.findViewById(R.id.button_container);

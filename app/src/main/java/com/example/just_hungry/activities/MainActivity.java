@@ -22,15 +22,16 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity {
 
     FragmentManager fragmentManager = getSupportFragmentManager();
+    Utils utilsInstance = Utils.getInstance();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Pull the location and store it to shared preferences
 
-        Utils.getDeviceLocation(MainActivity.this, locationModel -> {
+        utilsInstance.getDeviceLocation(MainActivity.this, locationModel -> {
             System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
-            Utils.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
+            utilsInstance.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
         });
 
 
@@ -48,12 +49,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
-        // Load image using glide into top nav bar imageview
-//        if (Utils.isNetworkAvailable(this)) {
-//            Glide.with(this)
-//                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
-//                    .into(top_nav_imageview);
-//        }
     }
 
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {
