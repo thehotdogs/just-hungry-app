@@ -38,7 +38,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="322dp"
             android:layout_height="match_parent"
-             />
+            android:imeOptions="actionNext" />
     </com.google.android.material.textfield.TextInputLayout>
 
 
@@ -60,7 +60,8 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:layout_width="322dp"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:imeOptions="actionDone" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton

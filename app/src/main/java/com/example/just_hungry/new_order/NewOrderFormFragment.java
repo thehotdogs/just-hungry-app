@@ -175,14 +175,14 @@ public class NewOrderFormFragment extends Fragment {
             Toast.makeText(context, "Please enter a groupbuy URL", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if(groupbuyURLString.length() < 18){
-            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
-        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
-            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
-            return false;
-        }
+//        if(groupbuyURLString.length() < 18){
+//            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
+//        if(!groupbuyURLString.substring(0,18).equals("https://r.grab.com")){
+//            Toast.makeText(context, "Grabfood URL: https://r.grab.com/...", Toast.LENGTH_SHORT).show();
+//            return false;
+//        }
 
         if(timeLimit == null){
             Toast.makeText(context, "Please set a time limit", Toast.LENGTH_SHORT).show();
