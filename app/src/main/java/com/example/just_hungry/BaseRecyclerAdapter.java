@@ -1,7 +1,9 @@
 package com.example.just_hungry;
 
 import static com.example.just_hungry.Utils.TAG;
+import static com.example.just_hungry.Utils.getDeviceLocation;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -20,8 +22,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.just_hungry.chat.ChatFragment;
+import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.models.UserModel;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.chip.Chip;
 import com.google.firebase.Timestamp;
@@ -44,12 +49,19 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     protected static final int ITEM_VIEW_TYPE = 1;
     protected SharedPreferences preferences;
     protected FragmentManager fragmentManager;
+    protected LocationModel userLocation;
 
     public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
         this.fragmentManager = supportFragmentManager;
+
+        //FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
+        getDeviceLocation((Activity) context, locationModel -> {
+            this.userLocation = locationModel;
+
+        });
     }
 
     protected abstract void onBindHeaderViewHolder(RecyclerView.ViewHolder holder);
@@ -89,8 +101,6 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         postHolder.joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 String postName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
@@ -163,7 +173,15 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         Date timingDate = posts.get(position).getTiming();
         SimpleDateFormat dt = new SimpleDateFormat("HH:mm", Locale.getDefault());
         postHolder.timing.setText(dt.format(timingDate));
-        if (posts.get(position).getLocation() != null) postHolder.location.setText(posts.get(position).getLocation().getStringLocation());
+        String participantCountString = posts.get(position).getParticipants().size()+"/"+posts.get(position).getMaxParticipants();
+        postHolder.participantCount.setText(participantCountString);
+        if (posts.get(position).getLocation() != null && userLocation != null) {
+            LocationModel postLocation = posts.get(position).getLocation();
+            double distance = Utils.distFrom(userLocation.getLatitude(), userLocation.getLongitude(), postLocation.getLatitude(), postLocation.getLongitude());
+            double distanceInTime = Utils.convertDistIntoTime(distance);
+            String distanceString = String.format("%.2f", distance) + " km      " + String.format("%.2f", distanceInTime) + " mins";
+            postHolder.location.setText(postLocation.getStringLocation());
+        }
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
@@ -207,6 +225,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         }catch (Exception e) {
             System.out.println("ERROR: " + e);
         }
+        //attach the distance
+        postHolder.location.setText(String.valueOf(posts.get(position).distanceFromDevice));
 
     }
     @Override

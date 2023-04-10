@@ -13,7 +13,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="spinner_cuisine">
-        <item>Please select a cuisine</item>
+        <item>No Category</item>
         <item>Chinese</item>
         <item>Western</item>
         <item>Japanese</item>
@@ -36,18 +36,4 @@
         <item>SUTD Sports and Recreation Centre Level 1</item>
     </string-array>
 
-    <string-array name="spinner_cuisineFilter">
-        <item>Please select a cuisine</item>
-        <item>Chinese</item>
-        <item>Western</item>
-        <item>Japanese</item>
-        <item>Indian</item>
-        <item>Malay</item>
-        <item>Thai</item>
-        <item>Italian</item>
-        <item>Vegetarian</item>
-        <item>Korean</item>
-        <item>Vietnamese</item>
-        <item>Others</item>
-    </string-array>
 </resources>

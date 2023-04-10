@@ -16,14 +16,24 @@ import com.example.just_hungry.browse_order.PostsFragment;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
 import com.example.just_hungry.your_order.YourOrderFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
     FragmentManager fragmentManager = getSupportFragmentManager();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Pull the location and store it to shared preferences
+
+        Utils.getDeviceLocation(MainActivity.this, locationModel -> {
+            System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
+            Utils.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
+        });
+
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
