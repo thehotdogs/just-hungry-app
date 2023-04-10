@@ -18,14 +18,15 @@ https://developer.android.com/guide/fragments/create#add
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:contentInsetStart="0dp"
-            app:contentInsetEnd="0dp">
+            app:contentInsetEnd="0dp"
+            android:background="#FFDE59">
 
             <!-- Add your filter UI elements here -->
             <ToggleButton
                 android:id="@+id/chipHalalFilter"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/cardview_default_elevation"
+                android:layout_height="40dp"
+                android:layout_margin="0dp"
                 android:background="@drawable/toggle_selector_halaloptions"
                 android:checked="false"
                 android:clickable="true"
@@ -37,21 +38,22 @@ https://developer.android.com/guide/fragments/create#add
                 android:textColor="@color/md_theme_light_shadow"
                 android:textOff="Halal"
                 android:textOn="Only Halal"
+                android:textSize="14sp"
                 android:visibility="visible"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/button2"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="45dp"
                 android:text="Calibrate 🛰️"
-                android:layout_gravity="center"
+                android:textSize="14sp"
 
                 />
             <Spinner
                 android:id="@+id/spinnerCuisineFilter"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="49dp"
                 android:layout_weight="1"
                 android:visibility="visible"
@@ -86,13 +88,13 @@ https://developer.android.com/guide/fragments/create#add
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-        <androidx.recyclerview.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
 
-            android:id="@+id/postRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+                android:id="@+id/postRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            </androidx.recyclerview.widget.RecyclerView>
         </RelativeLayout>
 
         </LinearLayout>

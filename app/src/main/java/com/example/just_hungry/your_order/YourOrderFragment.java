@@ -15,14 +15,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 import com.example.just_hungry.PostsByDistanceComparator;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
+import com.example.just_hungry.browse_order.PostRecyclerAdapter;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
 import com.example.just_hungry.new_order.NewOrderRecyclerAdapter;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -40,6 +45,8 @@ public class YourOrderFragment extends Fragment {
     YourOrderRecyclerAdapter adapter;
     SharedPreferences preferences;
     Utils.OnGetPostByUserDataListener yourJoinedOrderListener;
+    ToggleButton chipHalalOnly;
+    Spinner spinnerCuisineFilter;
 
     //scrolling stuff
     private boolean loading = true;
@@ -67,6 +74,63 @@ public class YourOrderFragment extends Fragment {
         this.fragmentManager = getParentFragmentManager();
         preferences= getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+        postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
+        AppBarLayout appbar = rootView.findViewById(R.id.appbar);
+        appbar.setVisibility(View.GONE);
+//        chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
+//
+//        chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
+//        chipHalalOnly.setOnClickListener(v -> {
+//            if (chipHalalOnly.isChecked()) {
+//                // filter by halal
+//                ArrayList<PostModel> halalPosts = new ArrayList<>();
+//                for (PostModel post : posts) {
+//                    if (post.isHalal()) {
+//                        halalPosts.add(post);
+//                    }
+//                }
+//                adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
+//                postRecyclerView.setAdapter(adapter);
+//            } else {
+//                // show all posts
+//                adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
+//                postRecyclerView.setAdapter(adapter);
+//            }
+//        });
+//
+//        spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
+//        spinnerCuisineFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
+//                String selectedCuisine = parent.getItemAtPosition(position).toString();
+//                String noCategory = getResources().getStringArray(R.array.spinner_cuisine)[0];
+//                if (!selectedCuisine.equals(noCategory)) {
+//                    ArrayList<PostModel> filteredPosts = new ArrayList<>();
+//                    for (PostModel post : posts) {
+//                        if (post.getCuisine().equals(selectedCuisine)) {
+//                            filteredPosts.add(post);
+//                        }
+//                    }
+//                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
+//                    postRecyclerView.setAdapter(adapter);
+//                } else {
+//                    adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
+//                    postRecyclerView.setAdapter(adapter);
+//                }
+//            }
+//
+//            @Override
+//            public void onNothingSelected(android.widget.AdapterView<?> parent) {
+//
+//            }
+//        });
+
+        // Cuisine spinner code - is there a function to add to all spinners?
+        Spinner spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
+        ArrayAdapter<CharSequence> adapterCuisineSpinner = ArrayAdapter.createFromResource(rootView.getContext(),
+                R.array.spinner_cuisine, android.R.layout.simple_spinner_item);
+        adapterCuisineSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerCuisineFilter.setAdapter(adapterCuisineSpinner);
 
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
