@@ -97,6 +97,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         postHolder.joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 String postName = targetPost.getStoreName();
                 if (postHolder.joinButton.getText().toString().equalsIgnoreCase("Join")) {
                     // Join function call
@@ -230,6 +232,16 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         }
         //attach the distance
         postHolder.location.setText(String.valueOf(posts.get(position).distanceFromDevice) + " km away");
+        PostModel currPost = posts.get(position);
+        LocationModel postLocation = currPost.getLocation();
+        String gmapsUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + postLocation.getLatitude() + ","
+                + postLocation.getLongitude() + "&zoom=15&size=400x300&maptype=roadmap&markers=color:red%7Clabel:C%7C"
+                + postLocation.getLatitude() + "," + postLocation.getLongitude() + "&key=AIzaSyBMr4Hb8-qc05vI3ScH8Qy85Fc3_PVKA5Q";
+        if (Utils.isNetworkAvailable(context)) {
+            Glide.with(context)
+                    .load(gmapsUrl)
+                    .into(postHolder.gmapsScrenshot);
+        }
 
     }
     @Override
@@ -271,6 +283,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         TextView dateCreated;
         TextView participantCount;
         ConstraintLayout buttonContainer;
+        ImageView gmapsScrenshot;
 
         TextView textViewParticipants;
 
@@ -300,6 +313,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             halalChip = itemView.findViewById(R.id.halalChip);
             textViewParticipants = itemView.findViewById(R.id.textViewParticipants);
             textViewCuisine = itemView.findViewById(R.id.textViewCuisine);
+            gmapsScrenshot = itemView.findViewById(R.id.gmapsScreenshot);
         }
     }
 }
