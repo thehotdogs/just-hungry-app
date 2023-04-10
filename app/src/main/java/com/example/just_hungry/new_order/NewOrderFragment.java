@@ -97,6 +97,10 @@ public class NewOrderFragment extends Fragment {
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             });
+            adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, fragmentManager,  newOrderPostslistener);
+//            postRecyclerView.setItemAnimator(null);
+            postRecyclerView.setLayoutManager(mLayoutManager);
+            postRecyclerView.setAdapter(adapter);
 
 
 //            adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager(), newOrderPostslistener);

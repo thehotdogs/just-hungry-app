@@ -167,6 +167,11 @@ public class PostsFragment extends Fragment {
                 postRecyclerView.setAdapter(adapter);
             });
 
+            adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+//            postRecyclerView.setItemAnimator(null);
+            postRecyclerView.setLayoutManager(mLayoutManager);
+            postRecyclerView.setAdapter(adapter);
+
 
 
         };
