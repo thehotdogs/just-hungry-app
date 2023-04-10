@@ -6,8 +6,8 @@
     tools:context=".account.AccountManagementFragment">
 
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="410dp"
+        android:layout_height="632dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -19,7 +19,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayoutNewOrderFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             app:layout_constrainedHeight="false">
 
             <ImageView
@@ -40,12 +40,13 @@
                 android:id="@+id/name_input"
                 android:layout_width="234dp"
                 android:layout_height="44dp"
-                android:layout_marginTop="96dp"
                 android:hint="Name"
+                app:layout_constraintBottom_toBottomOf="@+id/NameHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.638"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintHorizontal_bias="0.546"
+                app:layout_constraintStart_toEndOf="@+id/NameHint"
+                app:layout_constraintTop_toTopOf="@+id/NameHint"
+                app:layout_constraintVertical_bias="0.285" />
 
             <ImageButton
                 android:id="@+id/edit_email_button"
@@ -56,7 +57,7 @@
                 android:contentDescription="Edit email"
                 app:layout_constraintBottom_toBottomOf="@+id/current_email"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.825"
+                app:layout_constraintHorizontal_bias="0.857"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/current_email"
                 app:layout_constraintVertical_bias="0.75"
@@ -66,26 +67,30 @@
                 android:id="@+id/PasswordHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="276dp"
+                android:layout_marginTop="252dp"
+                android:layout_marginBottom="32dp"
                 android:text="Password:"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.048"
+                app:layout_constraintHorizontal_bias="0.104"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintTop_toBottomOf="@+id/profile_image"
+                app:layout_constraintVertical_bias="1.0" />
 
             <EditText
                 android:id="@+id/password_input"
                 android:layout_width="234dp"
                 android:layout_height="44dp"
-                android:layout_marginTop="272dp"
                 android:hint="Password"
                 android:inputType="textPassword"
-                app:passwordToggleEnabled="true"
+                app:layout_constraintBottom_toBottomOf="@+id/PasswordHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.677"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintHorizontal_bias="0.524"
+                app:layout_constraintStart_toEndOf="@+id/PasswordHint"
+                app:layout_constraintTop_toTopOf="@+id/PasswordHint"
+                app:layout_constraintVertical_bias="0.607"
+                app:passwordToggleEnabled="true" />
 
             <ImageButton
                 android:id="@+id/save_email_button"
@@ -96,7 +101,7 @@
                 android:contentDescription="Edit email"
                 app:layout_constraintBottom_toBottomOf="@+id/email_input"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.934"
+                app:layout_constraintHorizontal_bias="0.857"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/email_input"
                 app:layout_constraintVertical_bias="0.25"
@@ -106,13 +111,14 @@
                 android:id="@+id/current_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="108dp"
                 android:text="Current name"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/NameHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.374"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintHorizontal_bias="0.215"
+                app:layout_constraintStart_toEndOf="@+id/NameHint"
+                app:layout_constraintTop_toTopOf="@+id/NameHint"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageButton
                 android:id="@+id/save_name_button"
@@ -123,10 +129,10 @@
                 android:contentDescription="Edit name"
                 app:layout_constraintBottom_toBottomOf="@+id/name_input"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.934"
+                app:layout_constraintHorizontal_bias="0.857"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/name_input"
-                app:layout_constraintVertical_bias="1.0"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@android:drawable/ic_menu_save" />
 
             <ImageButton
@@ -137,20 +143,20 @@
                 android:src="@android:drawable/ic_menu_edit"
                 app:layout_constraintBottom_toBottomOf="@+id/current_password"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.81"
+                app:layout_constraintHorizontal_bias="0.841"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/current_password"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="1.0" />
 
             <TextView
                 android:id="@+id/EmailHint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="200dp"
+                android:layout_marginTop="180dp"
                 android:text="Email:"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.071"
+                app:layout_constraintHorizontal_bias="0.157"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
@@ -158,12 +164,13 @@
                 android:id="@+id/email_input"
                 android:layout_width="234dp"
                 android:layout_height="44dp"
-                android:layout_marginTop="184dp"
                 android:hint="Email"
+                app:layout_constraintBottom_toBottomOf="@+id/EmailHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.638"
+                app:layout_constraintHorizontal_bias="0.779"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintTop_toTopOf="@+id/EmailHint"
+                app:layout_constraintVertical_bias="0.6" />
 
             <TextView
                 android:id="@+id/NameHint"
@@ -171,9 +178,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="108dp"
                 android:text="Name:"
-                android:textSize="18sp"
+                android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.072"
+                app:layout_constraintHorizontal_bias="0.147"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/profile_image" />
 
@@ -181,13 +188,14 @@
                 android:id="@+id/current_email"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="196dp"
                 android:text="Current email"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/EmailHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.394"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintHorizontal_bias="0.208"
+                app:layout_constraintStart_toEndOf="@+id/EmailHint"
+                app:layout_constraintTop_toTopOf="@+id/EmailHint"
+                app:layout_constraintVertical_bias="0.0" />
 
             <ImageButton
                 android:id="@+id/edit_name_button"
@@ -197,22 +205,25 @@
                 android:src="@android:drawable/ic_menu_edit"
                 app:layout_constraintBottom_toBottomOf="@+id/current_name"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.81"
+                app:layout_constraintHorizontal_bias="0.841"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/current_name"
-                app:layout_constraintVertical_bias="0.0" />
+                app:layout_constraintVertical_bias="0.25" />
 
             <TextView
                 android:id="@+id/current_password"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="272dp"
                 android:text="Current password"
-                android:textSize="18sp"
+                android:textSize="14sp"
+                app:layout_constraintBottom_toBottomOf="@+id/PasswordHint"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.446"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/profile_image" />
+                app:layout_constraintHorizontal_bias="0.224"
+                app:layout_constraintStart_toEndOf="@+id/PasswordHint"
+                app:layout_constraintTop_toTopOf="@+id/PasswordHint"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <!-- Add other input fields (email and password) and the submit button here -->
 
             <ImageButton
                 android:id="@+id/save_password_button"
@@ -223,13 +234,11 @@
                 android:contentDescription="Edit password"
                 app:layout_constraintBottom_toBottomOf="@+id/password_input"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.934"
+                app:layout_constraintHorizontal_bias="0.857"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/password_input"
-                app:layout_constraintVertical_bias="0.25"
+                app:layout_constraintVertical_bias="0.0"
                 app:srcCompat="@android:drawable/ic_menu_save" />
-
-            <!-- Add other input fields (email and password) and the submit button here -->
 
             <TextView
                 android:id="@+id/nameHint"

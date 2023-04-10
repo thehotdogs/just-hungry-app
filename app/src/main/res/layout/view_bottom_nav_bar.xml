@@ -5,9 +5,11 @@
     android:id="@+id/bottom_nav_bar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/md_theme_light_secondary"
-    app:itemIconTint="@color/md_theme_light_onPrimary"
-    app:itemTextColor="@color/md_theme_light_onPrimary"
+    android:background="#FFFFFF"
+    app:itemIconTint="@color/bottom_nav_item_color"
+    app:itemTextColor="@color/bottom_nav_item_color"
+    app:itemRippleColor="@color/seed"
+
     app:menu="@menu/bottom_navigation_menu"
     app:labelVisibilityMode="labeled"/>
 

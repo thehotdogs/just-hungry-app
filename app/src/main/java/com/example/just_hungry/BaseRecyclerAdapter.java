@@ -93,6 +93,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                 } else {
                     postHolder.buttonContainer.setVisibility(View.GONE);
                 }
+                notifyDataSetChanged();
                 // notifyItemChanged(position);
             }
         });

@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
         bottomNavigationView.setOnItemSelectedListener(this::onNavigationItemSelected);
-        ImageView top_nav_imageview = findViewById(R.id.top_navbar_imageview);
+        //ImageView top_nav_imageview = findViewById(R.id.top_navbar_imageview);
 
         if (savedInstanceState == null) {
             // instantiate the PostsFragment fragment
@@ -49,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
         // Load image using glide into top nav bar imageview
-        if (Utils.isNetworkAvailable(this)) {
-            Glide.with(this)
-                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
-                    .into(top_nav_imageview);
-        }
+//        if (Utils.isNetworkAvailable(this)) {
+//            Glide.with(this)
+//                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
+//                    .into(top_nav_imageview);
+//        }
     }
 
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {
