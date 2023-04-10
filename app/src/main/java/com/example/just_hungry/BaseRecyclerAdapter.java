@@ -49,19 +49,12 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     protected static final int ITEM_VIEW_TYPE = 1;
     protected SharedPreferences preferences;
     protected FragmentManager fragmentManager;
-    protected LocationModel userLocation;
 
     public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         this.context = context;
         this.posts = posts;
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
         this.fragmentManager = supportFragmentManager;
-
-        //FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context);
-        getDeviceLocation((Activity) context, locationModel -> {
-            this.userLocation = locationModel;
-
-        });
     }
 
     protected abstract void onBindHeaderViewHolder(RecyclerView.ViewHolder holder);
@@ -176,13 +169,13 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         postHolder.timing.setText(dt.format(timingDate));
         String participantCountString = posts.get(position).getParticipants().size()+"/"+posts.get(position).getMaxParticipants();
         postHolder.participantCount.setText(participantCountString);
-        if (posts.get(position).getLocation() != null && userLocation != null) {
-            LocationModel postLocation = posts.get(position).getLocation();
-            double distance = Utils.distFrom(userLocation.getLatitude(), userLocation.getLongitude(), postLocation.getLatitude(), postLocation.getLongitude());
-            double distanceInTime = Utils.convertDistIntoTime(distance);
-            String distanceString = String.format("%.2f", distance) + " km      " + String.format("%.2f", distanceInTime) + " mins";
-            postHolder.location.setText(postLocation.getStringLocation());
-        }
+//        if (posts.get(position).getLocation() != null && userLocation != null) {
+//            LocationModel postLocation = posts.get(position).getLocation();
+//            double distance = Utils.distFrom(userLocation.getLatitude(), userLocation.getLongitude(), postLocation.getLatitude(), postLocation.getLongitude());
+//            double distanceInTime = Utils.convertDistIntoTime(distance);
+//            String distanceString = String.format("%.2f", distance) + " km      " + String.format("%.2f", distanceInTime) + " mins";
+//            postHolder.location.setText(postLocation.getStringLocation());
+//        }
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
@@ -227,7 +220,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             System.out.println("ERROR: " + e);
         }
         //attach the distance
-        postHolder.location.setText(String.valueOf(posts.get(position).distanceFromDevice));
+        postHolder.location.setText(String.valueOf(posts.get(position).distanceFromDevice) + " km away");
 
     }
     @Override

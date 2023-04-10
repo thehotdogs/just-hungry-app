@@ -3,6 +3,8 @@ package com.example.just_hungry.new_order;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -14,8 +16,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.just_hungry.PostsByDistanceComparator;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
+import com.example.just_hungry.browse_order.PostRecyclerAdapter;
+import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,6 +28,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class NewOrderFragment extends Fragment {
@@ -39,6 +45,8 @@ public class NewOrderFragment extends Fragment {
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
     LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    FragmentManager fragmentManager;
+    private FragmentActivity activity;
 
     /** onCreateView mainly handles firestore database post getting
      *
@@ -54,6 +62,8 @@ public class NewOrderFragment extends Fragment {
      */
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        this.activity = getActivity();
+        this.fragmentManager = getParentFragmentManager();
         View rootView = inflater.inflate(R.layout.fragment_new_order, container, false);
         preferences= getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
@@ -72,10 +82,27 @@ public class NewOrderFragment extends Fragment {
                     System.out.println(dataSnapshotValue.get(i).getData());
                 }
             }
-            adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager(), newOrderPostslistener);
-            System.out.println("SETTING UP ADAPTER DONE" + posts);
-            postRecyclerView.setLayoutManager(mLayoutManager);
-            postRecyclerView.setAdapter(adapter);
+
+            Utils.getDeviceLocation(activity, locationModel -> {
+
+                posts.sort(new PostsByDistanceComparator(locationModel));
+
+                for (PostModel post : posts) {
+                    post.distanceFromDevice = (Utils.calculateDistance(locationModel, post.getLocation()));
+                }
+
+                System.out.println("SETTING UP ADAPTER DONE" + posts);
+                adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, fragmentManager,  newOrderPostslistener);
+//            postRecyclerView.setItemAnimator(null);
+                postRecyclerView.setLayoutManager(mLayoutManager);
+                postRecyclerView.setAdapter(adapter);
+            });
+
+
+//            adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, getParentFragmentManager(), newOrderPostslistener);
+//            System.out.println("SETTING UP ADAPTER DONE" + posts);
+//            postRecyclerView.setLayoutManager(mLayoutManager);
+//            postRecyclerView.setAdapter(adapter);
         };
         String userId = preferences.getString("userId", "");
         final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);

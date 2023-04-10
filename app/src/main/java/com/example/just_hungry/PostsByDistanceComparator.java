@@ -36,13 +36,13 @@ public class PostsByDistanceComparator implements Comparator<PostModel> {
         double distToPost2 = distFrom(latDevice, lonDevice, lat2, lon2);
 
         if (distToPost1 < distToPost2) {
-            return 1;
+            return -1;
         }
         else if (distToPost1 == distToPost2) {
             return 0;
         }
         else {
-            return -1;
+            return 1;
         }
 
     }

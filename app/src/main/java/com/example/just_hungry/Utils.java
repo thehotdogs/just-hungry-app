@@ -125,8 +125,15 @@ public class Utils {
         postLocation.setLatitude(location.getLatitude());
         postLocation.setLongitude(location.getLongitude());
 
-        return device.distanceTo(postLocation);
+        double distanceInMeters = device.distanceTo(postLocation);
+        double distanceInKilometers = distanceInMeters / 1000.0;
+
+        // Round the distance to at most 2 decimal points
+        double roundedDistance = Math.round(distanceInKilometers * 100.0) / 100.0;
+
+        return roundedDistance;
     }
+
 
     public static void saveLocationToSharedPreferencesAndFirestore(Activity activity, LocationModel locationModel) {
         // Save location to SharedPreferences
