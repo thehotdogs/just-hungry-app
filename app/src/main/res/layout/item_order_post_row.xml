@@ -146,8 +146,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:layout_marginTop="5dp"
-                android:visibility="visible"
-                tools:visibility="visible">
+                android:visibility="gone"
+                tools:visibility="gone">
 
                 <Button
                     android:id="@+id/chatButton"
