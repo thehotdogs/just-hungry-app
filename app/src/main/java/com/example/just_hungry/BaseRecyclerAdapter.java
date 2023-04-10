@@ -105,16 +105,16 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                     Utils.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unused) {
-                            Toast.makeText(context, "Joined post" + postName, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Joined post: " + postName, Toast.LENGTH_SHORT).show();
                         }
                     });
 
                     postHolder.joinButton.setText("Leave");
                     Intent grabIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetPost.getGrabFoodUrl()));
-                    grabIntent.setPackage("com.grab");
-                    if (grabIntent.resolveActivity(context.getPackageManager()) != null) {
+//                    grabIntent.setPackage("com.grabtaxi.passenger");
+                    try {
                         context.startActivity(grabIntent);
-                    } else {
+                    } catch (Exception e) {
                         Toast.makeText(context, "Grab app not installed", Toast.LENGTH_SHORT).show();
                     }
                 } else {
