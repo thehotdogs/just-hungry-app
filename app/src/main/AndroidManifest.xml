@@ -12,11 +12,11 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_justhungry"
+        android:icon="@mipmap/hungrybees"
         android:label="@string/app_name"
         android:largeHeap="true"
         android:requestLegacyExternalStorage="true"
-        android:roundIcon="@mipmap/ic_justhungry_round"
+        android:roundIcon="@mipmap/hungrybees"
         android:supportsRtl="true"
         android:theme="@style/Theme.Justhungry"
         tools:targetApi="31">
