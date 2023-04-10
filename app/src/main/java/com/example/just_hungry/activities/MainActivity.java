@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
 
     FragmentManager fragmentManager = getSupportFragmentManager();
     Utils utilsInstance = Utils.getInstance();
+    // comment
 
 
     @Override
