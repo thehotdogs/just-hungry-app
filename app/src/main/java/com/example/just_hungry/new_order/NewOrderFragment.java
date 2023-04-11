@@ -46,7 +46,8 @@ public class NewOrderFragment extends Fragment {
     //scrolling stuff
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+//    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    LinearLayoutManager mLayoutManager;
     FragmentManager fragmentManager;
     private FragmentActivity activity;
 
@@ -99,6 +100,9 @@ public class NewOrderFragment extends Fragment {
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             });
+
+
+            mLayoutManager  = new LinearLayoutManager(this.getContext());
             adapter = new NewOrderRecyclerAdapter(rootView.getContext(), posts, fragmentManager,  newOrderPostslistener);
 //            postRecyclerView.setItemAnimator(null);
             postRecyclerView.setLayoutManager(mLayoutManager);

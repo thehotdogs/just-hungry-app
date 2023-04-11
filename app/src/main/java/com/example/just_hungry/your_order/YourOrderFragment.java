@@ -51,7 +51,8 @@ public class YourOrderFragment extends Fragment {
     //scrolling stuff
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+//    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    LinearLayoutManager mLayoutManager;
     private FragmentActivity activity;
     FragmentManager fragmentManager;
 
@@ -113,6 +114,8 @@ public class YourOrderFragment extends Fragment {
                     postRecyclerView.setLayoutManager(mLayoutManager);
                     postRecyclerView.setAdapter(adapter);
                 });
+
+                mLayoutManager  = new LinearLayoutManager(this.getContext());
                 adapter = new YourOrderRecyclerAdapter(rootView.getContext(), posts, yourJoinedOrderListener, getParentFragmentManager());
                 System.out.println("SETTING UP ADAPTER DONE" + posts);
                 postRecyclerView.setLayoutManager(mLayoutManager);
