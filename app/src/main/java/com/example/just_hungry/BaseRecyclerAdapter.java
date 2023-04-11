@@ -1,5 +1,6 @@
 package com.example.just_hungry;
 
+import static android.view.View.*;
 import static com.example.just_hungry.Utils.TAG;
 import static com.example.just_hungry.Utils.getDeviceLocation;
 
@@ -9,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.util.Log;
+import android.util.SparseArray;
+import android.util.SparseBooleanArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -52,6 +55,8 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
     protected SharedPreferences preferences;
     protected FragmentManager fragmentManager;
     private SharedPreferences sharedPreferences;
+    private SparseArray<Boolean> buttonContainerVisibilityStates = new SparseArray<>();
+
 
     Utils utilsInstance = Utils.getInstance();
 
@@ -70,6 +75,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
             onBindHeaderViewHolder(holder);
             HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
@@ -101,7 +107,18 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         position = position -1 ;  // Adjust the position for the header view
         PostViewHolder postHolder = (PostViewHolder) holder;
         PostModel targetPost = posts.get(position);
-        postHolder.itemView.setOnClickListener(new View.OnClickListener() {
+
+        Boolean isVisible = buttonContainerVisibilityStates.get(position);
+        if (isVisible == null || !isVisible) {
+            postHolder.buttonContainer.setVisibility(View.GONE);
+        } else {
+            postHolder.buttonContainer.setVisibility(View.VISIBLE);
+        }
+
+        final int finalPosition = position;
+
+
+        postHolder.itemView.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -110,17 +127,21 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
                 //int position = postHolder.getLayoutPosition();
                 if (postHolder.buttonContainer.getVisibility() == View.GONE) {
                     postHolder.buttonContainer.setVisibility(View.VISIBLE);
+                    buttonContainerVisibilityStates.put(finalPosition, true);
+
                 } else {
                     postHolder.buttonContainer.setVisibility(View.GONE);
+                    buttonContainerVisibilityStates.put(finalPosition, false);
+
                 }
-                notifyDataSetChanged();
+//                notifyDataSetChanged();
                 // notifyItemChanged(position);
             }
         });
         String userId = preferences.getString("userId", "");
         String postId = targetPost.getPostId();
         String postTitle = targetPost.getStoreName();
-        postHolder.joinButton.setOnClickListener(new View.OnClickListener() {
+        postHolder.joinButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
@@ -157,8 +178,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
             }
         });
 
-        int finalPosition = position;
-        postHolder.chatButton.setOnClickListener(new View.OnClickListener() {
+        postHolder.chatButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId, postTitle)).addToBackStack("BaseRecyclerAdapter").commit();
@@ -171,9 +191,9 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
 
         // halalChip set visibility
         if (posts.get(position).isHalal()) {
-            postHolder.halalChip.setVisibility(View.VISIBLE);
+            postHolder.halalChip.setVisibility(VISIBLE);
         } else {
-            postHolder.halalChip.setVisibility(View.GONE);
+            postHolder.halalChip.setVisibility(GONE);
         }
 
 
@@ -190,7 +210,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
         // holder.participantCount.setText(posts.get(position).getParticipantCount());
 
-        postHolder.gmapsScrenshot.setOnClickListener(new View.OnClickListener() {
+        postHolder.gmapsScrenshot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 String lat = String.valueOf(targetPost.getLocation().getLatitude());

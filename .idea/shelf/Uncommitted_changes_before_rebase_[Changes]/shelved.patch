@@ -1,0 +1,207 @@
+Index: app/src/main/java/com/example/just_hungry/BaseRecyclerAdapter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.just_hungry;\r\n\r\nimport static com.example.just_hungry.Utils.TAG;\r\nimport static com.example.just_hungry.Utils.getDeviceLocation;\r\n\r\nimport android.app.Activity;\r\nimport android.content.Context;\r\nimport android.content.Intent;\r\nimport android.content.SharedPreferences;\r\nimport android.net.Uri;\r\nimport android.util.Log;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.Button;\r\nimport android.widget.ImageView;\r\nimport android.widget.TextView;\r\nimport android.widget.Toast;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.constraintlayout.widget.ConstraintLayout;\r\nimport androidx.fragment.app.FragmentManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport com.bumptech.glide.Glide;\r\nimport com.bumptech.glide.load.engine.DiskCacheStrategy;\r\nimport com.example.just_hungry.chat.ChatFragment;\r\nimport com.example.just_hungry.models.LocationModel;\r\nimport com.example.just_hungry.models.PostModel;\r\nimport com.example.just_hungry.models.UserModel;\r\nimport com.google.android.gms.location.FusedLocationProviderClient;\r\nimport com.google.android.gms.location.LocationServices;\r\nimport com.google.android.gms.tasks.OnSuccessListener;\r\nimport com.google.android.material.chip.Chip;\r\nimport com.google.firebase.Timestamp;\r\n\r\nimport java.text.SimpleDateFormat;\r\nimport java.util.ArrayList;\r\nimport java.util.Arrays;\r\nimport java.util.Date;\r\nimport java.util.Locale;import android.transition.TransitionManager;\r\nimport android.transition.ChangeBounds;\r\nimport androidx.constraintlayout.widget.ConstraintLayout;\r\n\r\n\r\npublic abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{\r\n    // ...\r\n    protected Context context;\r\n    protected ArrayList<PostModel> posts;\r\n    protected UserModel resultUser = null;\r\n    protected static final int HEADER_VIEW_TYPE = 0;\r\n    protected static final int ITEM_VIEW_TYPE = 1;\r\n    protected SharedPreferences preferences;\r\n    protected FragmentManager fragmentManager;\r\n    private SharedPreferences sharedPreferences;\r\n\r\n    Utils utilsInstance = Utils.getInstance();\r\n\r\n    public BaseRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {\r\n        this.context = context;\r\n        this.posts = posts;\r\n        this.preferences = context.getSharedPreferences(\"preferences\", Context.MODE_PRIVATE);\r\n        this.fragmentManager = supportFragmentManager;\r\n    }\r\n\r\n    protected abstract void onBindHeaderViewHolder(RecyclerView.ViewHolder holder);\r\n\r\n    @NonNull\r\n    @Override\r\n    public abstract RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType);\r\n\r\n    @Override\r\n    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {\r\n        if (getItemViewType(position) == HEADER_VIEW_TYPE) {\r\n            onBindHeaderViewHolder(holder);\r\n            HeaderViewHolder headerHolder = (HeaderViewHolder) holder;\r\n            ImageView profilePictureImageView = headerHolder.itemView.findViewById(R.id.profilePictureImageView);\r\n            sharedPreferences = context.getSharedPreferences(\"preferences\", Context.MODE_PRIVATE);\r\n            String userId = sharedPreferences.getString(\"userId\", \"\");\r\n            utilsInstance.getUserById(userId, poster -> {\r\n                if (poster == null) {\r\n                    return;\r\n                }\r\n                String currentUserId = poster.getUserId();\r\n                String userProfileUrl = poster.getProfilePictureUrl().getAssetUrl();\r\n                System.out.println(\"userProfileUrl: \" + userProfileUrl );\r\n                if (!userProfileUrl.equalsIgnoreCase(\"\")) {\r\n                    if (utilsInstance.isNetworkAvailable(context)) {\r\n                        Glide.with(context)\r\n                                .load(userProfileUrl)\r\n//                        .diskCacheStrategy(DiskCacheStrategy.NONE)\r\n//                        .skipMemoryCache(true)\r\n                                .into(profilePictureImageView);\r\n                    }\r\n                }\r\n            });\r\n\r\n            return;\r\n        }\r\n\r\n        // Common onBindViewHolder logic for item view type\r\n        position = position -1 ;  // Adjust the position for the header view\r\n        PostViewHolder postHolder = (PostViewHolder) holder;\r\n        PostModel targetPost = posts.get(position);\r\n        postHolder.itemView.setOnClickListener(new View.OnClickListener() {\r\n\r\n            @Override\r\n            public void onClick(View v) {\r\n                //System.out.println(\"TOGGLED\");\r\n                //TransitionManager.beginDelayedTransition((ViewGroup) v.getRootView(), new ChangeBounds());\r\n                //int position = postHolder.getLayoutPosition();\r\n                if (postHolder.buttonContainer.getVisibility() == View.GONE) {\r\n                    postHolder.buttonContainer.setVisibility(View.VISIBLE);\r\n                } else {\r\n                    postHolder.buttonContainer.setVisibility(View.GONE);\r\n                }\r\n                notifyDataSetChanged();\r\n                // notifyItemChanged(position);\r\n            }\r\n        });\r\n        String userId = preferences.getString(\"userId\", \"\");\r\n        String postId = targetPost.getPostId();\r\n        String postTitle = targetPost.getStoreName();\r\n        postHolder.joinButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n\r\n\r\n                String postName = targetPost.getStoreName();\r\n                if (postHolder.joinButton.getText().toString().equalsIgnoreCase(\"Join\")) {\r\n                    // Join function call\r\n                    utilsInstance.addUserToPostParticipants(postId,userId, new OnSuccessListener<Void>() {\r\n                        @Override\r\n                        public void onSuccess(Void unused) {\r\n                            Toast.makeText(context, \"Joined post: \" + postName, Toast.LENGTH_SHORT).show();\r\n                        }\r\n                    });\r\n                    postHolder.joinButton.setText(\"Leave\");\r\n\r\n                    Intent grabIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(targetPost.getGrabFoodUrl()));\r\n                    Log.d(TAG, \"onClick: \" + targetPost.getGrabFoodUrl());\r\n//                    grabIntent.setPackage(\"com.grabtaxi.passenger\");\r\n                    try {\r\n                        context.startActivity(grabIntent);\r\n                    } catch (Exception e) {\r\n                        Toast.makeText(context, \"Grab app not installed\", Toast.LENGTH_SHORT).show();\r\n                    }\r\n                } else {\r\n                    // Leave function call\r\n                    utilsInstance.removeUserFromPostParticipants(postId,userId, new OnSuccessListener<Void>() {\r\n                        @Override\r\n                        public void onSuccess(Void unused) {\r\n                            Toast.makeText(context, \"Left post\" + postName, Toast.LENGTH_SHORT).show();\r\n                        }\r\n                    });\r\n                    postHolder.joinButton.setText(\"Join\");\r\n                }\r\n            }\r\n        });\r\n\r\n        int finalPosition = position;\r\n        postHolder.chatButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                //!TODO UNCOMMENT FOR CHAT\r\n                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId, postTitle)).commit();\r\n            }\r\n        });\r\n\r\n        // This is where you set the data to the views, assigning values to the views we created in the onCreateViewHolder in recycler view row layout file\r\n        // based on the position of the row\r\n        postHolder.storeName.setText(posts.get(position).getStoreName());\r\n\r\n        // halalChip set visibility\r\n        if (posts.get(position).isHalal()) {\r\n            postHolder.halalChip.setVisibility(View.VISIBLE);\r\n        } else {\r\n            postHolder.halalChip.setVisibility(View.GONE);\r\n        }\r\n\r\n\r\n        // text view of cuisine\r\n        String cuisineString = \"Cuisine: \"+posts.get(position).getCuisine();\r\n        postHolder.textViewCuisine.setText(cuisineString);\r\n\r\n        // we only want to show the hours and minutes of the timelimit\r\n        Date timingDate = posts.get(position).getTiming();\r\n        SimpleDateFormat dt = new SimpleDateFormat(\"HH:mm\", Locale.getDefault());\r\n        postHolder.timing.setText(dt.format(timingDate));\r\n        String participantCountString = posts.get(position).getParticipants().size()+\"/\"+posts.get(position).getMaxParticipants();\r\n        postHolder.participantCount.setText(participantCountString);\r\n        if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());\r\n        // holder.participantCount.setText(posts.get(position).getParticipantCount());\r\n\r\n        postHolder.gmapsScrenshot.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                String lat = String.valueOf(targetPost.getLocation().getLatitude());\r\n                String lon = String.valueOf(targetPost.getLocation().getLongitude());\r\n                String geoUri = \"http://maps.google.com/maps?q=loc:\" + lat + \",\" + lon + \" (\" + targetPost.getStoreName() + \")\";\r\n                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));\r\n                context.startActivity(intent);\r\n            }\r\n        });\r\n\r\n        // get image from firebase db\r\n        if (posts.get(position).getAssets() != null) {\r\n            String asset = String.valueOf(posts.get(position) // get the postModel\r\n                    .getAssets().get(0)); // get the assets arraylist <AssetModel>\r\n            String[] assetArray = asset.split(\"=\");\r\n            String assetUrl = assetArray[Arrays.asList(assetArray).indexOf(\"assetTitle, assetUrl\") + 1];\r\n\r\n            if (utilsInstance.isNetworkAvailable(context)) {\r\n                Glide.with(context)\r\n                        .load(assetUrl)\r\n//                        .diskCacheStrategy(DiskCacheStrategy.NONE)\r\n//                        .skipMemoryCache(true)\r\n                        .into(postHolder.postImage);\r\n            }\r\n        }\r\n        try {\r\n            if (posts.get(position).getPosterId() != null) {\r\n                String posterId = posts.get(position).getPosterId();\r\n\r\n                utilsInstance.getUserById(posterId, poster -> {\r\n                    if (poster == null) {\r\n                        return;\r\n                    }\r\n                    resultUser = poster;\r\n                    String name = resultUser.getName();\r\n                    String userProfileUrl = resultUser.getProfilePictureUrl().getAssetUrl();\r\n                    if (resultUser != null && !name.equalsIgnoreCase(\"\")) {\r\n                        postHolder.posterName.setText(name);\r\n                        if (utilsInstance.isNetworkAvailable(context)) {\r\n                            Glide.with(context)\r\n                                    .load(userProfileUrl)\r\n                                    .into(postHolder.posterImage);\r\n                        }\r\n                    }\r\n                });\r\n            }\r\n        }catch (Exception e) {\r\n            System.out.println(\"ERROR: \" + e);\r\n        }\r\n        //attach the distance\r\n        postHolder.location.setText(String.valueOf(posts.get(position).distanceFromDevice) + \" km away\");\r\n        PostModel currPost = posts.get(position);\r\n        LocationModel postLocation = currPost.getLocation();\r\n        String gmapsUrl = \"https://maps.googleapis.com/maps/api/staticmap?center=\" + postLocation.getLatitude() + \",\"\r\n                + postLocation.getLongitude() + \"&zoom=16&size=520x300&maptype=roadmap&markers=color:red%7Clabel:C%7C\"\r\n                + postLocation.getLatitude() + \",\" + postLocation.getLongitude() + \"&key=AIzaSyBMr4Hb8-qc05vI3ScH8Qy85Fc3_PVKA5Q\";\r\n        if (utilsInstance.isNetworkAvailable(context)) {\r\n            Glide.with(context)\r\n                    .load(gmapsUrl)\r\n                    .into(postHolder.gmapsScrenshot);\r\n        }\r\n\r\n    }\r\n    @Override\r\n    public int getItemCount() {\r\n        // This is where you return the number of rows\r\n        // the recycler vie just wants to know the number of rows you want to display (add 1 for header)\r\n        return posts.size() + 1;\r\n    }\r\n\r\n    @Override\r\n    public int getItemViewType(int position) {\r\n        if (position == 0) {\r\n            return HEADER_VIEW_TYPE;\r\n        } else {\r\n            return ITEM_VIEW_TYPE;\r\n        }\r\n    }\r\n    protected static class HeaderViewHolder extends RecyclerView.ViewHolder {\r\n//        public TextView textViewHelloUser;\r\n//        public TextView textViewFancySomeFood;\r\n\r\n        public HeaderViewHolder(View itemView) {\r\n            super(itemView);\r\n//            textViewHelloUser = itemView.findViewById(R.id.textViewHelloUser);\r\n//            textViewFancySomeFood = itemView.findViewById(R.id.textViewFancySomeFood);\r\n        }\r\n    }\r\n\r\n    protected static class PostViewHolder extends RecyclerView.ViewHolder{\r\n        // This is where you declare the views you want to use in the recycler view row layout file\r\n        // grabbing the views from our post row layout file kinda like onCreate method\r\n\r\n        ImageView postImage;\r\n        TextView storeName;\r\n        TextView timing;\r\n        TextView location;\r\n        TextView posterName;\r\n        ImageView posterImage;\r\n        TextView dateCreated;\r\n        TextView participantCount;\r\n        ConstraintLayout buttonContainer;\r\n        ImageView gmapsScrenshot;\r\n\r\n        TextView textViewParticipants;\r\n\r\n        Button joinButton;\r\n        Button chatButton;\r\n\r\n        Chip halalChip;\r\n        TextView textViewCuisine;\r\n\r\n        ImageView profilePictureImageView;\r\n\r\n\r\n\r\n        public PostViewHolder(@NonNull View itemView) {\r\n            super(itemView);\r\n            // This is where you initialize the views\r\n            postImage = itemView.findViewById(R.id.postImage);\r\n            storeName = itemView.findViewById(R.id.storeNameCardText);\r\n            timing = itemView.findViewById(R.id.timingCardText);\r\n            posterName = itemView.findViewById(R.id.posterNameCardText);\r\n            location = itemView.findViewById(R.id.locationCardText);\r\n            posterImage = itemView.findViewById(R.id.posterCardImage);\r\n            dateCreated = itemView.findViewById(R.id.dateCreatedCardText);\r\n            participantCount = itemView.findViewById(R.id.participantCountCardText);\r\n            joinButton = itemView.findViewById(R.id.joinButton);\r\n            chatButton = itemView.findViewById(R.id.chatButton);\r\n//            joinButton.setVisibility(View.GONE);\r\n//            chatButton.setVisibility(View.GONE);\r\n            buttonContainer = itemView.findViewById(R.id.button_container);\r\n            halalChip = itemView.findViewById(R.id.halalChip);\r\n            textViewParticipants = itemView.findViewById(R.id.textViewParticipants);\r\n            textViewCuisine = itemView.findViewById(R.id.textViewCuisine);\r\n            gmapsScrenshot = itemView.findViewById(R.id.gmapsScreenshot);\r\n            profilePictureImageView = itemView.findViewById(R.id.profilePictureImageView);\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/just_hungry/BaseRecyclerAdapter.java b/app/src/main/java/com/example/just_hungry/BaseRecyclerAdapter.java
+--- a/app/src/main/java/com/example/just_hungry/BaseRecyclerAdapter.java	(revision 6ff774be58b9bcf04f5d00530243a461e745b8e6)
++++ b/app/src/main/java/com/example/just_hungry/BaseRecyclerAdapter.java	(date 1681199630631)
+@@ -1,5 +1,6 @@
+ package com.example.just_hungry;
+ 
++import static android.view.View.*;
+ import static com.example.just_hungry.Utils.TAG;
+ import static com.example.just_hungry.Utils.getDeviceLocation;
+ 
+@@ -9,6 +10,8 @@
+ import android.content.SharedPreferences;
+ import android.net.Uri;
+ import android.util.Log;
++import android.util.SparseArray;
++import android.util.SparseBooleanArray;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.Button;
+@@ -52,6 +55,8 @@
+     protected SharedPreferences preferences;
+     protected FragmentManager fragmentManager;
+     private SharedPreferences sharedPreferences;
++    private SparseArray<Boolean> buttonContainerVisibilityStates = new SparseArray<>();
++
+ 
+     Utils utilsInstance = Utils.getInstance();
+ 
+@@ -70,6 +75,7 @@
+ 
+     @Override
+     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
++
+         if (getItemViewType(position) == HEADER_VIEW_TYPE) {
+             onBindHeaderViewHolder(holder);
+             HeaderViewHolder headerHolder = (HeaderViewHolder) holder;
+@@ -101,7 +107,14 @@
+         position = position -1 ;  // Adjust the position for the header view
+         PostViewHolder postHolder = (PostViewHolder) holder;
+         PostModel targetPost = posts.get(position);
+-        postHolder.itemView.setOnClickListener(new View.OnClickListener() {
++
++        int finalPosition = position;
++        Boolean isVisible = buttonContainerVisibilityStates.get(finalPosition);
++        postHolder.buttonContainer.setVisibility(isVisible != null && isVisible ? View.VISIBLE : View.GONE);
++
++//        postHolder.buttonContainer.setVisibility(buttonContainerVisibilityStates.get(finalPosition, GONE));
++
++        postHolder.itemView.setOnClickListener(new OnClickListener() {
+ 
+             @Override
+             public void onClick(View v) {
+@@ -110,17 +123,19 @@
+                 //int position = postHolder.getLayoutPosition();
+                 if (postHolder.buttonContainer.getVisibility() == View.GONE) {
+                     postHolder.buttonContainer.setVisibility(View.VISIBLE);
++                    buttonContainerVisibilityStates.put(finalPosition, true);
+                 } else {
+                     postHolder.buttonContainer.setVisibility(View.GONE);
++                    buttonContainerVisibilityStates.put(finalPosition, false);
+                 }
+-                notifyDataSetChanged();
++//                notifyDataSetChanged();
+                 // notifyItemChanged(position);
+             }
+         });
+         String userId = preferences.getString("userId", "");
+         String postId = targetPost.getPostId();
+         String postTitle = targetPost.getStoreName();
+-        postHolder.joinButton.setOnClickListener(new View.OnClickListener() {
++        postHolder.joinButton.setOnClickListener(new OnClickListener() {
+             @Override
+             public void onClick(View v) {
+ 
+@@ -157,8 +172,8 @@
+             }
+         });
+ 
+-        int finalPosition = position;
+-        postHolder.chatButton.setOnClickListener(new View.OnClickListener() {
++//        int finalPosition = position;
++        postHolder.chatButton.setOnClickListener(new OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 //!TODO UNCOMMENT FOR CHAT
+@@ -172,9 +187,9 @@
+ 
+         // halalChip set visibility
+         if (posts.get(position).isHalal()) {
+-            postHolder.halalChip.setVisibility(View.VISIBLE);
++            postHolder.halalChip.setVisibility(VISIBLE);
+         } else {
+-            postHolder.halalChip.setVisibility(View.GONE);
++            postHolder.halalChip.setVisibility(GONE);
+         }
+ 
+ 
+@@ -191,7 +206,7 @@
+         if (posts.get(position).getDateCreated() != null) postHolder.dateCreated.setText(posts.get(position).getDateCreated());
+         // holder.participantCount.setText(posts.get(position).getParticipantCount());
+ 
+-        postHolder.gmapsScrenshot.setOnClickListener(new View.OnClickListener() {
++        postHolder.gmapsScrenshot.setOnClickListener(new OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 String lat = String.valueOf(targetPost.getLocation().getLatitude());
+Index: app/src/main/java/com/example/just_hungry/chat/ChatFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.just_hungry.chat;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.content.Context;\r\nimport android.content.SharedPreferences;\r\nimport android.os.Bundle;\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.EditText;\r\nimport android.widget.ImageButton;\r\nimport android.widget.TextView;\r\n\r\nimport com.example.just_hungry.R;\r\nimport com.example.just_hungry.Utils;\r\nimport com.example.just_hungry.chat.MessageAdapter;\r\nimport com.example.just_hungry.models.ChatModel;\r\nimport com.google.firebase.firestore.DocumentChange;\r\nimport com.google.firebase.firestore.DocumentSnapshot;\r\nimport com.google.firebase.firestore.EventListener;\r\nimport com.google.firebase.firestore.FieldValue;\r\nimport com.google.firebase.firestore.FirebaseFirestore;\r\nimport com.google.firebase.firestore.FirebaseFirestoreException;\r\nimport com.google.firebase.firestore.Query;\r\nimport com.google.firebase.firestore.QuerySnapshot;\r\n\r\nimport java.util.ArrayList;\r\nimport java.util.HashMap;\r\nimport java.util.List;\r\n\r\npublic class ChatFragment extends Fragment {\r\n\r\n    private RecyclerView recyclerView;\r\n    private EditText messageEditText;\r\n    private ImageButton sendMessageButton;\r\n\r\n    private TextView textTitle;\r\n\r\n    private FirebaseFirestore firestore;\r\n    private MessageAdapter adapter;\r\n    private List<ChatModel> chatList = new ArrayList<>();\r\n    private String postId;\r\n    private String postTitle;\r\n\r\n    public ChatFragment(String postId, String postTitle) {\r\n        this.postId = postId;\r\n        this.postTitle = postTitle;\r\n    }\r\n\r\n    Utils utilsInstance = Utils.getInstance();\r\n\r\n    @Override\r\n    public View onCreateView(LayoutInflater inflater, ViewGroup container,\r\n                             Bundle savedInstanceState) {\r\n        View view = inflater.inflate(R.layout.fragment_chat, container, false);\r\n\r\n        recyclerView = view.findViewById(R.id.recyclerView);\r\n        messageEditText = view.findViewById(R.id.messageEditText);\r\n        sendMessageButton = view.findViewById(R.id.sendMessageButton);\r\n        textTitle = view.findViewById(R.id.titletext);\r\n\r\n        firestore = FirebaseFirestore.getInstance();\r\n        FirebaseFirestore.getInstance();\r\n        adapter = new MessageAdapter(chatList);\r\n\r\n        textTitle.setText(\"Chat Room: \" + postTitle);\r\n\r\n\r\n\r\n\r\n        sendMessageButton.setOnClickListener(new View.OnClickListener() {\r\n            @Override\r\n            public void onClick(View v) {\r\n                String message = messageEditText.getText().toString().trim();\r\n                if (!message.isEmpty()) {\r\n                    sendMessage(message);\r\n                    messageEditText.setText(\"\");\r\n                }\r\n            }\r\n        });\r\n\r\n        Utils.OnGetChatFromPostIdListener chatFetchListener = dataSnapshotValue -> {\r\n            chatList.clear();\r\n            if (dataSnapshotValue != null) {\r\n                //System.out.println(\"this is what i get from listener \" + dataSnapshotValue);\r\n                ArrayList<HashMap> chats = (ArrayList<HashMap>) dataSnapshotValue.get(0).get(\"chats\");\r\n                if (chats == null || chats.size() == 0) {\r\n                    return;\r\n                }\r\n                for (HashMap hm : chats) {\r\n                    ChatModel chat = new ChatModel(hm);\r\n                    chatList.add(chat);\r\n                }\r\n\r\n                adapter = new MessageAdapter(chatList);\r\n                adapter.notifyDataSetChanged();\r\n                recyclerView.setAdapter(adapter);\r\n                recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));\r\n                recyclerView.scrollToPosition(chatList.size() - 1);\r\n            }\r\n        };\r\n        loadMessages(chatFetchListener);\r\n        utilsInstance.getAllChatsInsidePost(postId, chatFetchListener);\r\n        return view;\r\n    }\r\n\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n    }\r\n\r\n    private void loadMessages(Utils.OnGetChatFromPostIdListener chatFetchListener) {\r\n        firestore.collection(\"posts\")\r\n                .orderBy(\"dateCreated\", Query.Direction.ASCENDING)\r\n                .addSnapshotListener(new EventListener<QuerySnapshot>() {\r\n\r\n                    @Override\r\n                    public void onEvent(QuerySnapshot value, FirebaseFirestoreException error) {\r\n                        //System.out.println(\"on change event is trigered\" + value.getDocumentChanges());\r\n                        if (error != null) {\r\n                            // Handle the error\r\n                            return;\r\n                        }\r\n\r\n                        for (DocumentChange change : value.getDocumentChanges()) {\r\n                            //System.out.println(\"for change:\" + change.getDocument().getData());\r\n                            ArrayList<DocumentSnapshot> out = new ArrayList<>();\r\n                            out.add(change.getDocument());\r\n                            chatFetchListener.onSuccess(out);\r\n//                            if (change.getType() == DocumentChange.Type.ADDED) {\r\n//                                // System.out.println(\"ADDED SOMETHING in chats!!\" + change.getDocument().getData());\r\n//                                //ChatModel chat = change.getDocument().toObject(ChatModel.class);\r\n//                                ChatModel chat = new ChatModel(change.getDocument());\r\n//                                chatList.add(chat);\r\n//                                adapter.notifyDataSetChanged();\r\n//                                chatFetchListener.onSuccess(null);\r\n//                                recyclerView.scrollToPosition(chatList.size() - 1);\r\n//                            }\r\n                        }\r\n                    }\r\n                });\r\n    }\r\n    private void sendMessage(String message) {\r\n        // Implement the code to send a message\r\n        SharedPreferences preferences = getContext().getSharedPreferences(\"preferences\", Context.MODE_PRIVATE);\r\n        String senderId = preferences.getString(\"userId\", \"\");\r\n        //String senderId = \"your_sender_id\";\r\n        String receiverId = this.postId;\r\n        ChatModel newChat = new ChatModel(senderId, receiverId, message);\r\n        String chatId = newChat.getChatId();\r\n        firestore.collection(\"posts\").document(this.postId).update(\"chats\", FieldValue.arrayUnion(newChat.getHashMapForFirestore()))\r\n                .addOnSuccessListener(documentSnapshot -> {\r\n                    //System.out.println(documentSnapshot);\r\n\r\n                })\r\n                .addOnFailureListener(e -> {\r\n                    // Handle any errors.\r\n                    System.err.println(\"Error adding user to post participants \" + e.getMessage());\r\n                });\r\n        //System.out.println(\"PUSHED TO FIRESTORE\");\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/just_hungry/chat/ChatFragment.java b/app/src/main/java/com/example/just_hungry/chat/ChatFragment.java
+--- a/app/src/main/java/com/example/just_hungry/chat/ChatFragment.java	(revision 6ff774be58b9bcf04f5d00530243a461e745b8e6)
++++ b/app/src/main/java/com/example/just_hungry/chat/ChatFragment.java	(date 1681196976571)
+@@ -112,6 +112,38 @@
+         super.onCreate(savedInstanceState);
+     }
+ 
++//    private void loadMessages(Utils.OnGetChatFromPostIdListener chatFetchListener) {
++//        firestore.collection("posts")
++//                .orderBy("dateCreated", Query.Direction.ASCENDING)
++//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
++//
++//                    @Override
++//                    public void onEvent(QuerySnapshot value, FirebaseFirestoreException error) {
++//                        //System.out.println("on change event is trigered" + value.getDocumentChanges());
++//                        if (error != null) {
++//                            // Handle the error
++//                            return;
++//                        }
++//
++//                        for (DocumentChange change : value.getDocumentChanges()) {
++//                            //System.out.println("for change:" + change.getDocument().getData());
++//                            ArrayList<DocumentSnapshot> out = new ArrayList<>();
++//                            out.add(change.getDocument());
++//                            chatFetchListener.onSuccess(out);
++////                            if (change.getType() == DocumentChange.Type.ADDED) {
++////                                // System.out.println("ADDED SOMETHING in chats!!" + change.getDocument().getData());
++////                                //ChatModel chat = change.getDocument().toObject(ChatModel.class);
++////                                ChatModel chat = new ChatModel(change.getDocument());
++////                                chatList.add(chat);
++////                                adapter.notifyItemInserted();
++////                                chatFetchListener.onSuccess(null);
++////                                recyclerView.scrollToPosition(chatList.size() - 1);
++////                            }
++//                        }
++//                    }
++//                });
++//    }
++
+     private void loadMessages(Utils.OnGetChatFromPostIdListener chatFetchListener) {
+         firestore.collection("posts")
+                 .orderBy("dateCreated", Query.Direction.ASCENDING)
+@@ -130,19 +162,18 @@
+                             ArrayList<DocumentSnapshot> out = new ArrayList<>();
+                             out.add(change.getDocument());
+                             chatFetchListener.onSuccess(out);
+-//                            if (change.getType() == DocumentChange.Type.ADDED) {
+-//                                // System.out.println("ADDED SOMETHING in chats!!" + change.getDocument().getData());
+-//                                //ChatModel chat = change.getDocument().toObject(ChatModel.class);
+-//                                ChatModel chat = new ChatModel(change.getDocument());
+-//                                chatList.add(chat);
+-//                                adapter.notifyDataSetChanged();
+-//                                chatFetchListener.onSuccess(null);
+-//                                recyclerView.scrollToPosition(chatList.size() - 1);
+-//                            }
++                            if (change.getType() == DocumentChange.Type.ADDED) {
++                                ChatModel chat = new ChatModel(change.getDocument());
++                                chatList.add(chat);
++                                adapter.notifyItemInserted(chatList.size() - 1);
++                                recyclerView.scrollToPosition(chatList.size() - 1);
++                            }
+                         }
+                     }
+                 });
+     }
++
++
+     private void sendMessage(String message) {
+         // Implement the code to send a message
+         SharedPreferences preferences = getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"GradleSettings\">\r\n    <option name=\"linkedExternalProjectsSettings\">\r\n      <GradleProjectSettings>\r\n        <option name=\"testRunner\" value=\"GRADLE\" />\r\n        <option name=\"distributionType\" value=\"DEFAULT_WRAPPED\" />\r\n        <option name=\"externalProjectPath\" value=\"$PROJECT_DIR$\" />\r\n        <option name=\"modules\">\r\n          <set>\r\n            <option value=\"$PROJECT_DIR$\" />\r\n            <option value=\"$PROJECT_DIR$/app\" />\r\n          </set>\r\n        </option>\r\n      </GradleProjectSettings>\r\n    </option>\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+--- a/.idea/gradle.xml	(revision 6ff774be58b9bcf04f5d00530243a461e745b8e6)
++++ b/.idea/gradle.xml	(date 1681196820059)
+@@ -1,5 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
+   <component name="GradleSettings">
+     <option name="linkedExternalProjectsSettings">
+       <GradleProjectSettings>
