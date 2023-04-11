@@ -48,10 +48,13 @@ import com.example.just_hungry.Utils;
 import com.example.just_hungry.your_order.YourOrderFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -70,15 +73,21 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences preferences = getApplicationContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
         long lastCheck = preferences.getLong(LAST_CHECK_KEY, 0);
         Date lastCheckDate = new Date(lastCheck);
+        String lastCheckDateString = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(lastCheckDate);
 
-        Query newOrdersQuery = db.collection("posts").whereGreaterThanOrEqualTo("dateCreated", lastCheckDate);
+
+        Query newOrdersQuery = db.collection("posts").whereGreaterThanOrEqualTo("dateCreated", lastCheckDateString);
         newOrdersQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
+                Log.d(TAG, "checkForUpdates: " + querySnapshot.getDocuments() + " new orders" + querySnapshot.isEmpty());
                 if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                    Log.d(TAG, "checkForUpdates: " + querySnapshot.size() + " new orders");
                     // Send notification for new orders
                     sendNotification(querySnapshot.size());
                 }
+            } else {
+                Log.e(TAG, "checkForUpdates: Error getting documents: ", task.getException());
             }
         });
 
@@ -96,10 +105,12 @@ public class MainActivity extends AppCompatActivity {
                 checkForUpdates();
                 System.out.println("Checking for updates");
                 handler.postDelayed(this, 5000);
-                sendNotification(new Random().nextInt(10));
             }
         };
-        handler.post(runnable);
+        // Cancel any previously scheduled executions of checkForUpdates()
+        handler.removeCallbacks(runnable);
+        // Schedule a new execution of checkForUpdates() every 5 seconds
+        handler.postDelayed(runnable, 5000);
     }
 
     private void stopCheckingForUpdates() {
@@ -108,39 +119,79 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    private void sendNotification(int newOrdersCount) {
-//        Context context = getApplicationContext();
-//        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "HungryBeesChannelId")
-//                .setSmallIcon(R.drawable.hungrybees)
-//                .setContentTitle("HungryBees")
-//                .setContentText(newOrdersCount + " new order(s) posted on HungryBees")
-//                .setLargeIcon(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
-//                .setPriority(NotificationCompat.PRIORITY_MAX)
-//                .setStyle(new NotificationCompat.BigPictureStyle()
-//                        .bigPicture(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
-//                        .bigLargeIcon(null))
-//                .setAutoCancel(true);
-//        Notification notification = new NotificationCompat.Builder(context, "HungryBeesChannelId")
-//                .setSmallIcon(R.drawable.hungrybees)
-//                .setContentTitle("HungryBees")
-//                .setContentText(newOrdersCount + " new order(s) posted on HungryBees")
-//                .setStyle(new NotificationCompat.BigPictureStyle()
-//                        .bigPicture(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888)))
-//                .build();
-//        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-//            // TODO: Consider calling
-//            //    ActivityCompat#requestPermissions
-//            // here to request the missing permissions, and then overriding
-//            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//            //                                          int[] grantResults)
-//            // to handle the case where the user grants the permission. See the documentation
-//            // for ActivityCompat#requestPermissions for more details.
-//            return;
-//        }
-//        notificationManager.notify(new Random().nextInt(10), notification);
-//    }
+    private void scheduleNewOrderWorker() {
+        PeriodicWorkRequest newOrderWorkRequest = new PeriodicWorkRequest.Builder(NewOrderWorker.class, 1, TimeUnit.MINUTES)
+                .build();
 
+        WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("NewOrderWorker", ExistingPeriodicWorkPolicy.KEEP, newOrderWorkRequest);
+        Log.d("MainActivity", "NewOrderWorker scheduled");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        stopCheckingForUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startCheckingForUpdates();
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        //Pull the location and store it to shared preferences
+
+        utilsInstance.getDeviceLocation(MainActivity.this, locationModel -> {
+            System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
+            utilsInstance.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
+        });
+
+//        createNotificationChannel();
+        // scheduleNewOrderWorker(); // remove this line
+        // no need to call now because we already specify it in onResume, which is called when the app is created anyways
+//        startCheckingForUpdates();
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
+        bottomNavigationView.setOnItemSelectedListener(this::onNavigationItemSelected);
+        //ImageView top_nav_imageview = findViewById(R.id.top_navbar_imageview);
+
+        if (savedInstanceState == null) {
+            // instantiate the PostsFragment fragment
+            fragmentManager.beginTransaction()
+                    .replace(R.id.fragment_container, new PostsFragment(fragmentManager))
+                    .commit();
+            bottomNavigationView.setSelectedItemId(R.id.action_posts);
+        }
+    }
+
+    private boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment selectedFragment = new PostsFragment(fragmentManager);
+
+        switch (item.getItemId()) {
+            case R.id.action_posts:
+                selectedFragment = new PostsFragment(fragmentManager);
+                break;
+            case R.id.action_addorder:
+                selectedFragment = new NewOrderFragment();
+                break;
+            case R.id.action_yourorder:
+                selectedFragment = new YourOrderFragment();
+                break;
+            case R.id.action_account_management: // Add this case
+                selectedFragment = new AccountManagementFragment();
+                break;
+            default:
+                return false;
+        }
+
+        fragmentManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        return true;
+    }
     private void sendNotification(int newOrdersCount) {
         String id = "HungryBeesChannelId";
 
@@ -189,33 +240,6 @@ public class MainActivity extends AppCompatActivity {
             m.notify(1, builder.build());
             notificationManager.notify(new Random().nextInt(10),builder.build());
         }
-
-//        Context context = getApplicationContext();
-//
-//        // Create a custom view for the floating notification
-//        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View view = inflater.inflate(R.layout.activity_main, null);
-//
-//        // Set the text of the notification
-//        TextView textView = view.findViewById(R.id.notification_text_view);
-//        textView.setText(newOrdersCount + " new order(s) posted on HungryBees");
-//
-//        // Create a layout params object to specify the position of the notification
-//        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(
-//                WindowManager.LayoutParams.WRAP_CONTENT,
-//                WindowManager.LayoutParams.WRAP_CONTENT,
-//                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-//                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-//                PixelFormat.TRANSLUCENT);
-//
-//        // Set the position of the notification
-//        layoutParams.gravity = Gravity.TOP | Gravity.END;
-//        layoutParams.x = 0;
-//        layoutParams.y = 200;
-//
-//        // Add the view to the current window
-//        WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
-//        windowManager.addView(view, layoutParams);
     }
 
     private void createNotificationChannel() {
@@ -229,79 +253,4 @@ public class MainActivity extends AppCompatActivity {
             notificationManager.createNotificationChannel(channel);
         }
     }
-    private void scheduleNewOrderWorker() {
-        PeriodicWorkRequest newOrderWorkRequest = new PeriodicWorkRequest.Builder(NewOrderWorker.class, 1, TimeUnit.MINUTES)
-                .build();
-
-        WorkManager.getInstance(getApplicationContext()).enqueueUniquePeriodicWork("NewOrderWorker", ExistingPeriodicWorkPolicy.KEEP, newOrderWorkRequest);
-        Log.d("MainActivity", "NewOrderWorker scheduled");
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        stopCheckingForUpdates();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        startCheckingForUpdates();
-    }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        //Pull the location and store it to shared preferences
-
-        utilsInstance.getDeviceLocation(MainActivity.this, locationModel -> {
-            System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
-            utilsInstance.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
-        });
-
-        createNotificationChannel();
-        // scheduleNewOrderWorker(); // remove this line
-        startCheckingForUpdates();
-        // TODO UNCOMMENT FOR NOTIFICATIONS!!
-//        sendNotification(4);
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_nav_bar);
-        bottomNavigationView.setOnItemSelectedListener(this::onNavigationItemSelected);
-        //ImageView top_nav_imageview = findViewById(R.id.top_navbar_imageview);
-
-        if (savedInstanceState == null) {
-            // instantiate the PostsFragment fragment
-            fragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, new PostsFragment(fragmentManager))
-                    .commit();
-            bottomNavigationView.setSelectedItemId(R.id.action_posts);
-        }
-    }
-
-    private boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Fragment selectedFragment = new PostsFragment(fragmentManager);
-
-        switch (item.getItemId()) {
-            case R.id.action_posts:
-                selectedFragment = new PostsFragment(fragmentManager);
-                break;
-            case R.id.action_addorder:
-                selectedFragment = new NewOrderFragment();
-                break;
-            case R.id.action_yourorder:
-                selectedFragment = new YourOrderFragment();
-                break;
-            case R.id.action_account_management: // Add this case
-                selectedFragment = new AccountManagementFragment();
-                break;
-            default:
-                return false;
-        }
-
-        fragmentManager.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-        return true;
-    }
-
 }

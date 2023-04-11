@@ -267,8 +267,6 @@ public class NewOrderFormFragment extends Fragment {
                 Integer.parseInt(orderFormData.get("maxParticipants").toString()),
                 orderFormData.get("cuisine").toString(),
                 orderFormData.get("groupbuyURL").toString(),
-
-                // TODO add the rest of the fields in the firebase
                 (Boolean) orderFormData.get("isHalal")
         ).getHashMapForFirestore();
 
@@ -277,6 +275,7 @@ public class NewOrderFormFragment extends Fragment {
         System.out.println(userId);
         db.collection("posts").document(postId).set(newRandomOrderHM);
 
+        Log.d(TAG, "pushToFirebase: new order created at date " + new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date()) + " with postId " + postId);
         // redirect to the new order page
         getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, new NewOrderFragment()).commit();
     }
