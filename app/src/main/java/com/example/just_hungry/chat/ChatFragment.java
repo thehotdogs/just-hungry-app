@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
@@ -35,14 +36,20 @@ public class ChatFragment extends Fragment {
     private EditText messageEditText;
     private ImageButton sendMessageButton;
 
+    private TextView textTitle;
+
     private FirebaseFirestore firestore;
     private MessageAdapter adapter;
     private List<ChatModel> chatList = new ArrayList<>();
     private String postId;
+    private String postTitle;
 
-    public ChatFragment(String postId) {
+    public ChatFragment(String postId, String postTitle) {
         this.postId = postId;
+        this.postTitle = postTitle;
     }
+
+    Utils utilsInstance = Utils.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -52,13 +59,14 @@ public class ChatFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerView);
         messageEditText = view.findViewById(R.id.messageEditText);
         sendMessageButton = view.findViewById(R.id.sendMessageButton);
+        textTitle = view.findViewById(R.id.titletext);
 
         firestore = FirebaseFirestore.getInstance();
         FirebaseFirestore.getInstance();
         adapter = new MessageAdapter(chatList);
-//        adapter = new MessageAdapter(chatList);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-//        recyclerView.setAdapter(adapter);
+
+        textTitle.setText("Chat Room: " + postTitle);
+
 
 
 
@@ -94,7 +102,7 @@ public class ChatFragment extends Fragment {
             }
         };
         loadMessages(chatFetchListener);
-        Utils.getAllChatsInsidePost(postId, chatFetchListener);
+        utilsInstance.getAllChatsInsidePost(postId, chatFetchListener);
         return view;
     }
 

@@ -371,4 +371,24 @@ public class Utils {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, COARSE_LOCATION_REQUEST_CODE);
     }
 
+    public static int distFrom(LocationModel loc1, LocationModel loc2) {
+        double earthRadius = 6371; // kilometers
+
+        double lat1 = loc1.getLatitude();
+        double lat2 = loc2.getLatitude();
+        double lon1 = loc1.getLongitude();
+        double lon2 = loc2.getLongitude();
+
+        double dLat = Math.toRadians(lat2-lat1);
+        double dLng = Math.toRadians(lon2-lon1);
+        double sindLat = Math.sin(dLat / 2);
+        double sindLng = Math.sin(dLng / 2);
+        double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                * Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2));
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        double dist = earthRadius * c;
+
+        return (int) dist;
+    }
+
 }

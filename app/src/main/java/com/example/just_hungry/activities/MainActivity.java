@@ -58,6 +58,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
 
+    Utils utilsInstance = Utils.getInstance();
     FragmentManager fragmentManager = getSupportFragmentManager();
     private static final String LAST_CHECK_KEY = "last_check";
 
@@ -253,9 +254,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         //Pull the location and store it to shared preferences
 
-        Utils.getDeviceLocation(MainActivity.this, locationModel -> {
+        utilsInstance.getDeviceLocation(MainActivity.this, locationModel -> {
             System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
-            Utils.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
+            utilsInstance.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
         });
 
         createNotificationChannel();
@@ -277,12 +278,6 @@ public class MainActivity extends AppCompatActivity {
                     .commit();
             bottomNavigationView.setSelectedItemId(R.id.action_posts);
         }
-        // Load image using glide into top nav bar imageview
-//        if (Utils.isNetworkAvailable(this)) {
-//            Glide.with(this)
-//                    .load("https://preview.redd.it/8sjtjrlmkru41.png?auto=webp&s=ee505e75337336992bb0be14e5ec98978c14f406")
-//                    .into(top_nav_imageview);
-//        }
     }
 
     private boolean onNavigationItemSelected(@NonNull MenuItem item) {

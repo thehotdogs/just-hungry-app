@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class PostRecyclerAdapter extends BaseRecyclerAdapter {
 
+    Utils utilsInstance = Utils.getInstance();
+
     public PostRecyclerAdapter(Context context, ArrayList<PostModel> posts, FragmentManager supportFragmentManager) {
         super(context, posts, supportFragmentManager);
     }

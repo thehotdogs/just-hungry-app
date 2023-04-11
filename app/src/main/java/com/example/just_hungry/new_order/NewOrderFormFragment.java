@@ -73,6 +73,7 @@ public class NewOrderFormFragment extends Fragment {
 
     // location is default for now
     LocationModel currentLocation = new LocationModel();
+    Utils utilsInstance = Utils.getInstance();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -120,7 +121,7 @@ public class NewOrderFormFragment extends Fragment {
         spinnerCuisine.setAdapter(adapter);
 
         // !TODO this is not working
-        Utils.getDeviceLocation((Activity) context, locationModel -> {
+        utilsInstance.getDeviceLocation((Activity) context, locationModel -> {
             currentLocation = locationModel;
         });
 //        currentLocation = getDeviceLocation(this.getActivity(), fusedLocationClient, currentLocation);

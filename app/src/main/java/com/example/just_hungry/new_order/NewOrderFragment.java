@@ -39,6 +39,8 @@ public class NewOrderFragment extends Fragment {
     RecyclerView postRecyclerView;
     NewOrderRecyclerAdapter adapter;
     SharedPreferences preferences;
+
+    Utils utilsInstance = Utils.getInstance();
     Utils.OnGetPostByUserDataListener newOrderPostslistener;
 
     //scrolling stuff
@@ -83,12 +85,12 @@ public class NewOrderFragment extends Fragment {
                 }
             }
 
-            Utils.getDeviceLocation(activity, locationModel -> {
+            utilsInstance.getDeviceLocation(activity, locationModel -> {
 
                 posts.sort(new PostsByDistanceComparator(locationModel));
 
                 for (PostModel post : posts) {
-                    post.distanceFromDevice = (Utils.calculateDistance(locationModel, post.getLocation()));
+                    post.distanceFromDevice = (utilsInstance.calculateDistance(locationModel, post.getLocation()));
                 }
 
                 System.out.println("SETTING UP ADAPTER DONE" + posts);
@@ -113,14 +115,14 @@ public class NewOrderFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utils.getAllPostsByUserId(userId, newOrderPostslistener); // your code
+                utilsInstance.getAllPostsByUserId(userId, newOrderPostslistener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
 
 
 
-        Utils.getAllPostsByUserId(userId, newOrderPostslistener);
+        utilsInstance.getAllPostsByUserId(userId, newOrderPostslistener);
         return rootView;
     }
 

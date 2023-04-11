@@ -22,6 +22,7 @@ import java.util.ArrayList;
 
 
 public class NewOrderRecyclerAdapter extends BaseRecyclerAdapter {
+    Utils utilsInstance = Utils.getInstance();
 
     Utils.OnGetPostByUserDataListener newOrderPostslistener;
 

@@ -59,6 +59,8 @@ public class PostsFragment extends Fragment {
 
     private android.widget.ArrayAdapter<Object> ArrayAdapter;
 
+    Utils utilsInstance = Utils.getInstance();
+
     public PostsFragment(FragmentManager fragmentManager) {
         // Required empty public constructor
         this.fragmentManager = fragmentManager;
@@ -143,36 +145,30 @@ public class PostsFragment extends Fragment {
         // firebase has its own threading operations
         Task<QuerySnapshot> postsQuery = db.collection("posts").get();
 
-//        deviceLocation = Utils.getDeviceLocation(this.getActivity(), fusedLocationProviderClient, deviceLocation);
 
         Utils.OnGetDataListener listener = queryDocumentSnapshots -> {
-//            System.out.println("QuerySnapshot: " + queryDocumentSnapshots);
             posts.clear();
             // create a new posts ArrayList which stores all the PostModel objects
             for (int i = 0; i < queryDocumentSnapshots.size(); i++) {
                 HashMap<String, Object> post = (HashMap<String, Object>) queryDocumentSnapshots.getDocuments().get(i).getData();
                 posts.add(new PostModel((DocumentSnapshot) queryDocumentSnapshots.getDocuments().get(i)));
-                //posts.add(new PostModel(queryDocumentSnapshots.getDocuments().get(i).getData()));
-//                System.out.println(queryDocumentSnapshots.getDocuments().get(i).getData());
             }
 
-            Utils.getDeviceLocation(activity, locationModel -> {
+            utilsInstance.getDeviceLocation(activity, locationModel -> {
                 this.deviceLocation = locationModel;
                 Collections.sort(posts, new PostsByDistanceComparator(deviceLocation));
 
                 for (PostModel post : posts) {
-                    post.distanceFromDevice = (Utils.calculateDistance(deviceLocation, post.getLocation()));
+                    post.distanceFromDevice = (utilsInstance.calculateDistance(deviceLocation, post.getLocation()));
                 }
 
                 System.out.println("SETTING UP ADAPTER DONE" + posts);
                 adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
-//            postRecyclerView.setItemAnimator(null);
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             });
 
             adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
-//            postRecyclerView.setItemAnimator(null);
             postRecyclerView.setLayoutManager(mLayoutManager);
             postRecyclerView.setAdapter(adapter);
 
@@ -204,11 +200,11 @@ public class PostsFragment extends Fragment {
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Utils.getAllPostsFirestore(listener); // your code
+                utilsInstance.getAllPostsFirestore(listener); // your code
                 pullToRefresh.setRefreshing(false);
             }
         });
-        Utils.getAllPostsFirestore(listener);
+        utilsInstance.getAllPostsFirestore(listener);
         return rootView;
     }
 

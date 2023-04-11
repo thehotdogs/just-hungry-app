@@ -32,6 +32,8 @@ public class PostModel {
     public String grabFoodUrl;
     public boolean isHalal;
     public double distanceFromDevice;
+    Utils utilsInstance = Utils.getInstance();
+
 
     public PostModel() {
         //set to default value
@@ -123,7 +125,7 @@ public class PostModel {
         CountDownLatch latch = new CountDownLatch(this.participants.size());
 
         for (String participantId : this.participants) {
-            Utils.getUserById(participantId, participantName -> {
+            utilsInstance.getUserById(participantId, participantName -> {
                     if (participantName == null) {
                         latch.countDown();
                         return;
