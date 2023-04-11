@@ -121,6 +121,38 @@ public class ChatFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+//    private void loadMessages(Utils.OnGetChatFromPostIdListener chatFetchListener) {
+//        firestore.collection("posts")
+//                .orderBy("dateCreated", Query.Direction.ASCENDING)
+//                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+//
+//                    @Override
+//                    public void onEvent(QuerySnapshot value, FirebaseFirestoreException error) {
+//                        //System.out.println("on change event is trigered" + value.getDocumentChanges());
+//                        if (error != null) {
+//                            // Handle the error
+//                            return;
+//                        }
+//
+//                        for (DocumentChange change : value.getDocumentChanges()) {
+//                            //System.out.println("for change:" + change.getDocument().getData());
+//                            ArrayList<DocumentSnapshot> out = new ArrayList<>();
+//                            out.add(change.getDocument());
+//                            chatFetchListener.onSuccess(out);
+////                            if (change.getType() == DocumentChange.Type.ADDED) {
+////                                // System.out.println("ADDED SOMETHING in chats!!" + change.getDocument().getData());
+////                                //ChatModel chat = change.getDocument().toObject(ChatModel.class);
+////                                ChatModel chat = new ChatModel(change.getDocument());
+////                                chatList.add(chat);
+////                                adapter.notifyItemInserted();
+////                                chatFetchListener.onSuccess(null);
+////                                recyclerView.scrollToPosition(chatList.size() - 1);
+////                            }
+//                        }
+//                    }
+//                });
+//    }
+
     private void loadMessages(Utils.OnGetChatFromPostIdListener chatFetchListener) {
         firestore.collection("posts")
                 .orderBy("dateCreated", Query.Direction.ASCENDING)
@@ -139,19 +171,18 @@ public class ChatFragment extends Fragment {
                             ArrayList<DocumentSnapshot> out = new ArrayList<>();
                             out.add(change.getDocument());
                             chatFetchListener.onSuccess(out);
-//                            if (change.getType() == DocumentChange.Type.ADDED) {
-//                                // System.out.println("ADDED SOMETHING in chats!!" + change.getDocument().getData());
-//                                //ChatModel chat = change.getDocument().toObject(ChatModel.class);
-//                                ChatModel chat = new ChatModel(change.getDocument());
-//                                chatList.add(chat);
-//                                adapter.notifyDataSetChanged();
-//                                chatFetchListener.onSuccess(null);
-//                                recyclerView.scrollToPosition(chatList.size() - 1);
-//                            }
+                            if (change.getType() == DocumentChange.Type.ADDED) {
+                                ChatModel chat = new ChatModel(change.getDocument());
+                                chatList.add(chat);
+                                adapter.notifyItemInserted(chatList.size() - 1);
+                                recyclerView.scrollToPosition(chatList.size() - 1);
+                            }
                         }
                     }
                 });
     }
+
+
     private void sendMessage(String message) {
         // Implement the code to send a message
         SharedPreferences preferences = getContext().getSharedPreferences("preferences", Context.MODE_PRIVATE);
