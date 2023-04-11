@@ -66,7 +66,6 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         this.preferences = context.getSharedPreferences("preferences", Context.MODE_PRIVATE);
         this.fragmentManager = supportFragmentManager;
     }
-
     protected abstract void onBindHeaderViewHolder(RecyclerView.ViewHolder holder);
 
     @NonNull
