@@ -52,7 +52,7 @@ public class PostsFragment extends Fragment {
     //scrolling stuff
     private boolean loading = true;
     int pastVisiblesItems, visibleItemCount, totalItemCount;
-    LinearLayoutManager mLayoutManager = new LinearLayoutManager(this.getContext());
+    LinearLayoutManager mLayoutManager;
     private final static int COARSE_LOCATION_REQUEST_CODE = 100;
     LocationModel deviceLocation = new LocationModel(0, 0); // instantiate on SUTD coordinates
     FragmentManager fragmentManager;
@@ -167,6 +167,8 @@ public class PostsFragment extends Fragment {
                 postRecyclerView.setLayoutManager(mLayoutManager);
                 postRecyclerView.setAdapter(adapter);
             });
+
+            mLayoutManager  = new LinearLayoutManager(this.getContext());
 
             adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
             postRecyclerView.setLayoutManager(mLayoutManager);

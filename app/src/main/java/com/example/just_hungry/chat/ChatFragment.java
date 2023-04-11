@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.just_hungry.R;
@@ -44,6 +45,8 @@ public class ChatFragment extends Fragment {
     private String postId;
     private String postTitle;
 
+    private ImageButton backImageButton;
+
     public ChatFragment(String postId, String postTitle) {
         this.postId = postId;
         this.postTitle = postTitle;
@@ -60,6 +63,7 @@ public class ChatFragment extends Fragment {
         messageEditText = view.findViewById(R.id.messageEditText);
         sendMessageButton = view.findViewById(R.id.sendMessageButton);
         textTitle = view.findViewById(R.id.titletext);
+        backImageButton = view.findViewById(R.id.backImageButton);
 
         firestore = FirebaseFirestore.getInstance();
         FirebaseFirestore.getInstance();
@@ -68,7 +72,12 @@ public class ChatFragment extends Fragment {
         textTitle.setText("Chat Room: " + postTitle);
 
 
-
+        backImageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
 
         sendMessageButton.setOnClickListener(new View.OnClickListener() {
             @Override

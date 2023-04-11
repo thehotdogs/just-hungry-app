@@ -161,8 +161,7 @@ public abstract class BaseRecyclerAdapter extends RecyclerView.Adapter<RecyclerV
         postHolder.chatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //!TODO UNCOMMENT FOR CHAT
-                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId, postTitle)).commit();
+                fragmentManager.beginTransaction().replace(R.id.fragment_container, new ChatFragment(postId, postTitle)).addToBackStack("BaseRecyclerAdapter").commit();
             }
         });
 

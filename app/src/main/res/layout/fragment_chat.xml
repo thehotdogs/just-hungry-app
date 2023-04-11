@@ -27,7 +27,18 @@
                 android:textColor="@android:color/white"
                 android:layout_gravity="center" />
 
+            <ImageButton
+                android:id="@+id/backImageButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                app:srcCompat="@drawable/baseline_chevron_left_24"
+                app:tint="?attr/colorOnPrimary"
+                android:background="@null" />
+
         </androidx.appcompat.widget.Toolbar>
+
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

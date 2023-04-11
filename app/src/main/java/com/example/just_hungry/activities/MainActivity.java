@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity {
         newOrdersQuery.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 QuerySnapshot querySnapshot = task.getResult();
-                Log.d(TAG, "checkForUpdates: " + querySnapshot.getDocuments() + " new orders" + querySnapshot.isEmpty());
                 if (querySnapshot != null && !querySnapshot.isEmpty()) {
                     Log.d(TAG, "checkForUpdates: " + querySnapshot.size() + " new orders");
                     // Send notification for new orders
@@ -127,10 +126,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d("MainActivity", "NewOrderWorker scheduled");
     }
 
+
+
     @Override
     protected void onPause() {
         super.onPause();
         stopCheckingForUpdates();
+//        startCheckingForUpdates();
     }
 
     @Override
