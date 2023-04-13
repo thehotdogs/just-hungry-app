@@ -5,21 +5,24 @@ https://developer.android.com/guide/fragments/create#add
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <!-- Add your filter bar here -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        tools:visibility="visible">
 
         <!-- Add your toolbar here -->
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:contentInsetStart="0dp"
+            android:background="#FFDE59"
             app:contentInsetEnd="0dp"
-            android:background="#FFDE59">
+            app:contentInsetStart="0dp">
 
             <!-- Add your filter UI elements here -->
             <ToggleButton
@@ -51,17 +54,17 @@ https://developer.android.com/guide/fragments/create#add
                 android:textSize="14sp"
 
                 />
+
             <Spinner
                 android:id="@+id/spinnerCuisineFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="49dp"
+                android:layout_gravity="end"
                 android:layout_weight="1"
                 android:visibility="visible"
                 app:layout_constraintStart_toEndOf="@+id/chipHalalFilter"
-                app:layout_constraintTop_toTopOf="@+id/chipHalalFilter"
-                android:layout_gravity="end" />
+                app:layout_constraintTop_toTopOf="@+id/chipHalalFilter" />
         </androidx.appcompat.widget.Toolbar>
-
 
 
     </com.google.android.material.appbar.AppBarLayout>

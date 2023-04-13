@@ -26,6 +26,7 @@ import com.example.just_hungry.PostsByDistanceComparator;
 import com.example.just_hungry.R;
 import com.example.just_hungry.Utils;
 import com.example.just_hungry.activities.MainActivity;
+import com.example.just_hungry.filtering.Filter;
 import com.example.just_hungry.models.LocationModel;
 import com.example.just_hungry.models.PostModel;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -38,6 +39,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 public class PostsFragment extends Fragment {
 
@@ -90,43 +92,57 @@ public class PostsFragment extends Fragment {
         postRecyclerView = (RecyclerView) rootView.findViewById(R.id.postRecyclerView);
         Button calibrateButton = rootView.findViewById(R.id.calibrateButton);
         chipHalalOnly = (ToggleButton) rootView.findViewById(R.id.chipHalalFilter);
+
+        PostFilter filter = new PostFilter();
+
         chipHalalOnly.setOnClickListener(v -> {
-            if (chipHalalOnly.isChecked()) {
-                // filter by halal
-                ArrayList<PostModel> halalPosts = new ArrayList<>();
-                for (PostModel post : posts) {
-                    if (post.isHalal()) {
-                        halalPosts.add(post);
-                    }
-                }
-                adapter = new PostRecyclerAdapter(rootView.getContext(), halalPosts, fragmentManager);
-                postRecyclerView.setAdapter(adapter);
-            } else {
-                // show all posts
-                adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
-                postRecyclerView.setAdapter(adapter);
-            }
+            filter.setHalalOnly(chipHalalOnly.isChecked());
+
+            ArrayList<PostModel> filteredPosts = filter.filter(posts);
+            adapter = new PostRecyclerAdapter(rootView.getContext(), filteredPosts, fragmentManager);
+            postRecyclerView.setAdapter(adapter);
+
+//            if (chipHalalOnly.isChecked()) {
+//                // filter by halal
+//                ArrayList<PostModel> halalPosts = new ArrayList<>();
+//                for (PostModel post : posts) {
+//                    if (post.isHalal()) {
+//                        halalPosts.add(post);
+//                    }
+//                }
+//                adapter = new PostRecyclerAdapter(rootView.getContext(), halalPosts, fragmentManager);
+//                postRecyclerView.setAdapter(adapter);
+//            } else {
+//                // show all posts
+//                adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+//                postRecyclerView.setAdapter(adapter);
+//            }
         });
 
         spinnerCuisineFilter = (Spinner) rootView.findViewById(R.id.spinnerCuisineFilter);
         spinnerCuisineFilter.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                String selectedCuisine = parent.getItemAtPosition(position).toString();
-                String noCategory = getResources().getStringArray(R.array.spinner_cuisine)[0];
-                if (!selectedCuisine.equals(noCategory)) {
-                    ArrayList<PostModel> filteredPosts = new ArrayList<>();
-                    for (PostModel post : posts) {
-                        if (post.getCuisine().equals(selectedCuisine)) {
-                            filteredPosts.add(post);
-                        }
-                    }
-                    adapter = new PostRecyclerAdapter(rootView.getContext(), filteredPosts, fragmentManager);
-                    postRecyclerView.setAdapter(adapter);
-                } else {
-                    adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
-                    postRecyclerView.setAdapter(adapter);
-                }
+                filter.setCuisineFilter(spinnerCuisineFilter.getSelectedItem().toString());
+                ArrayList<PostModel> filteredPosts = filter.filter(posts);
+                adapter = new PostRecyclerAdapter(rootView.getContext(), filteredPosts, fragmentManager);
+                postRecyclerView.setAdapter(adapter);
+
+//                String selectedCuisine = parent.getItemAtPosition(position).toString();
+//                String noCategory = getResources().getStringArray(R.array.spinner_cuisine)[0];
+//                if (!selectedCuisine.equals(noCategory)) {
+//                    ArrayList<PostModel> filteredPosts = new ArrayList<>();
+//                    for (PostModel post : posts) {
+//                        if (post.getCuisine().equals(selectedCuisine)) {
+//                            filteredPosts.add(post);
+//                        }
+//                    }
+//                    adapter = new PostRecyclerAdapter(rootView.getContext(), filteredPosts, fragmentManager);
+//                    postRecyclerView.setAdapter(adapter);
+//                } else {
+//                    adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
+//                    postRecyclerView.setAdapter(adapter);
+//                }
             }
 
             @Override
@@ -173,9 +189,6 @@ public class PostsFragment extends Fragment {
             adapter = new PostRecyclerAdapter(rootView.getContext(), posts, fragmentManager);
             postRecyclerView.setLayoutManager(mLayoutManager);
             postRecyclerView.setAdapter(adapter);
-
-
-
         };
 
         calibrateButton.setOnClickListener(v -> {
@@ -193,10 +206,6 @@ public class PostsFragment extends Fragment {
             });
             }
         );
-//        Utils.getDeviceLocation(MainActivity.this, locationModel -> {
-//            System.out.println("Location: " + locationModel.getLatitude() + ' ' + locationModel.getLongitude());
-//            Utils.saveLocationToSharedPreferencesAndFirestore(MainActivity.this, locationModel);
-//        });
 
         final SwipeRefreshLayout pullToRefresh = rootView.findViewById(R.id.pullToRefresh);
         pullToRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -211,6 +220,33 @@ public class PostsFragment extends Fragment {
     }
 
 
-    // FIREBASE STACK OVER FLOW STUFF
+    public class PostFilter implements Filter<PostModel> {
+        private boolean halalOnly = false;
+        private String cuisineFilter = null;
 
+        public void setHalalOnly(boolean halalOnly) {
+            this.halalOnly = halalOnly;
+        }
+
+        public void setCuisineFilter(String cuisineFilter) {
+            this.cuisineFilter = cuisineFilter;
+        }
+
+        @Override
+        public ArrayList<PostModel> filter(ArrayList<PostModel> items) {
+            ArrayList<PostModel> filteredItems = new ArrayList<>();
+
+            for (PostModel post: items) {
+                if (halalOnly && !post.isHalal()) {
+                    continue;
+                }
+                if (cuisineFilter != null && !cuisineFilter.equals(getResources().getStringArray(R.array.spinner_cuisine)[0])
+                        && !post.getCuisine().equals(cuisineFilter)) {
+                    continue;
+                }
+                filteredItems.add(post);
+            }
+            return filteredItems;
+        }
+    }
 }
